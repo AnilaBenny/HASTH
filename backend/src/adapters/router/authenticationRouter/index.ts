@@ -1,13 +1,14 @@
 import express from "express";
 
-import { userController } from "../../controller/user/userController";
-import { adminController } from "../../controller/admin/adminController";
-import {creativeController} from "../../controller/creative/creativeController"
+import { userController } from "../../controller";
+
 export default  (dependencies:any)=>{
-const router=express.Router();
+const router=express();
+const { registrationController }=userController(dependencies);
+// const { }=adminController(dependencies)
 
   router.post('/login',);
-  router.post('/register', );
+  router.post('/register',registrationController);
   router.post('/verifyOtp', );
   router.get('/logout', );
   router.get('/resendOtp',);
@@ -15,5 +16,5 @@ const router=express.Router();
   router.post('/checkOTP')
   router.post('/changePassword')
   router.post('/forgotPassword')
-
+return router;
 }
