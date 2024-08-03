@@ -1,0 +1,31 @@
+@media (min-width: 768px) {
+    .md\:max-w-sm {
+        max-width: 60rem;
+    }
+}
+
+@keyframes bulbFlicker {
+    0%, 100% {
+      opacity: 1; 
+    }
+    50% {
+      opacity: 0; 
+    }
+  }
+
+  .bulb-container {
+    animation: bulbFlicker 2s infinite;
+    position: absolute;
+    top: 36%;
+    transform: translateY(-50%);
+    left: 26%; 
+  }
+
+  .bulb-image {
+    max-width: 100px; 
+    transition: opacity 0.5s ease-in-out;
+  }
+  
+.bannerimage{
+  width:700px
+}
