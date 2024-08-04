@@ -2,7 +2,7 @@ import './Banner.css';
 
 const Banner = () => {
   return (
-    <div className="relative flex flex-col md:flex-row justify-evenly items-center p-4">
+    <div className="relative flex flex-col xl:flex-row justify-evenly items-center p-4">
       <div className="relative">
         <img 
           src="/images/banner1.jpg" 

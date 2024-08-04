@@ -10,7 +10,7 @@ type BannerafterfeatureProps = {
 
 const Bannerafterfeature: React.FC<BannerafterfeatureProps> = ({ title, description, imageUrl, reverse = false ,tags=false}) => {
   return (
-    <div className={`relative flex flex-col ${reverse ? 'md:flex-row-reverse' : 'md:flex-row'} justify-evenly items-center p-6`}>
+    <div className={`relative flex flex-col ${reverse ? 'xl:flex-row-reverse' : 'xl:flex-row'} justify-evenly items-center p-6`}>
       <div className="relative">
         <img 
           src={imageUrl} 

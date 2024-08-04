@@ -1,5 +1,5 @@
 
-const Searchbar = () => {
+const Searchbar:React.FC= () => {
   return (
     <div className="flex items-center justify-center my-4 pe-20">
       <input
