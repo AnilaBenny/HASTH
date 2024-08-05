@@ -15,12 +15,16 @@ import App from './App';
 import Landingpage from './pages/Landingpage';
 import Loginpage from './pages/Loginpage';
 import Registerpage from './pages/Registerpage';
+import Otppage from './pages/Otppage';
+import Home from './pages/Home';
 
 const userRoutes=(
 <Route path='/' element={<App/>}>
 <Route index={true} element={<Landingpage/>}/>
 <Route path='/login' element={<Loginpage/>}/>
 <Route path='/register' element={<Registerpage/>}/>
+<Route path='/verifyOtp' element={<Otppage/>}/>
+<Route path='/home' element={<Home/>}/>
 </Route>
 )
 
