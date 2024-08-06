@@ -23,7 +23,7 @@ const Register: React.FC = () => {
     role: 'user',
   });
 
-  // Error state variables
+  
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -39,24 +39,6 @@ const Register: React.FC = () => {
   const [roleError, setRoleError] = useState('');
 
   const navigate = useNavigate();
-
-  const clearValidationErrors = () => {
-    setTimeout(() => {
-      setNameError("");
-      setEmailError("");
-      setPasswordError("");
-      setCpasswordError("");
-      setMobileError("");
-      setSkillsError("");
-      setEducationError("");
-      setSpecificationError("");
-      setStreetError("");
-      setCityError("");
-      setStateError("");
-      setZipCodeError("");
-      setRoleError("");
-    }, 6000); 
-  };
 
   const validate = () => {
     let isValid = true;
@@ -76,74 +58,117 @@ const Register: React.FC = () => {
       role
     } = formData;
 
-    if (name.trim() === "") {
-      setNameError("Name is required");
+    if (name.trim() === '') {
+      setNameError('Name is required');
       isValid = false;
+    } else if (name.length < 3 || name.length > 15) {
+      setNameError('Name must be between 3 and 15 characters long');
+      isValid = false;
+    } else if (!/^[a-zA-Z\s]*$/.test(name)) {
+      setNameError('Name cannot contain numbers or special characters');
+      isValid = false;
+    } else {
+      setNameError('');
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (email.trim() === "" || !emailRegex.test(email)) {
-      setEmailError("Valid email is required");
+    const emailRegex = /^[a-zA-Z0-9_]+@gmail\.com$/;
+    if (email.trim() === '') {
+      setEmailError('Email is required');
       isValid = false;
+    } else if (!emailRegex.test(email)) {
+      setEmailError('Valid email is required');
+      isValid = false;
+    } else {
+      setEmailError('');
     }
 
-    if (password.trim() === "") {
-      setPasswordError("Password is required");
+    if (password.trim() === '') {
+      setPasswordError('Password is required');
       isValid = false;
+    } else if (password.length < 6 || password.length > 15) {
+      setPasswordError('Password must be between 6 and 15 characters');
+      isValid = false;
+    } else if (!/(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9])(?!.*\s).*$/.test(password)) {
+      setPasswordError('Password must contain at least one uppercase letter, one special character, and one number, and no spaces');
+      isValid = false;
+    } else {
+      setPasswordError('');
     }
 
-    if (confirmPassword !== password) {
-      setCpasswordError("Passwords do not match");
+    if (confirmPassword.trim() === '') {
+      setCpasswordError('Confirm password is required');
       isValid = false;
+    } else if (confirmPassword !== password) {
+      setCpasswordError('Passwords do not match');
+      isValid = false;
+    } else {
+      setCpasswordError('');
     }
 
-    if (mobile.trim() === "" || !/^\d{10}$/.test(mobile)) {
-      setMobileError("Valid mobile number is required");
+    if (mobile.trim() === '') {
+      setMobileError('Mobile number is required');
       isValid = false;
+    } else if (!/^[6-9]\d{9}$/.test(mobile)) {
+      setMobileError('Invalid mobile number format. Must start with a digit from 6 to 9 and be 10 digits long');
+      isValid = false;
+    } else {
+      setMobileError('');
     }
 
-    if (skills.trim() === "") {
-      setSkillsError("Skills are required");
+    if (skills.trim() === '') {
+      setSkillsError('Skills are required');
       isValid = false;
+    } else {
+      setSkillsError('');
     }
 
-    if (education.trim() === "") {
-      setEducationError("Education is required");
+    if (education.trim() === '') {
+      setEducationError('Education is required');
       isValid = false;
+    } else {
+      setEducationError('');
     }
 
-    if (specification.trim() === "") {
-      setSpecificationError("Specification is required");
+    if (specification.trim() === '') {
+      setSpecificationError('Specification is required');
       isValid = false;
+    } else {
+      setSpecificationError('');
     }
 
-    if (street.trim() === "") {
-      setStreetError("Street is required");
+    if (street.trim() === '') {
+      setStreetError('Street is required');
       isValid = false;
+    } else {
+      setStreetError('');
     }
 
-    if (city.trim() === "") {
-      setCityError("City is required");
+    if (city.trim() === '') {
+      setCityError('City is required');
       isValid = false;
+    } else {
+      setCityError('');
     }
 
-    if (state.trim() === "") {
-      setStateError("State is required");
+    if (state.trim() === '') {
+      setStateError('State is required');
       isValid = false;
+    } else {
+      setStateError('');
     }
 
-    if (zipCode.trim() === "" || !/^\d{5,6}$/.test(zipCode)) {
-      setZipCodeError("Valid Zip Code is required");
+    if (zipCode.trim() === '' || !/^\d{5,6}$/.test(zipCode)) {
+      setZipCodeError('Valid Zip Code is required');
       isValid = false;
+    } else {
+      setZipCodeError('');
     }
 
-    if (role.trim() === "") {
-      setRoleError("Role is required");
+    if (role.trim() === '') {
+      setRoleError('Role is required');
       isValid = false;
-    }
-
-    if (!isValid) {
-      clearValidationErrors();
+    } else {
+      setRoleError('');
     }
 
     return isValid;
@@ -151,7 +176,7 @@ const Register: React.FC = () => {
 
   const handleRegister = async () => {
     if (!validate()) {
-      return; // Exit if validation fails
+      return; 
     }
     try {
       const {
@@ -182,12 +207,12 @@ const Register: React.FC = () => {
         zipCode,
         role
       };
-      const response = await axiosInstance.post("/api/auth/register", data);
+      const response = await axiosInstance.post('/api/auth/register', data);
 
       if (response.data && response.data.status) {
         navigate('/verifyOtp');
-        localStorage.removeItem("userEmail");
-        localStorage.setItem("userEmail", email);
+        localStorage.removeItem('userEmail');
+        localStorage.setItem('userEmail', email);
       } else {
         toast.warn(response.data.data);
       }
@@ -387,13 +412,25 @@ const Register: React.FC = () => {
                   Signup
                 </button>
               </div>
-            </form>
-            <div className="flex justify-center mt-6">
-              <FcGoogle className="text-2xl mr-2" />
-              <button className="bg-white border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-semibold hover:bg-gray-100 focus:outline-none">
-                Signup with Google
+              <button
+              type="button"
+              className="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold py-2 rounded mt-4 flex items-center justify-center"
+            >
+              <FcGoogle size={24} className="mr-2" />
+              Continue with Google
+            </button>
+              <div className="text-center mt-4">
+              Don't have an account?{' '}
+              <button
+                type="button"
+                onClick={() => navigate('/login')}
+                className="text-blue-500 hover:underline"
+              >
+                login
               </button>
             </div>
+            </form>
+            
           </div>
           <div className="w-1/2">
             <img src="/images/register.jpg" alt="Register" className="w-full h-auto" />

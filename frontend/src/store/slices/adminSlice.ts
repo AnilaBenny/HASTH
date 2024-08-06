@@ -17,7 +17,7 @@ const initialState: AdminState = {
 };
 
 const adminSlice = createSlice({
-  name: "Admin",
+  name: "admin",
   initialState,
   reducers: {
     setAdmin: (state, action: PayloadAction<Admin>) => {
@@ -36,8 +36,9 @@ const adminSlice = createSlice({
 });
 
 export const { setAdmin, clearAdmin } = adminSlice.actions;
-export const selectAdmin = (state: any) => state.persisted.admin.admin;
-export const isAdminAuthenticated = (state: any) => state.persisted.admin.isAuthenticated;
+
+export const selectAdmin = (state: { admin: AdminState }) => state.admin.admin;
+export const selectIsAdminAuthenticated = (state: { admin: AdminState }) => state.admin.isAuthenticated;
 
 export default adminSlice.reducer;
 export type { AdminState };

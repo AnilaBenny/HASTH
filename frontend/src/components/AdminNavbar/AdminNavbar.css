@@ -1,0 +1,27 @@
+.sticky-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+/*sidebar */
+/* styles.css */
+
+.sidebar {
+  padding-top: 100px;
+  width: 250px;
+  height: 100vh;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.sidebar-menu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+

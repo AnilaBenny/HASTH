@@ -3,12 +3,20 @@ import { useState } from 'react';
 import Searchbar from './Searchbar';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import './Navbar.css';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectIsUserAuthenticated, clearUser } from '../../store/slices/userSlice';
 
 const Navbar = () => {
   const [navOpen, setNavOpen] = useState(false);
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector(selectIsUserAuthenticated);
 
   const handleToggleNav = () => {
     setNavOpen(prev => !prev);
+  };
+
+  const handleLogout = () => {
+    dispatch(clearUser());
   };
 
   return (
@@ -54,24 +62,31 @@ const Navbar = () => {
         </ul>
       </div>
 
-      <div className="hidden lg:block">
-        <Link to="/login" className="btn2">
-          <button className="border-2 hover:bg-white p-2 rounded-3xl">
-            Login/Register
+      {isAuthenticated ? (
+        <div className="hidden lg:block">
+          <button className="border-2 hover:bg-white p-2 rounded-3xl" onClick={handleLogout}>
+            LogOut
           </button>
-        </Link>
-      </div>
+        </div>
+      ) : (
+        <div className="hidden lg:block">
+          <Link to="/login" className="btn2">
+            <button className="border-2 hover:bg-white p-2 rounded-3xl">
+              Login/Register
+            </button>
+          </Link>
+        </div>
+      )}
 
       <div className="lg:hidden flex items-center">
-  <button onClick={handleToggleNav} className="focus:outline-none">
-    {navOpen ? (
-      <AiOutlineClose size={24} />
-    ) : (
-      <AiOutlineMenu size={24} />
-    )}
-  </button>
-</div>
-
+        <button onClick={handleToggleNav} className="focus:outline-none">
+          {navOpen ? (
+            <AiOutlineClose size={24} />
+          ) : (
+            <AiOutlineMenu size={24} />
+          )}
+        </button>
+      </div>
 
       {navOpen && (
         <div className="absolute top-0 left-0 w-full h-screen bg-white flex flex-col items-center space-y-4 pt-20 z-50">

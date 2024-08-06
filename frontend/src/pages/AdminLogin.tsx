@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import './Login.css';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { clearUser,setUser,selectIsUserAuthenticated } from '../../store/slices/userSlice';
+import { clearAdmin, setAdmin, selectIsAdminAuthenticated } from '../store/slices/adminSlice';
 import { toast } from 'react-toastify';
-import axiosInstance from '../../Axiosconfig/Axiosconfig';
-import { AiOutlineMail, AiOutlineLock, AiOutlineEyeInvisible } from 'react-icons/ai';
-import { FcGoogle } from 'react-icons/fc';
+import axiosInstance from '../Axiosconfig/Axiosconfig';
+import { AiOutlineMail, AiOutlineLock, AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
-const Login: React.FC = () => {
+const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector(selectIsUserAuthenticated);
+  const isAuthenticated = useSelector(selectIsAdminAuthenticated);
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/home');
+      navigate('/admin/adminHome');
     }
   }, [isAuthenticated, navigate]);
 
@@ -51,25 +49,25 @@ const Login: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     if (!validateForm()) return;
-
+  
     const data = { email, password };
-
+  
     try {
-      const response = await axiosInstance.post('/api/auth/login', data);
+      const response = await axiosInstance.post('/api/auth/admin/login', data);
       if (response.data && response.data.status) {
+        dispatch(clearAdmin());
+        dispatch(setAdmin(response.data.user));
+        localStorage.setItem('admin', JSON.stringify(response.data.user));
         toast.success('Login successful');
-        dispatch(clearUser());
-        dispatch(setUser(response.data.data));
-        localStorage.setItem('User', JSON.stringify(response.data));
-        navigate('/home');
+        navigate('/admin/adminHome');
       } else {
         toast.error(response.data.message || 'Login failed');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error during login:', error);
-      toast.error('Error during login');
+      toast.error('Error during login. Please try again.');
     }
   };
 
@@ -77,7 +75,7 @@ const Login: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center background-image">
       <div className="relative border-transparent rounded-lg shadow-lg p-8 w-full max-w-md">
         <div className="login_form">
-          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-700">Login</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-700">Admin Login</h2>
           <img src="/images/login.webp" alt="Login" className="w-full h-auto mb-4" />
           <form onSubmit={handleLogin}>
             <div className="mb-4 relative">
@@ -108,14 +106,9 @@ const Login: React.FC = () => {
                 onClick={togglePasswordVisibility}
                 className="absolute top-3 right-3 text-gray-400"
               >
-                <AiOutlineEyeInvisible />
+                {isPasswordVisible ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
               </button>
             </div>
-
-            <div className="flex items-center justify-between mb-4">
-              <Link to="/forgotPassword" className="text-blue-500 hover:underline">Forgot password?</Link>
-            </div>
-
             <button
               type="submit"
               className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded focus:outline-none focus:shadow-outline transition duration-200"
@@ -123,26 +116,6 @@ const Login: React.FC = () => {
               Login Now
             </button>
 
-            <div className="flex justify-center items-center mt-4">
-              <div className="border-t border-gray-300 flex-grow"></div>
-              <span className="mx-4 text-gray-500">or</span>
-              <div className="border-t border-gray-300 flex-grow"></div>
-            </div>
-
-            <button
-              type="button"
-              className="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold py-2 rounded mt-4 flex items-center justify-center"
-            >
-              <FcGoogle size={24} className="mr-2" />
-              Continue with Google
-            </button>
-
-            <div className="text-center mt-4">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-blue-500 hover:underline">
-                Signup
-              </Link>
-            </div>
           </form>
         </div>
       </div>
@@ -150,4 +123,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;

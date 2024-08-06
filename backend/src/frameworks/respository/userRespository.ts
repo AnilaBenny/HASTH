@@ -1,6 +1,6 @@
 import { databaseSchema } from "../database"; 
 
-const userService = {
+export default  {
   createUser: async (data: any) => {
     try {
       console.log(data);
@@ -59,6 +59,26 @@ const userService = {
       throw new Error("Internal server error"); 
     }
   },
+  finduser: async (email: any) => {
+    try {
+     
+
+      const finduser = await databaseSchema.User.findOne({
+        email: email,
+      });
+      ;
+      if (finduser) {
+        return { status: true, user: finduser };
+      } else {
+        return { status: false,message:'user not found'};
+      }
+    } catch (error) {
+      console.log(
+        "error in repositery authencation repo in userEmailexist",
+        error
+      );
+    }
+  }
 };
 
-export default userService;
+
