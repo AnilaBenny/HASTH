@@ -4,27 +4,31 @@ import { userController,adminController,} from "../../controller";
 
 
 
+
+
 export default  (dependencies:any)=>{
 const router=express();
-const { registrationController,otpController,loginController }=userController(dependencies);
+const { 
+  registrationController,otpController,loginController,forgotPasswordController,checkOtpController,updatePasswordController
+}=userController(dependencies);
 
 
   router.post('/login',loginController);
   router.post('/register',registrationController);
   router.post('/verifyOtp',otpController);
-  router.post('/checkOTP');
-  router.get('/resendOtp');
-  router.get('/logout',);
- 
-  router.post('/generateOtp');
- 
-  router.post('/changePassword')
-  router.post('/forgotPassword')
+  router.post('/forgotPassword',forgotPasswordController);
+  router.post('/checkOtp',checkOtpController);
+  router.put('/resetPassword',updatePasswordController);
+  router.post('/resendOtp');
+  router.post('/updateUser');
 
-const { AdminLoginController,getAllUserController,handleUserBlockController}=adminController(dependencies);
+const { 
+  AdminLoginController,getAllUserController,handleUserBlockController,
+}=adminController(dependencies);
 router.post('/admin/login',AdminLoginController);
 router.get('/getAllUsers',getAllUserController);
-router.put('/handleUserBlock/:userId',handleUserBlockController)
+router.put('/handleUserBlock/:userId',handleUserBlockController);
+router.post('/verifyCreative')
 
 return router;
 }

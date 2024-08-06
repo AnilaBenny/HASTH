@@ -20,13 +20,16 @@ import AdminApp from './AdminApp';
 import AdminLogin from './pages/AdminLogin';
 import AdminHome from './pages/AdminHome';
 import UserManagement from './pages/UserManagement';
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import ForgotPasswordPage from './pages/forgotPasswordPage';
 const userRoutes = (
   <Route path='/' element={<App />}>
     <Route index={true} element={<Landingpage />} />
     <Route element={<PublicRoute />}>
+      
       <Route path='login' element={<Loginpage />} />
       <Route path='register' element={<Registerpage />} />
+      <Route path='forgotPassword' element={<ForgotPasswordPage/>} />
     </Route>
     <Route path='verifyOtp' element={<Otppage />} />
     <Route element={<PrivateRoute />}>
@@ -57,7 +60,9 @@ const router = createBrowserRouter(createRoutesFromElements(allRoutes))
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
+      <GoogleOAuthProvider clientId="454780597057-m0hi77khg1hntm0l1qj2bm5as7qvbtng.apps.googleusercontent.com">
       <RouterProvider router={router} />
+      </GoogleOAuthProvider>
     </Provider>
   </React.StrictMode>
 );

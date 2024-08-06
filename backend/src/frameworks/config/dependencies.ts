@@ -1,6 +1,5 @@
 import { adminRespository,userRespository } from "../respository"
-import { userRegistration,otpVerification } from "../../application/useCase"
-import loginUseCase from "../../application/useCase/userUseCase/loginUseCase"
+import { userRegistration,otpVerification ,forgotPasswordUseCase,loginUseCase,updatePasswordUseCase} from "../../application/useCase"
 import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase} from "../../application/useCase/adminUseCase"
 
 
@@ -11,7 +10,9 @@ const useCase:any={
     loginVerification:loginUseCase,
     AdminloginUseCase:AdminloginUseCase,
     getallUseCase:getallUseCase,
-    handleUserBlockUseCase:handleUserBlockUseCase
+    handleUserBlockUseCase:handleUserBlockUseCase,
+    forgotPasswordUseCase:forgotPasswordUseCase,
+    updatePasswordUseCase:updatePasswordUseCase
 }
 const respository:any={
     userRespository,

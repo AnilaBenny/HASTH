@@ -78,6 +78,43 @@ export default  {
         error
       );
     }
+  },
+  forgotPassword:async(email:any)=>{
+    
+    
+    try{
+      const finduser = await databaseSchema.User.findOne({
+        email: email,
+      });
+      console.log(finduser,email);
+      
+      if (finduser) {
+        return { status: true, data: finduser };
+      } else {
+        return { status: false, message: "User not found" };
+      }
+
+    }catch (error) {
+      console.error("Error in userRespository.forgotPassword:", error);
+      throw new Error("Internal server error"); 
+    }
+  },
+  updatePassword:async(data:any)=>{
+    try{
+      const {email,password}=data
+      const updateUser = await databaseSchema.User.findOneAndUpdate({
+        email: email,
+      },{password:password});
+      if(updateUser){
+        return { status: true, message:'Password updated' };
+      } else {
+        return { status: false, message: "User not found" };
+      }
+
+    }catch(error){
+      console.error('Error in userRespository.updatePassword',error);
+      throw new Error('Internal server error')
+    }
   }
 };
 

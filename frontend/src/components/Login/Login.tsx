@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
 import { useSelector, useDispatch } from 'react-redux';
-import { clearUser,setUser,selectIsUserAuthenticated } from '../../store/slices/userSlice';
+import { clearUser, setUser, selectIsUserAuthenticated } from '../../store/slices/userSlice';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { AiOutlineMail, AiOutlineLock, AiOutlineEyeInvisible } from 'react-icons/ai';
-import { FcGoogle } from 'react-icons/fc';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -73,6 +73,27 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleGoogleLoginSuccess = async (credentialResponse: any) => {
+    try {
+      const { credential } = credentialResponse;
+      console.log('credential',credential);
+      
+      const response = await axiosInstance.post('/api/auth/google', { idToken: credential });
+      if (response.data && response.data.status) {
+        toast.success('Login successful');
+        dispatch(clearUser());
+        dispatch(setUser(response.data.data));
+        localStorage.setItem('User', JSON.stringify(response.data));
+        navigate('/home');
+      } else {
+        toast.error(response.data.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Error during Google login:', error);
+      toast.error('Error during Google login');
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center background-image">
       <div className="relative border-transparent rounded-lg shadow-lg p-8 w-full max-w-md">
@@ -129,13 +150,14 @@ const Login: React.FC = () => {
               <div className="border-t border-gray-300 flex-grow"></div>
             </div>
 
-            <button
-              type="button"
-              className="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold py-2 rounded mt-4 flex items-center justify-center"
-            >
-              <FcGoogle size={24} className="mr-2" />
-              Continue with Google
-            </button>
+            <div className="w-full flex justify-center mt-4">
+              <GoogleLogin
+                onSuccess={handleGoogleLoginSuccess}
+                onError={() => toast.error('Google login failed')}
+                useOneTap={false}
+                promptMomentNotification={() => {}}
+              />
+            </div>
 
             <div className="text-center mt-4">
               Don't have an account?{' '}
