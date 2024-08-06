@@ -55,7 +55,7 @@ const Register: React.FC = () => {
       setStateError("");
       setZipCodeError("");
       setRoleError("");
-    }, 3000); 
+    }, 6000); 
   };
 
   const validate = () => {
