@@ -4,6 +4,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { toast } from 'react-toastify';
+import Loading from '../../Loading/Loading';
 
 const Register: React.FC = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -37,7 +38,7 @@ const Register: React.FC = () => {
   const [stateError, setStateError] = useState('');
   const [zipCodeError, setZipCodeError] = useState('');
   const [roleError, setRoleError] = useState('');
-
+  const [isLoading,setisLoading]=useState(false);
   const navigate = useNavigate();
 
   const validate = () => {
@@ -207,6 +208,7 @@ const Register: React.FC = () => {
         zipCode,
         role
       };
+      setisLoading(true);
       const response = await axiosInstance.post('/api/auth/register', data);
 
       if (response.data && response.data.status) {
@@ -400,7 +402,7 @@ const Register: React.FC = () => {
                   required
                 >
                   <option value="user">User</option>
-                  <option value="creator">Creator</option>
+                  <option value="creative">Creative</option>
                 </select>
                 {roleError && <p className="text-red-500 text-sm mt-1">{roleError}</p>}
               </div>
@@ -408,8 +410,14 @@ const Register: React.FC = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none"
-                >
-                  Signup
+                >{isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <Loading /> 
+                  </div>
+                ) : (
+                  'Signup' 
+                )}
+                  
                 </button>
               </div>
               <button

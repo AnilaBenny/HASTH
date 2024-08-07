@@ -23,12 +23,14 @@ import UserManagement from './pages/UserManagement';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import ForgotPasswordPage from './pages/forgotPasswordPage';
 import Profile from './pages/Profile';
+import CreativeLogin from './pages/CreativeLogin';
 const userRoutes = (
   <Route path='/' element={<App />}>
     <Route index={true} element={<Landingpage />} />
     <Route element={<PublicRoute />}>
       
       <Route path='login' element={<Loginpage />} />
+      <Route path='creativeLogin' element={<CreativeLogin />} />
       <Route path='register' element={<Registerpage />} />
       <Route path='forgotPassword' element={<ForgotPasswordPage/>} />
     </Route>

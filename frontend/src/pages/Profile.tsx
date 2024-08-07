@@ -14,6 +14,7 @@ const Profile: React.FC = () => {
   const [education, setEducation] = useState<string>("");
   const [specification, setSpecification] = useState<string>("");
   const [zipCode, setZipCode] = useState<string>("");
+  const [role, setRole] = useState<string>("");
 
   const [loading, setLoading] = useState(false);
 
@@ -209,6 +210,8 @@ const Profile: React.FC = () => {
     const storedEducation = profileData.data?.education || "";
     const storedSpecification = profileData.data?.specification || "";
     const storedZipCode = storedAddress.zipCode || "";
+    const storedRole=profileData.data?.role || "";
+    
 
     setName(storedName);
     setEmail(storedEmail);
@@ -218,16 +221,19 @@ const Profile: React.FC = () => {
     setEducation(storedEducation);
     setSpecification(storedSpecification);
     setZipCode(storedZipCode);
+    setRole(storedRole);
+    
   }, []);
 
   return (
     <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-md p-8 mb-6 w-full max-w-4xl">
-        <h1 className="text-2xl font-semibold mb-4 text-gray-800">Profile</h1>
+        <h1 className="text-2xl font-semibold mb-4 text-gray-800">{role}-Profile</h1>
         <div className="grid gap-6 text-sm grid-cols-1 lg:grid-cols-3">
           <div className="lg:col-span-1 flex flex-col items-center">
             <p className="font-medium text-lg text-gray-800">Personal Details</p>
             <div className="relative mt-4">
+          
               <img
                 src="images/profile.avif"
                 alt="Profile"
@@ -281,6 +287,7 @@ const Profile: React.FC = () => {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  readOnly
                 />
                 {emailError && <p className="text-red-500 text-xs">{emailError}</p>}
               </div>

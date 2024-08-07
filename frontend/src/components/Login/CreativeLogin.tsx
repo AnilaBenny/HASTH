@@ -8,7 +8,7 @@ import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { AiOutlineMail, AiOutlineLock, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { GoogleLogin } from '@react-oauth/google';
 
-const Login: React.FC = () => {
+const CreativeLogin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -62,9 +62,8 @@ const Login: React.FC = () => {
       
       if (response.data.data.isBlocked) {
         toast.error('Your account has been blocked. Please contact support.');
-      } 
-      else if(response.data.data.role!=='user'){
-        toast.error('Please login in to creative Login');
+      } else if(response.data.data.role!=='creative'){
+        toast.error('Please login in to user Login');
       }
       else if (response.data && response.data.status) {
         toast.success('Login successful');
@@ -106,7 +105,7 @@ const Login: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center background-image">
       <div className="relative border-transparent rounded-lg shadow-lg p-8 w-full max-w-md">
         <div className="login_form">
-          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-700">Login</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-700">Creative Login</h2>
           <img src="/images/login.webp" alt="Login" className="w-full h-auto mb-4" />
           <form onSubmit={handleLogin}>
             <div className="mb-4 relative">
@@ -174,9 +173,9 @@ const Login: React.FC = () => {
               </Link>
             </div>
             <div className="text-center mt-4">
-              Want to become a creative?{' '}
-              <Link to="/creativeLogin" className="text-blue-500 hover:underline">
-                Become a creative
+              Want to become a user?{' '}
+              <Link to="/login" className="text-blue-500 hover:underline">
+                Become a user
               </Link>
             </div>
           </form>
@@ -186,4 +185,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default CreativeLogin;
