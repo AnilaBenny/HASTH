@@ -2,8 +2,14 @@ import React, { useEffect, useState, useCallback } from "react";
 import SearchBar from "./SearchBar";
 import axiosInstance from "../../Axiosconfig/Axiosconfig";
 import { User } from "../../interfaces/user/userInterface";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { clearUser } from "../../store/slices/userSlice";
+import { toast } from 'react-toastify';
 
 const UserList: React.FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [filter, setFilter] = useState<"all" | "blocked" | "unblocked">("all");
@@ -49,7 +55,7 @@ const UserList: React.FC = () => {
         `/api/auth/handleUserBlock/${userId}`
       );
       const updatedUser = response.data.data;
-
+        
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user._id === updatedUser._id ? updatedUser : user
@@ -64,6 +70,18 @@ const UserList: React.FC = () => {
         ...prevStatus,
         [userId]: updatedUser.isBlocked,
       }));
+
+      const currentUser = JSON.parse(localStorage.getItem('User') || '{}');
+      if (currentUser && currentUser._id === updatedUser._id && updatedUser.isBlocked) {
+       
+        dispatch(clearUser());
+        localStorage.removeItem('User');
+        localStorage.removeItem('accessToken');
+  
+        navigate('/login');
+        toast.error('You have been logged out because your account is blocked.');
+      }
+
     } catch (error) {
       console.error("Error toggling block status:", error);
     }

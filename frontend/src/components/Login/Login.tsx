@@ -58,7 +58,12 @@ const Login: React.FC = () => {
 
     try {
       const response = await axiosInstance.post('/api/auth/login', data);
-      if (response.data && response.data.status) {
+      console.log(response.data);
+      
+      if (response.data.data.isBlocked) {
+        toast.error('Your account has been blocked. Please contact support.');
+      } 
+      else if (response.data && response.data.status) {
         toast.success('Login successful');
         dispatch(clearUser());
         dispatch(setUser(response.data.data));

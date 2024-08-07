@@ -16,7 +16,7 @@ export default  {
         street,
         city,
         state,
-        zipcode,
+        zipCode,
         role,
       } = data;
 
@@ -28,7 +28,7 @@ export default  {
         skills,
         education,
         specification,
-        address: [{ street, city, state, zipCode: zipcode }], 
+        address: [{ street, city, state, zipCode: zipCode }], 
         role,
         isVerified:true
       });
@@ -114,6 +114,48 @@ export default  {
     }catch(error){
       console.error('Error in userRespository.updatePassword',error);
       throw new Error('Internal server error')
+    }
+  },
+  updateProfile:async(data:any)=>{
+    try {
+      const {
+        name,
+        email,
+        mobile,
+        skills,
+        education,
+        specification,
+        street,
+        city,
+        state,
+        zipCode,
+        role,
+      } = data;
+      const address = { street, city, state, zipCode };
+      const user = await databaseSchema.User.findOneAndUpdate(
+        { email: email }, 
+        {
+          $set: {
+            name,
+            mobile,
+            skills,
+            education,
+            specification,
+            address,
+            role,
+          },
+        },
+        { new: true } 
+      );
+   
+      if (user) {
+        return { status: true, data: user };
+      } else {
+        return { status: false, message: "Profile updation failed" }; 
+      }
+    } catch (error) {
+      console.error("Error in userRespository.updateProfile:", error);
+      return { status: false, message: "Internal server error" }; 
     }
   }
 };

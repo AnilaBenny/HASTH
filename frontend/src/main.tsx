@@ -22,6 +22,7 @@ import AdminHome from './pages/AdminHome';
 import UserManagement from './pages/UserManagement';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import ForgotPasswordPage from './pages/forgotPasswordPage';
+import Profile from './pages/Profile';
 const userRoutes = (
   <Route path='/' element={<App />}>
     <Route index={true} element={<Landingpage />} />
@@ -34,6 +35,7 @@ const userRoutes = (
     <Route path='verifyOtp' element={<Otppage />} />
     <Route element={<PrivateRoute />}>
       <Route path='home' element={<Home />} />
+      <Route path='profile' element={<Profile/>}/>
     </Route>
   </Route>
 )

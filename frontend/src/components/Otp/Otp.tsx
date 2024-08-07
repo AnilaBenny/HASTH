@@ -73,8 +73,8 @@ const Otp: React.FC = () => {
       const email = localStorage.getItem('userEmail');
       if (email) {
         const response = await axiosInstance.post('/api/auth/resendOtp', { email });
-        if (response.status === 200) {
-          toast.success('OTP has been resent');
+        if (response.data.status) {
+          toast.success(response.data.message);
         } else {
           toast.error(response.data.message || 'Failed to resend OTP');
         }

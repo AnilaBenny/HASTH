@@ -5,7 +5,7 @@ import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import './Navbar.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectIsUserAuthenticated, clearUser } from '../../store/slices/userSlice';
-
+import { MdShoppingCart, MdFavoriteBorder, MdPerson } from 'react-icons/md';
 const Navbar = () => {
   const [navOpen, setNavOpen] = useState(false);
   const dispatch = useDispatch();
@@ -62,13 +62,26 @@ const Navbar = () => {
         </ul>
       </div>
 
-      {isAuthenticated ? (
-        <div className="hidden lg:block">
-          <button className="border-2 hover:bg-white p-2 rounded-3xl" onClick={handleLogout}>
+      {isAuthenticated ? (<div className="hidden lg:flex items-center">
+          <div className="flex items-center space-x-4">
+            <Link to="/cart" className="btn2">
+              <MdShoppingCart className="text-2xl" title="Cart" />
+            </Link>
+            <Link to="/wishlist" className="btn2">
+              <MdFavoriteBorder className="text-2xl" title="Wishlist" />
+            </Link>
+            <Link to="/profile" className="btn2">
+              <MdPerson className="text-2xl" title="Profile" />
+            </Link>
+          </div>
+          <button
+            className="border-2 hover:bg-white p-2 rounded-3xl ml-4"
+            onClick={handleLogout}
+          >
             LogOut
           </button>
         </div>
-      ) : (
+      )  : (
         <div className="hidden lg:block">
           <Link to="/login" className="btn2">
             <button className="border-2 hover:bg-white p-2 rounded-3xl">

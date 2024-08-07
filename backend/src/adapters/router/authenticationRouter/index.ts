@@ -9,7 +9,8 @@ import { userController,adminController,} from "../../controller";
 export default  (dependencies:any)=>{
 const router=express();
 const { 
-  registrationController,otpController,loginController,forgotPasswordController,checkOtpController,updatePasswordController
+  registrationController,otpController,loginController,forgotPasswordController,checkOtpController,updatePasswordController,resendOtpController,
+  updateProfileController
 }=userController(dependencies);
 
 
@@ -19,8 +20,8 @@ const {
   router.post('/forgotPassword',forgotPasswordController);
   router.post('/checkOtp',checkOtpController);
   router.put('/resetPassword',updatePasswordController);
-  router.post('/resendOtp');
-  router.post('/updateUser');
+  router.post('/resendOtp',resendOtpController);
+  router.post('/updateProfile',updateProfileController);
 
 const { 
   AdminLoginController,getAllUserController,handleUserBlockController,

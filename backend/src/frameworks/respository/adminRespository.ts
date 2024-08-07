@@ -42,6 +42,7 @@ export default {
       const user = await databaseSchema.User.findById(userId);
       if (user) {
         user.isBlocked = !user.isBlocked; 
+        
         const response = await user.save();
         if (response) {
           return { status: true, data: response };

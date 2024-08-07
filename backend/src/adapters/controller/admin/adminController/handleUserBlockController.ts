@@ -5,6 +5,8 @@ export default (dependencies: any) => {
     const handleUserBlockController = async (req: Request, res: Response) => {
         try {
             const { userId } = req.params;
+
+            
             const executeFunction = await handleUserBlockUseCase(dependencies)
             const response=executeFunction.executeFunction(userId);
             if (response && response.status) {
