@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { AiOutlineMail, AiOutlineLock, AiOutlineEyeInvisible, AiOutlineUser, AiOutlinePhone } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
-import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { toast } from 'react-toastify';
 import Loading from '../../Loading/Loading';
-
-const Register: React.FC = () => {
+import { useNavigate,useLocation } from 'react-router-dom';
+import { initializeUser,setUser } from '../../store/slices/userSlice';
+import {  useDispatch } from 'react-redux';
+ const Register= function (){
+  const dispatch = useDispatch();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -39,7 +41,7 @@ const Register: React.FC = () => {
   const [zipCodeError, setZipCodeError] = useState('');
   const [roleError, setRoleError] = useState('');
   const [isLoading,setisLoading]=useState(false);
-  const navigate = useNavigate();
+
 
   const validate = () => {
     let isValid = true;
@@ -229,6 +231,36 @@ const Register: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const status = queryParams.get('status');
+    const userString:any = queryParams.get('user');
+    const token:any = queryParams.get('token');
+
+    if (status === 'true') {
+      try {
+        const user = JSON.parse(userString); 
+        dispatch(setUser(user)); 
+        dispatch(initializeUser(token));
+        
+        navigate('/home');
+      } catch (error) {
+        console.error('Error parsing user:', error);
+        toast.error('Failed to parse user data.');
+      }
+    } else if (status === 'false') {
+      toast.error('User already exists. Please login.');
+    }
+  }, [location, navigate]);
+
+  const handleGoogleSignIn = async () => {
+    window.location.href = 'http://localhost:8080/api/auth/google';
+  };
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center background-image">
@@ -245,7 +277,7 @@ const Register: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 <AiOutlineUser className="absolute top-3 right-3 text-gray-400" />
                 {nameError && <p className="text-red-500 text-sm mt-1">{nameError}</p>}
@@ -258,7 +290,7 @@ const Register: React.FC = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 <AiOutlineMail className="absolute top-3 right-3 text-gray-400" />
                 {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
@@ -271,7 +303,7 @@ const Register: React.FC = () => {
                   value={formData.password}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 <AiOutlineLock className="absolute top-3 right-10 text-gray-400" />
                 <button
@@ -291,7 +323,7 @@ const Register: React.FC = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 <AiOutlineLock className="absolute top-3 right-10 text-gray-400" />
                 {cpasswordError && <p className="text-red-500 text-sm mt-1">{cpasswordError}</p>}
@@ -304,7 +336,7 @@ const Register: React.FC = () => {
                   value={formData.mobile}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 <AiOutlinePhone className="absolute top-3 right-3 text-gray-400" />
                 {mobileError && <p className="text-red-500 text-sm mt-1">{mobileError}</p>}
@@ -317,7 +349,7 @@ const Register: React.FC = () => {
                   value={formData.skills}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 {skillsError && <p className="text-red-500 text-sm mt-1">{skillsError}</p>}
               </div>
@@ -329,7 +361,7 @@ const Register: React.FC = () => {
                   value={formData.education}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 {educationError && <p className="text-red-500 text-sm mt-1">{educationError}</p>}
               </div>
@@ -341,7 +373,7 @@ const Register: React.FC = () => {
                   value={formData.specification}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 {specificationError && <p className="text-red-500 text-sm mt-1">{specificationError}</p>}
               </div>
@@ -353,7 +385,7 @@ const Register: React.FC = () => {
                   value={formData.street}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 {streetError && <p className="text-red-500 text-sm mt-1">{streetError}</p>}
               </div>
@@ -365,7 +397,7 @@ const Register: React.FC = () => {
                   value={formData.city}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 {cityError && <p className="text-red-500 text-sm mt-1">{cityError}</p>}
               </div>
@@ -377,7 +409,7 @@ const Register: React.FC = () => {
                   value={formData.state}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 {stateError && <p className="text-red-500 text-sm mt-1">{stateError}</p>}
               </div>
@@ -389,7 +421,7 @@ const Register: React.FC = () => {
                   value={formData.zipCode}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 />
                 {zipCodeError && <p className="text-red-500 text-sm mt-1">{zipCodeError}</p>}
               </div>
@@ -399,7 +431,7 @@ const Register: React.FC = () => {
                   value={formData.role}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500 bg-transparent text-gray-700"
-                  required
+                  
                 >
                   <option value="user">User</option>
                   <option value="creative">Creative</option>
@@ -423,6 +455,7 @@ const Register: React.FC = () => {
               <button
               type="button"
               className="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold py-2 rounded mt-4 flex items-center justify-center"
+              onClick={handleGoogleSignIn}
             >
               <FcGoogle size={24} className="mr-2" />
               Continue with Google
@@ -448,5 +481,5 @@ const Register: React.FC = () => {
     </div>
   );
 };
+export {Register};
 
-export default Register;

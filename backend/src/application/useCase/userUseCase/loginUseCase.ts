@@ -1,4 +1,5 @@
 import { verifyHashPassword } from "../../../utils";
+import generateToken from "../../../utils/generateToken";
 
 export default function loginUseCase(dependencies: any) {
   const { userRespository } = dependencies.respository; 
@@ -15,7 +16,8 @@ export default function loginUseCase(dependencies: any) {
         const isPasswordCorrect = await verifyHashPassword(data.password, user.password);
 
         if (isPasswordCorrect) {
-          return { status: true, data: user };
+          const token=await generateToken(data);
+          return { status: true, data: user,token };
         } else {
           return { status: false, message: 'Incorrect password' };
         }

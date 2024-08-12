@@ -24,11 +24,13 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import ForgotPasswordPage from './pages/forgotPasswordPage';
 import Profile from './pages/Profile';
 import CreativeLogin from './pages/CreativeLogin';
+import ErrorPage from './pages/ErrorPage(401)';
+import CreativeManagement from './pages/CreativeManagement';
 const userRoutes = (
   <Route path='/' element={<App />}>
     <Route index={true} element={<Landingpage />} />
     <Route element={<PublicRoute />}>
-      
+      <Route path='401' element={<ErrorPage/>} />
       <Route path='login' element={<Loginpage />} />
       <Route path='creativeLogin' element={<CreativeLogin />} />
       <Route path='register' element={<Registerpage />} />
@@ -47,6 +49,7 @@ const adminRoutes=(
     <Route element={<AdminPrivateRoute/>}>
       <Route path='adminHome' element={<AdminHome/>}/>
       <Route path='userManagement' element={<UserManagement/>}/>
+      <Route path='creativeManagement' element={<CreativeManagement/>}/>
     </Route>
   </Route>
 )

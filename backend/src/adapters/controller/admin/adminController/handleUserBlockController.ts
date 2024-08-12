@@ -10,6 +10,8 @@ export default (dependencies: any) => {
             const executeFunction = await handleUserBlockUseCase(dependencies)
             const response=executeFunction.executeFunction(userId);
             if (response && response.status) {
+                res.clearCookie('accessToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+                res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
                 res.json({ status: true, data: response.data });
             } else {
                 res.status(400).json({ status: false, message: response.message || "User blocking/unblocking failed" });

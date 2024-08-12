@@ -3,11 +3,11 @@ import mongoose, { Schema, model } from 'mongoose';
 const userSchema = new Schema({
   name: {
     type: String,
-    required: true,
+    
   },
   password: {
     type: String,
-    required: true,
+    
   },
   email: {
     type: String,
@@ -16,7 +16,7 @@ const userSchema = new Schema({
   },
   mobile: {
     type: Number,
-    required: true
+ 
   },
   isVerified: {
     type: Boolean,

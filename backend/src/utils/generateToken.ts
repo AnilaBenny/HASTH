@@ -4,12 +4,16 @@ import jwt from 'jsonwebtoken';
 interface GenerateTokenOptions {
   userId: any;
 }
-const generateToken = ({  userId }: GenerateTokenOptions): { token: string }=> {
+const generateToken = ({  userId }: GenerateTokenOptions)=> {
   
-  const token = jwt.sign({ userId }, "anila@123", {
+  const accessToken= jwt.sign({ userId }, "anila@123", {
+    expiresIn: '30m',
+  });
+  const refreshToken = jwt.sign({ userId }, "anila@123", {
     expiresIn: '30d',
   });
-  return {token};
+  
+  return {accessToken,refreshToken};
 };
 export default generateToken;
 

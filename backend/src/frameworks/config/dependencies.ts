@@ -1,8 +1,8 @@
 import { adminRespository,userRespository } from "../respository"
-import { userRegistration,otpVerification ,forgotPasswordUseCase,loginUseCase,updatePasswordUseCase,resendOtpUseCase,
-    updateProfileUseCase
-} from "../../application/useCase"
-import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase} from "../../application/useCase/adminUseCase"
+import { userRegistration,otpVerification ,forgotPasswordUseCase,loginUseCase,updatePasswordUseCase,
+         resendOtpUseCase,updateProfileUseCase,googleRegisterUseCase,refreshTokenuseCase
+       } from "../../application/useCase"
+import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,verifyCreativeUseCase} from "../../application/useCase/adminUseCase"
 
 
 const useCase:any={
@@ -16,7 +16,10 @@ const useCase:any={
     forgotPasswordUseCase:forgotPasswordUseCase,
     updatePasswordUseCase:updatePasswordUseCase,
     resendOtpUseCase:resendOtpUseCase,
-    updateProfileUseCase:updateProfileUseCase
+    updateProfileUseCase:updateProfileUseCase,
+    googleRegisterUseCase:googleRegisterUseCase,
+    refreshTokenuseCase:refreshTokenuseCase,
+    verifyCreativeUseCase:verifyCreativeUseCase
 }
 const respository:any={
     userRespository,

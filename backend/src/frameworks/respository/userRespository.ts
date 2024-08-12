@@ -19,19 +19,35 @@ export default  {
         zipCode,
         role,
       } = data;
-
-      const user = new databaseSchema.User({
-        name,
-        email,
-        password,
-        mobile,
-        skills,
-        education,
-        specification,
-        address: [{ street, city, state, zipCode: zipCode }], 
-        role,
-        isVerified:true
-      });
+      let user;
+      if(role==='user'){
+         user = new databaseSchema.User({
+          name,
+          email,
+          password,
+          mobile,
+          skills,
+          education,
+          specification,
+          address: [{ street, city, state, zipCode: zipCode }], 
+          role,
+          isVerified:true
+        });
+      }else{
+         user = new databaseSchema.User({
+          name,
+          email,
+          password,
+          mobile,
+          skills,
+          education,
+          specification,
+          address: [{ street, city, state, zipCode: zipCode }], 
+          role,
+          isVerified:false
+        });
+      }
+     
 
       const response = await user.save();
       if (response) {

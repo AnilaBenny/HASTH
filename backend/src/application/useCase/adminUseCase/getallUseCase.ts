@@ -5,7 +5,7 @@ export default (dependencies: any)=> {
         try {
             const response = await adminRespository.getAllUsers(requestData);
            
-            
+          
             if (response.status) {
                 return { status: true, data: response.data };
             } else {

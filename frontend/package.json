@@ -18,6 +18,8 @@
     "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.3",
     "frontend": "file:",
+    "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
@@ -27,6 +29,8 @@
     "redux-persist": "^6.0.0"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
+    "@types/jwt-decode": "^3.1.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",

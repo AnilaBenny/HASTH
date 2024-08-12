@@ -5,6 +5,8 @@ import loginUseCase from './loginUseCase'
 import updatePasswordUseCase from "./updatePasswordUseCase";
 import resendOtpUseCase from "./resendOtpUseCase";
 import updateProfileUseCase from "./updateProfileUseCase";
+import googleRegisterUseCase from'./googleRegisterUseCase';
+import refreshTokenuseCase from './refreshTokenuseCase'
 export{
     userRegistration,
     loginUseCase,
@@ -12,5 +14,7 @@ export{
     forgotPasswordUseCase,
     updatePasswordUseCase,
     resendOtpUseCase,
-    updateProfileUseCase
+    updateProfileUseCase,
+    googleRegisterUseCase,
+    refreshTokenuseCase
 }

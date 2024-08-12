@@ -10,6 +10,17 @@ export default (dependecies: any) => {
     }
   const responce =await loginVerification(dependecies).executeFunction(data) 
   if(responce.status){
+    res.cookie('accessToken', responce.token.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 30 * 60 * 1000 
+    });
+
+    res.cookie('refreshToken', responce.token.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 30 * 24 * 60 * 60 * 1000 
+    });
     res.json({status:true,data:responce.data})
   }else{
     res.json({status:false,message:responce.message})

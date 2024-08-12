@@ -22,20 +22,40 @@ export default {
       return { status: false, message: 'Error occurred during verification' };
     }
   },
-  getAllUsers:async()=>{
-    try{
-      const users=await databaseSchema.User.find()
-      console.log(users);
-      
-      if(users){
-        return {status:true,data:users}
-      }else{
-        return {status:false,message:'users not found'}
+  getAllUsers:async(data:any)=>{
+    try {
+
+      const page = data.page || 1;
+      const limit = data.limit || 8;
+      const skip = (page - 1) * limit;
+
+      const users = await databaseSchema.User.find()
+          .skip(skip)
+          .limit(limit);
+
+  
+      const totalUsers = await databaseSchema.User.countDocuments();
+
+      if (users && users.length > 0) {
+        
+        
+          return {
+              status: true,
+              data: {
+                  users,
+                  total: totalUsers,
+                  currentPage: page,
+                  totalPages: Math.ceil(totalUsers / limit)
+              }
+          };
+          
+      } else {
+          return { status: false, message: 'Users not found' };
       }
-    }catch(error){
+  } catch (error) {
       console.log("Error in adminRepository.getAllUsers", error);
       return { status: false, message: 'Error occurred during get users' };
-    }
+  }
   },
   handleUserBlock: async (userId: string) => {
     try {
@@ -55,6 +75,26 @@ export default {
     } catch (error) {
       console.error("Error in handleUserBlock repository:", error);
       return { status: false, message: "User blocking/unblocking failed" };
+    }
+  },
+  verifyCreative:async(userId:string)=>{
+    try{
+    const user = await databaseSchema.User.findById(userId);
+      if (user) {
+        user.isVerified = !user.isVerified; 
+        
+        const response = await user.save();
+        if (response) {
+          return { status: true, data: response };
+        } else {
+          return { status: false, message: "creative verification failed" };
+        }
+      } else {
+        return { status: false, message: "creative not found" };
+      }
+    } catch (error) {
+      console.error("Error in verifyCreative repository:", error);
+      return { status: false, message: "creative verification failed" };
     }
   }
 };

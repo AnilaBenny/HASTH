@@ -6,6 +6,8 @@ import checkOtpController from './checkOtpController'
 import updatePasswordController from './updatePasswordController'
 import resendOtpController from './resendOtpController'
 import updateProfileController from './updateProfileController'
+import googleRegisterController from './googleRegisterController'
+import refreshTokenController from './refreshTokenController'
 export default (dependencies:any)=>{
 return{
     registrationController:registrationController(dependencies),
@@ -15,6 +17,8 @@ return{
     checkOtpController:checkOtpController(dependencies),
     updatePasswordController:updatePasswordController(dependencies),
     resendOtpController:resendOtpController(dependencies),
-    updateProfileController:updateProfileController(dependencies)
+    updateProfileController:updateProfileController(dependencies),
+    googleRegisterController:googleRegisterController(dependencies),
+    refreshTokenController:refreshTokenController(dependencies)
 }
 }

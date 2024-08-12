@@ -25,6 +25,16 @@ const AdminSidebar: React.FC = () => {
             USER MANAGEMENT
           </NavLink>
         </li>
+        <li className="sidebar-item mb-2"> 
+          <NavLink
+            to="/admin/creativeManagement"
+            className="text-blue-950 font-bold hover:bg-blue-800; rounded-xl p-3 flex items-center"
+            
+          >
+            <FaUserCog className="mr-3"/>
+            CREATIVE MANAGEMENT
+          </NavLink>
+        </li>
       </ul>
     </div>
   );

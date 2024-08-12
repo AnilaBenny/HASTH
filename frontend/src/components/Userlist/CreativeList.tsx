@@ -3,12 +3,13 @@ import SearchBar from "./SearchBar";
 import axiosInstance from "../../Axiosconfig/Axiosconfig";
 import { User } from "../../interfaces/user/userInterface";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { clearUser } from "../../store/slices/userSlice";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import Pagination from "../Pagination/Pagination";
 import ViewUser from "./ViewUser";
-const UserList: React.FC = () => {
+
+export default () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
@@ -17,24 +18,29 @@ const UserList: React.FC = () => {
   const [blockStatus, setBlockStatus] = useState<Record<string, boolean>>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const usersPerPage = 8; 
+  const usersPerPage = 8;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axiosInstance.get(`/api/auth/getAllUsers?page=${currentPage}&limit=${usersPerPage}`);
+        const response = await axiosInstance.get(
+          `/api/auth/getAllUsers?page=${currentPage}&limit=${usersPerPage}`
+        );
         console.log(response);
         if (Array.isArray(response.data.data.users)) {
-          
-          
-          const users = response.data.data.users;
-          const userData = users.filter((user: any) => user.role === 'user');
-          setUsers(userData);
-          setFilteredUsers(userData);
-          const initialBlockStatus = userData.reduce((acc: any, user: any) => {
-            acc[user._id] = user.isBlocked;
-            return acc;
-          }, {} as Record<string, boolean>);
+          const userData = response.data.data.users;
+          const creative = userData.filter(
+            (user: any) => user.role === "creative"
+          );
+          setUsers(creative);
+          setFilteredUsers(creative);
+          const initialBlockStatus = creative.reduce(
+            (acc: any, user: any) => {
+              acc[user._id] = user.isBlocked;
+              return acc;
+            },
+            {} as Record<string, boolean>
+          );
           setBlockStatus(initialBlockStatus);
         } else {
           console.error("Invalid user data:", response.data.data.users);
@@ -45,7 +51,7 @@ const UserList: React.FC = () => {
     };
 
     fetchUsers();
-  }, [blockStatus, currentPage]); 
+  }, [currentPage]);
 
   const handleSearch = (query: string) => {
     const lowerCaseQuery = query.toLowerCase();
@@ -63,7 +69,7 @@ const UserList: React.FC = () => {
         `/api/auth/handleUserBlock/${userId}`
       );
       const updatedUser = response.data.data;
-      
+
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user._id === updatedUser._id ? updatedUser : user
@@ -79,17 +85,21 @@ const UserList: React.FC = () => {
         [userId]: updatedUser.isBlocked,
       }));
 
-      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
       if (currentUser && currentUser._id === updatedUser._id && updatedUser.isBlocked) {
         dispatch(clearUser());
-        localStorage.removeItem('user');
-        localStorage.removeItem('accessToken');
-        navigate('/login');
-        toast.error('You have been logged out because your account is blocked.');
+        localStorage.removeItem("user");
+        localStorage.removeItem("accessToken");
+        navigate("/login");
+        toast.error("You have been logged out because your account is blocked.");
       }
     } catch (error) {
       console.error("Error toggling block status:", error);
     }
+  };
+
+  const handleViewDetails = (user: User) => {
+    setSelectedUser(user);
   };
 
   const applyFilter = useCallback(
@@ -113,15 +123,12 @@ const UserList: React.FC = () => {
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-  const handleViewDetails = (user: User) => {
-    setSelectedUser(user);
-  };
 
   return (
     <div className="pl-64 flex justify-center items-center">
       <div className="w-full max-w-4xl">
         <div className="text-center my-4">
-          <h1 className="text-2xl font-bold">User List</h1>
+          <h1 className="text-2xl font-bold">Creative List</h1>
         </div>
 
         <div className="flex justify-between mb-4">
@@ -186,6 +193,9 @@ const UserList: React.FC = () => {
                   >
                     {blockStatus[user._id] ? "Unblock" : "Block"}
                   </button>
+                  <button className="mr-2 bg-green-500 hover:bg-green-700 text-white py-1 px-3 rounded-full">
+                    Verify
+                  </button>
                   <button
                     onClick={() => handleViewDetails(user)}
                     className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-full"
@@ -211,5 +221,3 @@ const UserList: React.FC = () => {
     </div>
   );
 };
-
-export default UserList;
