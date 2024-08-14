@@ -11,6 +11,7 @@ const expressConfig = (app: Express) => {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser(process.env.COOKIEPARSERSECRET || 'default_secret'));
   app.use(express.static("public"));
+  app.use('/src/uploads', express.static('src/uploads'));
 
   app.use(
     cors({

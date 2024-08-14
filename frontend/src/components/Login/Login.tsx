@@ -182,7 +182,7 @@ const Login: React.FC = () => {
           </div>
           <div className="text-center mt-4">
               Want to become a creative?{' '}
-              <Link to="/login" className="text-blue-500 hover:underline">
+              <Link to="/creativeLogin" className="text-blue-500 hover:underline">
                 Become a creative
               </Link>
             </div>

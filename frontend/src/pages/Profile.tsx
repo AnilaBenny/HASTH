@@ -196,7 +196,7 @@ const Profile: React.FC = () => {
   }, [nameError, emailError, mobileError, addressError, skillsError, educationError, specificationError, zipCodeError]);
 
   useEffect(() => {
-    const profileData = JSON.parse(localStorage.getItem("User") || "{}");
+    const profileData = JSON.parse(localStorage.getItem("user") || "{}");
 
     const storedName = profileData.data?.name || "";
     const storedEmail = profileData.data?.email || "";

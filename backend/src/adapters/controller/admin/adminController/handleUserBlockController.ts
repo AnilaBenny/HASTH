@@ -8,7 +8,9 @@ export default (dependencies: any) => {
 
             
             const executeFunction = await handleUserBlockUseCase(dependencies)
-            const response=executeFunction.executeFunction(userId);
+            const response=await executeFunction.executeFunction(userId);
+            console.log(response,'....res');
+            
             if (response && response.status) {
                 res.clearCookie('accessToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
                 res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });

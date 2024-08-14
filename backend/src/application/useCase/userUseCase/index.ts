@@ -6,7 +6,11 @@ import updatePasswordUseCase from "./updatePasswordUseCase";
 import resendOtpUseCase from "./resendOtpUseCase";
 import updateProfileUseCase from "./updateProfileUseCase";
 import googleRegisterUseCase from'./googleRegisterUseCase';
-import refreshTokenuseCase from './refreshTokenuseCase'
+import refreshTokenuseCase from './refreshTokenuseCase';
+import postCreationUseCase from "./postCreationUseCase";
+import getPostUseCase from "./getPostUseCase";
+import likedUseCase from './likedUseCase';
+import commentCreationUseCase from "./commentCreationUseCase";
 export{
     userRegistration,
     loginUseCase,
@@ -16,5 +20,9 @@ export{
     resendOtpUseCase,
     updateProfileUseCase,
     googleRegisterUseCase,
-    refreshTokenuseCase
+    refreshTokenuseCase,
+    postCreationUseCase,
+    getPostUseCase,
+    likedUseCase,
+    commentCreationUseCase
 }

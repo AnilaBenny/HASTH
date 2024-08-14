@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import Pagination from "../Pagination/Pagination";
 import ViewUser from "./ViewUser";
 
-export default () => {
+export default function UserList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
@@ -65,7 +65,7 @@ export default () => {
 
   const handleUserBlock = async (userId: string) => {
     try {
-      const response = await axiosInstance.put(
+      const response = await axiosInstance.patch(
         `/api/auth/handleUserBlock/${userId}`
       );
       const updatedUser = response.data.data;
@@ -95,6 +95,32 @@ export default () => {
       }
     } catch (error) {
       console.error("Error toggling block status:", error);
+      toast.error("Failed to toggle block status.");
+    }
+  };
+
+  const handleVerify = async (user: User) => {
+    try {
+      const response = await axiosInstance.patch(
+        `/api/auth/verifyCreative/${user._id}`
+      );
+      console.log(response);
+
+      const updatedUser = response.data.data;
+
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user._id === updatedUser._id ? updatedUser : user
+        )
+      );
+      setFilteredUsers((prevFilteredUsers) =>
+        prevFilteredUsers.map((user) =>
+          user._id === updatedUser._id ? updatedUser : user
+        )
+      );
+    } catch (error) {
+      console.error("Error verifying user:", error);
+      toast.error("Failed to verify user.");
     }
   };
 
@@ -193,9 +219,16 @@ export default () => {
                   >
                     {blockStatus[user._id] ? "Unblock" : "Block"}
                   </button>
-                  <button className="mr-2 bg-green-500 hover:bg-green-700 text-white py-1 px-3 rounded-full">
-                    Verify
-                  </button>
+                  {user.isVerified ? (
+                    <span className="mr-2 text-green-500">Verified</span>
+                  ) : (
+                    <button
+                      onClick={() => handleVerify(user)}
+                      className="mr-2 bg-green-500 hover:bg-green-700 text-white py-1 px-3 rounded-full"
+                    >
+                      Verify
+                    </button>
+                  )}
                   <button
                     onClick={() => handleViewDetails(user)}
                     className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-full"
@@ -220,4 +253,4 @@ export default () => {
       )}
     </div>
   );
-};
+}

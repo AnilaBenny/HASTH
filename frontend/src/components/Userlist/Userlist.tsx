@@ -45,21 +45,23 @@ const UserList: React.FC = () => {
     };
 
     fetchUsers();
-  }, [blockStatus, currentPage]); 
+  }, [currentPage,filter]); 
 
   const handleSearch = (query: string) => {
     const lowerCaseQuery = query.toLowerCase();
     const filtered = users.filter(
       (user) =>
-        user.name.toLowerCase().includes(lowerCaseQuery) ||
-        user.email.toLowerCase().includes(lowerCaseQuery)
+        (user.name.toLowerCase().includes(lowerCaseQuery) ||
+         user.email.toLowerCase().includes(lowerCaseQuery)) &&
+        (filter === 'all' || user.isBlocked === (filter === 'blocked'))
     );
     setFilteredUsers(filtered);
   };
+  
 
   const handleUserBlock = async (userId: string) => {
     try {
-      const response = await axiosInstance.put(
+      const response = await axiosInstance.patch(
         `/api/auth/handleUserBlock/${userId}`
       );
       const updatedUser = response.data.data;
@@ -78,6 +80,8 @@ const UserList: React.FC = () => {
         ...prevStatus,
         [userId]: updatedUser.isBlocked,
       }));
+      console.log("Block Status:", blockStatus);
+
 
       const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
       if (currentUser && currentUser._id === updatedUser._id && updatedUser.isBlocked) {

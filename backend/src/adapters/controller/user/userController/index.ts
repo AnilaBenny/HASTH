@@ -7,7 +7,11 @@ import updatePasswordController from './updatePasswordController'
 import resendOtpController from './resendOtpController'
 import updateProfileController from './updateProfileController'
 import googleRegisterController from './googleRegisterController'
-import refreshTokenController from './refreshTokenController'
+import refreshTokenController from './refreshTokenController';
+import addInnovationController from './addInnovationController';
+import getPostController from './getPostController';
+import likedController from './likedController';
+import commentController from './commentController';
 export default (dependencies:any)=>{
 return{
     registrationController:registrationController(dependencies),
@@ -19,6 +23,10 @@ return{
     resendOtpController:resendOtpController(dependencies),
     updateProfileController:updateProfileController(dependencies),
     googleRegisterController:googleRegisterController(dependencies),
-    refreshTokenController:refreshTokenController(dependencies)
+    refreshTokenController:refreshTokenController(dependencies),
+    addInnovationController:addInnovationController(dependencies),
+    getPostController:getPostController(dependencies),
+    likedController:likedController(dependencies),
+    commentController:commentController(dependencies)
 }
 }

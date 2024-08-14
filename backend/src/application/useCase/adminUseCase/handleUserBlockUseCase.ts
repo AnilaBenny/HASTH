@@ -4,6 +4,8 @@ export default function handleUserBlockUseCase(dependencies: any) {
     const executeFunction = async (userId: any) => {
         try {
             const response = await adminRespository.handleUserBlock(userId);
+            console.log(response);
+            
             if (response.status) {
                 return { status: true, data: response.data };
             } else {

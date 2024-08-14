@@ -1,5 +1,18 @@
 import { databaseSchema } from "../database"; 
 
+interface LikeOrDislikeData {
+  postId: string;
+  userId: string;
+}
+
+interface Post {
+  _id: string;
+  liked: string[];
+  save: () => Promise<void>;
+}
+
+
+
 export default  {
   createUser: async (data: any) => {
     try {
@@ -173,7 +186,120 @@ export default  {
       console.error("Error in userRespository.updateProfile:", error);
       return { status: false, message: "Internal server error" }; 
     }
+  },
+  createPost:async (data: any) => {
+    console.log(data);
+    
+    const { userId, caption, images, video,tag} = data;
+    try {
+  
+      const post = new databaseSchema.Post({
+        userId,
+        caption,
+        images,
+        video,
+        tags:tag
+      });
+  
+      const response = await post.save();
+  
+      if (response) {
+        return { status: true, data: response };
+      } else {
+        return { status: false, message: "Post creation failed" };
+      }
+    } catch (error) {
+      console.error("Error during post creation:", error);
+      return { status: false, message: "An error occurred during post creation" };
+    }
+  },
+  getPosts: async () => {
+    try {
+      const posts = await databaseSchema.Post.find()
+    .sort({ createdAt: -1 })
+    .populate('userId') 
+    .populate({
+        path: 'comments.userId', 
+    });
+
+      return {status:true,data:posts};
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      throw new Error('Unable to fetch posts');
+    }
+  },
+  likeOrDislikePost: async (data: LikeOrDislikeData): Promise<{ status: boolean; message: string }> => {
+    try {
+      const { postId, userId } = data;
+  
+      const post:Post|null = await databaseSchema.Post.findById(postId);
+  
+      if (!post) {
+        throw new Error('Post not found');
+      }
+  
+      const userIndex = post.liked.indexOf(userId);
+  
+      if (userIndex > -1) {
+        post.liked.splice(userIndex, 1);
+      } else {
+        post.liked.push(userId);
+      }
+  
+      await post.save();
+  
+      return {
+        status: true,
+        message: userIndex > -1 ? 'Disliked' : 'Liked',
+      };
+    } catch (error) {
+      console.error('Error liking or disliking post:', error);
+      return {
+        status: false,
+        message: 'Error processing your request',
+      };
+    }
+  },
+  createComment:async(data:any)=>{
+    try {
+      const { userId, postId, text } = data;
+
+     
+      if (!userId || !postId || !text) {
+          throw new Error('User ID, Post ID, and text are required');
+      }
+
+      
+      const newComment = {
+          userId: userId,
+          text: text,
+          liked: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+      };
+
+      const updatedPost = await databaseSchema.Post.findByIdAndUpdate(
+          postId,
+          { $push: { comments: newComment }, $set: { updatedAt: new Date() } }, 
+          { new: true, useFindAndModify: false }
+      ).populate('userId') 
+      .populate({
+          path: 'comments.userId', 
+      });
+
+      if (!updatedPost) {
+          throw new Error('Post not found');
+      }
+
+      console.log('Comment added successfully');
+      return {status:true,data:updatedPost}; 
+  } catch (error) {
+      console.error('Error creating comment:',error);
+      return {status:false,message:'Error creating comment'};
+
   }
+  }
+  
 };
 
 

@@ -1,5 +1,7 @@
 import { userRegistration,otpVerification,loginUseCase,forgotPasswordUseCase,updatePasswordUseCase,resendOtpUseCase,
-    updateProfileUseCase,googleRegisterUseCase,refreshTokenuseCase} from "./userUseCase"
+    updateProfileUseCase,googleRegisterUseCase,refreshTokenuseCase,postCreationUseCase,getPostUseCase,
+    likedUseCase,commentCreationUseCase
+} from "./userUseCase"
 export{
     userRegistration,
     otpVerification,
@@ -9,9 +11,15 @@ export{
     resendOtpUseCase,
     updateProfileUseCase,
     googleRegisterUseCase,
-    refreshTokenuseCase
+    refreshTokenuseCase,
+    postCreationUseCase,
+    getPostUseCase,
+    likedUseCase,
+    commentCreationUseCase
 }
 import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase } from "./adminUseCase"
 export{
-    AdminloginUseCase,getallUseCase,handleUserBlockUseCase
+    AdminloginUseCase,
+    getallUseCase,
+    handleUserBlockUseCase
 }

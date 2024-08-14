@@ -3,11 +3,13 @@ import express from "express";
 import { userController,adminController,} from "../../controller";
 import passport from "passport";
 import { middleware } from "../../../utils/middleware/middleware";
+import { upload } from "../../../utils";
 export default  (dependencies:any)=>{
 const router=express();
 const { 
   registrationController,otpController,loginController,forgotPasswordController,checkOtpController,updatePasswordController,resendOtpController,
-  updateProfileController,googleRegisterController,refreshTokenController
+  updateProfileController,googleRegisterController,refreshTokenController,addInnovationController,getPostController,
+  likedController,commentController
 }=userController(dependencies);
 
 
@@ -22,8 +24,10 @@ const {
   router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
   router.get('/google/callback',passport.authenticate('google'),googleRegisterController);
   router.post('/refresh-token',refreshTokenController);
-  router.post('/ideaSubmission');
-  router.get('/getIdeas');
+  router.post('/innovation',upload.fields([{ name: 'images' }, { name: 'video' }]),addInnovationController);
+  router.get('/posts',getPostController);
+  router.post('/liked',likedController);
+  router.post('/comment',commentController);
   router.post('/editIdea');
   router.delete('/deleteIdea');
   // router.post('/product')
@@ -38,8 +42,8 @@ const {
 }=adminController(dependencies);
 router.post('/admin/login',AdminLoginController);
 router.get('/getAllUsers',getAllUserController);
-router.put('/handleUserBlock/:userId',handleUserBlockController);
-router.post('/verifyCreative',verifyCreativeController)
+router.patch('/handleUserBlock/:userId',handleUserBlockController);
+router.patch('/verifyCreative/:userId',verifyCreativeController)
 
 return router;
 }

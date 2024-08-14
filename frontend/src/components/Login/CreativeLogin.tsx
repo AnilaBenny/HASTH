@@ -62,6 +62,8 @@ const CreativeLogin: React.FC = () => {
       
       if (response.data.data.isBlocked) {
         toast.error('Your account has been blocked. Please contact support.');
+      }else if(!response.data.data.isVerified){
+        toast.error('Your account is not verified by admin. Please contact support.');
       } else if(response.data.data.role!=='creative'){
         toast.error('Please login in to user Login');
       }
@@ -69,7 +71,7 @@ const CreativeLogin: React.FC = () => {
         toast.success('Login successful');
         dispatch(clearUser());
         dispatch(setUser(response.data.data));
-        localStorage.setItem('User', JSON.stringify(response.data));
+        localStorage.setItem('user', JSON.stringify(response.data));
         navigate('/home');
       } else {
         toast.error(response.data.message || 'Login failed');
