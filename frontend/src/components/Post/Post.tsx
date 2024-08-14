@@ -202,7 +202,7 @@ const Post: React.FC = () => {
                             value={caption}
                             onChange={(e) => setCaption(e.target.value)}
                             placeholder="What's on your mind?"
-                            className="w-full h-32 p-4 border border-gray-300 rounded-lg mb-4 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full h-28 p-4 border border-gray-300 rounded-lg mb-4 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                         <div className="flex items-center gap-6 mb-4">
                             <label className="flex items-center cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-200">
