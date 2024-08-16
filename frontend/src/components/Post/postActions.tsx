@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import Modal from 'react-modal';
+import { toast } from 'react-toastify';
 
 interface PostActionsProps {
     post: any;
@@ -19,6 +20,7 @@ function PostActions({ userId, post, initialLikesCount, initialCommentsCount }: 
     const [isLiking, setIsLiking] = useState(false);
     const [comments, setComments] = useState(post.comments || []);
     const [currentPost, setCurrentPost] = useState(post);
+    const [reportReason, setReportReason] = useState('');
 
     useEffect(() => {
         if (currentPost.liked.includes(userId)) {
@@ -90,6 +92,30 @@ function PostActions({ userId, post, initialLikesCount, initialCommentsCount }: 
     const handleCloseModal = () => {
         setShowComment(false);
     };
+    const handlereport = async (type: string) => {
+        try {
+          
+          if (!userId || !currentPost?._id || !reportReason) {
+            throw new Error('Missing required information to submit the report');
+          }
+      
+          const response = await axiosInstance.post('/api/auth/report', {
+            reportedPostId: currentPost._id,
+            reason: reportReason,
+            type,
+          });
+      
+          if (response.data.status) {
+            toast.success('Report submitted successfully');
+          } else {
+            toast.error('Failed to submit report');
+          }
+        } catch (error) {
+          console.error('Error submitting report:', error);
+          toast.error('An error occurred while submitting the report');
+        }
+      };
+      
 
     return (
         <div className="mt-4 bg-gray-100 p-4 rounded-lg shadow-md">
@@ -211,8 +237,33 @@ function PostActions({ userId, post, initialLikesCount, initialCommentsCount }: 
                     Close
                 </button>
             </Modal>
+            
+            {showReportOptions && (
+        <div className="report-options bg-white shadow-md rounded-lg p-4 mt-2">
+          <select
+            className="w-full p-2 rounded border border-gray-300"
+            value={reportReason}
+            onChange={(e) => setReportReason(e.target.value)}
+          >
+            <option value="" disabled>Select a reason</option>
+            <option value="Spam">Spam</option>
+            <option value="Harassment">Harassment</option>
+            <option value="Inappropriate Content">Inappropriate Content</option>
+          </select>
+          <button
+            className={`mt-3 bg-red-500 text-white p-2 rounded ${
+              !reportReason ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            onClick={() => handlereport('post')}
+            disabled={!reportReason}
+          >
+            Submit
+          </button>
         </div>
-    );
+      )}
+      
+    </div>
+  );
 }
 
 export default PostActions;

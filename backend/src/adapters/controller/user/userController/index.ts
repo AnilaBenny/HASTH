@@ -12,6 +12,14 @@ import addInnovationController from './addInnovationController';
 import getPostController from './getPostController';
 import likedController from './likedController';
 import commentController from './commentController';
+import reportController from './reportController';
+import addProductController from './addProductController';
+import getProductsController from './getProductsController';
+import getCreatorsController from './getCreatorsController';
+import editPostController from './editPostController';
+import editProductController from './editProductController';
+import deletePostController from './deletePostController';
+import statusProductController from './statusProductController'
 export default (dependencies:any)=>{
 return{
     registrationController:registrationController(dependencies),
@@ -27,6 +35,14 @@ return{
     addInnovationController:addInnovationController(dependencies),
     getPostController:getPostController(dependencies),
     likedController:likedController(dependencies),
-    commentController:commentController(dependencies)
+    commentController:commentController(dependencies),
+    reportController:reportController(dependencies),
+    addProductController:addProductController(dependencies),
+    getProductsController:getProductsController(dependencies),
+    getCreatorsController:getCreatorsController(dependencies),
+    editPostController:editPostController(dependencies),
+    editProductController:editProductController(dependencies),
+    deletePostController:deletePostController(dependencies),
+    statusProductController:statusProductController(dependencies)
 }
 }

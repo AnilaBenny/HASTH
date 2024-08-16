@@ -9,7 +9,8 @@ const router=express();
 const { 
   registrationController,otpController,loginController,forgotPasswordController,checkOtpController,updatePasswordController,resendOtpController,
   updateProfileController,googleRegisterController,refreshTokenController,addInnovationController,getPostController,
-  likedController,commentController
+  likedController,commentController,reportController,addProductController,getCreatorsController,getProductsController,
+  editPostController,editProductController,deletePostController,statusProductController
 }=userController(dependencies);
 
 
@@ -28,12 +29,14 @@ const {
   router.get('/posts',getPostController);
   router.post('/liked',likedController);
   router.post('/comment',commentController);
-  router.post('/editIdea');
-  router.delete('/deleteIdea');
-  // router.post('/product')
-  // router.post('/editProduct')
-  // router.delete('/deleteProduct')
-  // router.get('/productListing')
+  router.post('/report',reportController);
+  router.post('/editIdea',editPostController);
+  router.delete('/deleteIdea/:postId',deletePostController);
+  router.post('/addProduct',upload.fields([{ name: 'images' }]),addProductController)
+  router.get('/products',getProductsController);
+  router.get('/creators',getCreatorsController);
+  router.post('/editProduct',editProductController)
+  router.patch('/deleteProduct/:productId',statusProductController)
  
   
 const { 

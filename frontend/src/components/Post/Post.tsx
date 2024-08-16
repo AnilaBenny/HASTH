@@ -185,27 +185,27 @@ const Post: React.FC = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-100">
-            <div className="w-1/5 sticky top-0 left-0 bg-white shadow-lg rounded-lg p-8 m-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
-                <h2 className="text-2xl font-bold mb-6 text-gray-800">Creative Lists</h2>
-                <ul className="space-y-4">
-                    <li className="text-lg text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Creative List 1</li>
-                    <li className="text-lg text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Creative List 2</li>
-                    <li className="text-lg text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Creative List 3</li>
+            <div className="w-64 sticky top-0 left-0 bg-white shadow-lg rounded-lg p-4 m-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+                <h2 className="text-xl font-bold mb-4 text-gray-800">Creative Lists</h2>
+                <ul className="space-y-2">
+                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Creative List 1</li>
+                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Creative List 2</li>
+                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Creative List 3</li>
                 </ul>
             </div>
             <div className="flex-1 p-4 space-y-8">
-                <div className="bg-white p-8 rounded-lg shadow-lg">
-                    <h2 className="text-2xl font-bold mb-6 text-gray-800">Share Your Thoughts</h2>
-                    {error && <p className="text-red-500 mb-4 p-3 bg-red-100 rounded-lg">{error}</p>}
-                    <form onSubmit={handlePostSubmit} className="space-y-6">
+            <div className="bg-white p-4 rounded-lg shadow-md">
+                    <h2 className="text-lg font-bold mb-3 text-gray-800">Share Your Thoughts</h2>
+                    {error && <p className="text-red-500 mb-2 p-2 bg-red-100 rounded-lg text-sm">{error}</p>}
+                    <form onSubmit={handlePostSubmit} className="space-y-3">
                         <textarea
                             value={caption}
                             onChange={(e) => setCaption(e.target.value)}
                             placeholder="What's on your mind?"
-                            className="w-full h-28 p-4 border border-gray-300 rounded-lg mb-4 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full h-20 p-2 text-sm border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
-                        <div className="flex items-center gap-6 mb-4">
-                            <label className="flex items-center cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <label className="flex items-center cursor-pointer bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition-colors duration-200 text-sm">
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -214,9 +214,9 @@ const Post: React.FC = () => {
                                     multiple
                                     disabled={images.length >= MAX_IMAGES}
                                 />
-                                <span className="text-xl mr-2">📷</span> Add Photos
+                                <span className="text-lg mr-1">📷</span> Add Photos
                             </label>
-                            <label className="flex items-center cursor-pointer bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors duration-200">
+                            <label className="flex items-center cursor-pointer bg-green-500 text-white py-1 px-3 rounded-lg hover:bg-green-600 transition-colors duration-200 text-sm">
                                 <input
                                     type="file"
                                     accept="video/*"
@@ -224,73 +224,46 @@ const Post: React.FC = () => {
                                     className="hidden"
                                     disabled={video !== null}
                                 />
-                                <span className="text-xl mr-2">🎥</span> Add Video
+                                <span className="text-lg mr-1">🎥</span> Add Video
                             </label>
                             <input
                                 type="text"
                                 value={tag}
                                 onChange={(e) => setTag(e.target.value)}
                                 placeholder="Add tags (comma-separated)"
-                                className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="flex-1 p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
                         <button
                             type="submit"
-                            className="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors duration-200 font-semibold"
+                            className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-200 font-semibold text-sm"
                         >
                             Post
                         </button>
                     </form>
                     {images.length > 0 && (
-                        <div className="mt-6 grid grid-cols-3 gap-4">
+                        <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
                             {images.map((img, index) => (
                                 <div key={index} className="relative group">
                                     <img
                                         src={croppedImages[index] || URL.createObjectURL(img)}
                                         alt={`Selected Image ${index + 1}`}
-                                        className="w-full h-40 object-cover rounded-lg cursor-pointer"
+                                        className="w-full h-24 object-cover rounded-lg cursor-pointer"
                                         onClick={() => setSelectedImageIndex(index)}
                                     />
                                     <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                        <button className="text-white bg-blue-500 px-3 py-1 rounded-lg" onClick={() => setSelectedImageIndex(index)}>Edit</button>
+                                        <button className="text-white bg-blue-500 px-2 py-1 rounded-lg text-xs" onClick={() => setSelectedImageIndex(index)}>Edit</button>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     )}
-                    {selectedImageIndex !== null && (
-                        <div className="mt-6">
-                            <Cropper
-                                src={URL.createObjectURL(images[selectedImageIndex])}
-                                style={{ height: 400, width: '100%' }}
-                                initialAspectRatio={1}
-                                guides={false}
-                                onInitialized={(instance) => setCropper(instance)}
-                                viewMode={1}
-                                dragMode="move"
-                            />
-                            <div className="mt-4 flex justify-end space-x-4">
-                                <button 
-                                    onClick={handleCrop} 
-                                    className="bg-green-500 text-white py-2 px-6 rounded-lg hover:bg-green-600 transition-colors duration-200"
-                                >
-                                    Crop Image
-                                </button>
-                                <button 
-                                    onClick={() => setSelectedImageIndex(null)} 
-                                    className="bg-red-500 text-white py-2 px-6 rounded-lg hover:bg-red-600 transition-colors duration-200"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    )}
                     {videoPreview && (
-                        <div className="mt-6">
+                        <div className="mt-3">
                             <video 
                                 src={videoPreview} 
                                 controls 
-                                className="w-full h-72 object-cover rounded-lg mb-4"
+                                className="w-full h-48 object-cover rounded-lg"
                             />
                         </div>
                     )}
@@ -357,12 +330,12 @@ const Post: React.FC = () => {
                     )}
                 </div>
             </div>
-            <div className="w-1/5 sticky top-0 right-0 bg-white shadow-lg rounded-lg p-8 m-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
-                <h2 className="text-2xl font-bold mb-6 text-gray-800">Notifications</h2>
-                <ul className="space-y-4">
-                    <li className="text-lg text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Notification 1</li>
-                    <li className="text-lg text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Notification 2</li>
-                    <li className="text-lg text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Notification 3</li>
+            <div className="w-64 sticky top-0 right-0 bg-white shadow-lg rounded-lg p-4 m-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+                <h2 className="text-xl font-bold mb-4 text-gray-800">Notifications</h2>
+                <ul className="space-y-2">
+                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Notification 1</li>
+                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Notification 2</li>
+                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Notification 3</li>
                 </ul>
             </div>
         </div>

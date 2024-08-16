@@ -27,6 +27,8 @@ import CreativeLogin from './pages/CreativeLogin';
 import ErrorPage from './pages/ErrorPage(401)';
 import CreativeManagement from './pages/CreativeManagement';
 import Innovations from './pages/Innovations';
+import ProductPage from './pages/ProductPage';
+import SingleUserProfile from './pages/SingleUserProfile'
 const userRoutes = (
   <Route path='/' element={<App />}>
     <Route index={true} element={<Landingpage />} />
@@ -41,7 +43,9 @@ const userRoutes = (
     <Route element={<PrivateRoute />}>
       <Route path='home' element={<Home />} />
       <Route path='profile' element={<Profile/>}/>
+      <Route path='userProfile' element={<SingleUserProfile/>}/>
       <Route path='innovations' element={<Innovations/>}/>
+      <Route path='products' element={<ProductPage/>}/>
     </Route>
   </Route>
 )

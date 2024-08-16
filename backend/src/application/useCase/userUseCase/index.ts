@@ -11,6 +11,13 @@ import postCreationUseCase from "./postCreationUseCase";
 import getPostUseCase from "./getPostUseCase";
 import likedUseCase from './likedUseCase';
 import commentCreationUseCase from "./commentCreationUseCase";
+import reportUseCase from "./reportUseCase";
+import productCreationUseCase from './productCreationUseCase';
+import getCreatorUseCase from "./getCreatorUseCase";
+import getProductsUseCase from "./getProductsUseCase";
+import postEditUseCase from "./postEditUseCase";
+import deletePostUseCase from "./deletePostUseCase";
+import statusProductUseCase from "./statusProductUseCase";
 export{
     userRegistration,
     loginUseCase,
@@ -24,5 +31,13 @@ export{
     postCreationUseCase,
     getPostUseCase,
     likedUseCase,
-    commentCreationUseCase
+    commentCreationUseCase,
+    reportUseCase,
+    productCreationUseCase,
+    getCreatorUseCase,
+    getProductsUseCase,
+    postEditUseCase,
+    deletePostUseCase,
+    statusProductUseCase
+
 }

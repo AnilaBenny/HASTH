@@ -11,6 +11,14 @@ interface Post {
   save: () => Promise<void>;
 }
 
+interface ReportData {
+  reportedUserId?: string;
+  reportedPostId?: string; 
+  reportedCommentId?: string; 
+  type: 'post' | 'comment' | 'user';
+  reason: string;
+}
+
 
 
 export default  {
@@ -73,7 +81,6 @@ export default  {
       return { status: false, message: "Internal server error" }; 
     }
   },
-
   getUserByEmail: async (data: any) => {
     try {
       const { email } = data;
@@ -298,7 +305,167 @@ export default  {
       return {status:false,message:'Error creating comment'};
 
   }
+  },
+  createReport:async (data: ReportData) =>{
+    try {
+   
+    
+  
+      const newReport = new databaseSchema.Report({
+        reportedUserId: data.reportedUserId,
+        reportedPostId: data.reportedPostId,
+        reportedCommentId: data.reportedCommentId,
+        type: data.type,
+        reason: data.reason,
+      });
+  
+      
+      const savedReport = await newReport.save(); 
+  
+      return { status: true, data: savedReport };
+    } catch (error) {
+      console.error('Error creating report:', error);
+      return { status: false, message: 'An error occurred during report creation' };
+    }
+  },
+  createProduct:async(data:any)=>{
+    const { collab,name, description, images,brand,countInStock,price} = data;
+    try {
+  
+      const product = new databaseSchema.Product({
+        collab,name, description, images,countInStock,price
+      });
+  
+      const response = await product.save();
+  
+      if (response) {
+        return { status: true, data: response };
+      } else {
+        return { status: false, message: "Post creation failed" };
+      }
+    } catch (error) {
+      console.error("Error during post creation:", error);
+      return { status: false, message: "An error occurred during post creation" };
+    }
+  },
+  getCreators:async()=>{
+    try {
+      const creators = await databaseSchema.User.find({ role: 'creative' });
+      
+    
+      if (creators && creators.length > 0) {
+        return { status: true, data: creators };
+      }
+    
+      return { status: false, data: [] };
+    } catch (error) {
+      console.error('Error fetching creators:', error);
+      throw new Error('Unable to fetch creators');
+    }
+    
+  },
+  getProducts:async(data:any)=>{
+    try {
+      const products = await databaseSchema.Product.find()
+    .sort({ createdAt: -1 })
+      return {status:true,data:products};
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      throw new Error('Unable to fetch products');
+    }
+  },
+  editPost :async (data: any) => {
+    try {
+      const { postId, userId, caption, images, video, tag } = data;
+  
+     
+      const existingPost = await databaseSchema.Post.findById(postId);
+      if (!existingPost) {
+        return { status: false, message: 'Post not found' };
+      }
+  
+     
+      existingPost.caption = caption || existingPost.caption;
+      existingPost.images = images.length > 0 ? images : existingPost.images;
+      existingPost.video = video || existingPost.video;
+      existingPost.tag = tag || existingPost.tag;
+  
+      const updatedPost = await existingPost.save();
+  
+      return { status: true, data: updatedPost };
+    } catch (error) {
+      console.error('Error editing post:', error);
+      return { status: false, message: 'Error editing post' };
+    }
+  },
+  editProduct :async (data: any) => {
+    try {
+      const { productId, name, description, collab, images, brand, countInStock, isFeatured, price, popularity, list } = data;
+  
+      
+      const existingProduct = await databaseSchema.Product.findById(productId);
+      if (!existingProduct) {
+        return { status: false, message: 'Product not found' };
+      }
+  
+      existingProduct.name = name || existingProduct.name;
+      existingProduct.description = description || existingProduct.description;
+      existingProduct.collab = collab || existingProduct.collab;
+      existingProduct.images = images.length > 0 ? images : existingProduct.images;
+      existingProduct.brand = brand || existingProduct.brand;
+      existingProduct.countInStock = countInStock !== undefined ? countInStock : existingProduct.countInStock;
+      existingProduct.isFeatured = isFeatured !== undefined ? isFeatured : existingProduct.isFeatured;
+      existingProduct.price = price !== undefined ? price : existingProduct.price;
+      existingProduct.popularity = popularity !== undefined ? popularity : existingProduct.popularity;
+      existingProduct.list = list !== undefined ? list : existingProduct.list;
+  
+      const updatedProduct = await existingProduct.save();
+  
+      return { status: true, data: updatedProduct };
+    } catch (error) {
+      console.error('Error editing product:', error);
+      return { status: false, message: 'Error editing product' };
+    }
+  },
+  deletePost:async (data: any) => {
+    try {
+      const { postId } = data;
+  
+      const post = await databaseSchema.Post.findByIdAndDelete(postId);;
+      if (!post) {
+        return { status: false, message: 'Post not found' };
+      }
+      return { status: true, message: 'Post deleted successfully' };
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      return { status: false, message: 'Error deleting post' };
+    }
+  },
+  activeordeactiveProduct:async(data:any)=>{
+    try {
+      const {productId}=data;
+      const product = await databaseSchema.Product.findById(productId);
+
+      if (!product) {
+        return { status: false, message: 'Product not found' };
+      }
+  
+      product.list = !product.list;
+  
+      const updatedProduct = await product.save();
+  
+      return {
+        status: true,
+        data: updatedProduct,
+      };
+    } catch (error) {
+      console.error('Error updating product status:', error);
+      return { status: false, message: 'Error updating product status' };
+    }
+   
   }
+  
+  
   
 };
 
