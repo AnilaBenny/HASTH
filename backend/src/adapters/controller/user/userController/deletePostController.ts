@@ -5,7 +5,7 @@ export default (dependencies: any) => {
     const deletePostController = async (req: Request, res: Response) => {
         try {
             const { postId } = req.params;
-
+            
             
             const executeFunction = await deletePostUseCase(dependencies)
             const response=await executeFunction.executeFunction(postId);

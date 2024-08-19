@@ -5,6 +5,8 @@ export default (dependencies: any) => {
     const statusProductController = async (req: Request, res: Response) => {
         try {
             const { productId } = req.params;
+            console.log(productId);
+            
 
             
             const executeFunction = await statusProductUseCase(dependencies)

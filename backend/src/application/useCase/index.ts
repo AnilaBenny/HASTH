@@ -1,7 +1,7 @@
 import { userRegistration,otpVerification,loginUseCase,forgotPasswordUseCase,updatePasswordUseCase,resendOtpUseCase,
     updateProfileUseCase,googleRegisterUseCase,refreshTokenuseCase,postCreationUseCase,getPostUseCase,
     likedUseCase,commentCreationUseCase,reportUseCase,productCreationUseCase,getProductsUseCase,
-    getCreatorUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase
+    getCreatorUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase,productEditUseCase
 } from "./userUseCase"
 export{
     userRegistration,
@@ -23,11 +23,13 @@ export{
     getCreatorUseCase,
     postEditUseCase,
     deletePostUseCase,
-    statusProductUseCase
+    statusProductUseCase,
+    productEditUseCase
 }
-import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase } from "./adminUseCase"
+import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,getallReportUseCase } from "./adminUseCase"
 export{
     AdminloginUseCase,
     getallUseCase,
-    handleUserBlockUseCase
+    handleUserBlockUseCase,
+    getallReportUseCase
 }

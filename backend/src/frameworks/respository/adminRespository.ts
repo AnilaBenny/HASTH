@@ -96,5 +96,47 @@ export default {
       console.error("Error in verifyCreative repository:", error);
       return { status: false, message: "creative verification failed" };
     }
+  },
+  getAllReports:async(data:any)=>{
+    try {
+
+      const page = data.page || 1;
+      const limit = data.limit || 8;
+      const skip = (page - 1) * limit;
+
+      const reports = await databaseSchema.Report.find()
+  .populate({
+    path: 'reportedPostId',
+    populate: {
+      path: 'userId'  
+    }
+  }).populate('reportedUserId')
+  .skip(skip)
+  .limit(limit);
+
+
+  
+      const totalReports = await databaseSchema.Report.countDocuments();
+
+      if (reports && reports.length > 0) {
+        
+        
+          return {
+              status: true,
+              data: {
+                reports,
+                  total: totalReports,
+                  currentPage: page,
+                  totalPages: Math.ceil(totalReports / limit)
+              }
+          };
+          
+      } else {
+          return { status: false, message: 'reports not found' };
+      }
+  } catch (error) {
+      console.log("Error in adminRepository.getAllreports", error);
+      return { status: false, message: 'Error occurred during get reports' };
+  }
   }
 };

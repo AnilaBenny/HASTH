@@ -18,7 +18,6 @@ export const PrivateRoute = () => {
 };
 
 
-
 export const AdminPrivateRoute = () => {
   const  isAuthenticated  = useSelector(selectIsAdminAuthenticated);
   return isAuthenticated ? <Outlet /> : <Navigate to='/admin' replace />;

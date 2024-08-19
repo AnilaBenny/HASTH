@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
- 
 
 interface MulterRequest extends Request {
   files: {
@@ -10,24 +9,21 @@ interface MulterRequest extends Request {
 export default (dependencies: any) => {
   const postEditController = async (req: Request, res: Response) => {
     try {
+      console.log(req.body._id);
+
       const { postEditUseCase } = dependencies.useCase;
-      const { post, userId, caption, tag } = req.body;
+      const { _id, caption, tags, existingImages,existingVideo } = req.body;
 
-
-      const existingPost = post;
-
-      if (!existingPost) {
-        return res.status(404).json({ status: false, message: 'Post not found' });
-      }
-
-      let images: string[] = existingPost.images;
-      let video: string = existingPost.video;
+      const postId=_id;
+      let images: string[] = existingImages 
+      let video: string = existingVideo;
 
       const multerReq = req as MulterRequest;
 
       if (multerReq.files) {
         if (multerReq.files['images']) {
-          images = multerReq.files['images'].map(file => file.filename);
+          const newImages = multerReq.files['images'].map(file => file.filename);
+          images = [...images, ...newImages]; 
         }
 
         if (multerReq.files['video'] && multerReq.files['video'].length > 0) {
@@ -36,21 +32,20 @@ export default (dependencies: any) => {
       }
 
       const data = {
-        userId,
+        postId,
         caption,
         images,
         video,
-        tag
+        tags,
       };
 
       const executeFunction = await postEditUseCase(dependencies);
-      console.log(executeFunction);
-
       const response = await executeFunction.executeFunction(data);
+
       if (response.status) {
         return res.status(200).json({ status: true, data: response.data });
       } else {
-        return res.status(400).json({ status: false, data: response.data });
+        return res.status(400).json({ status: false, message: response.message });
       }
     } catch (error) {
       console.error('Error in post edit controller:', error);

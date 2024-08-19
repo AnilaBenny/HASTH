@@ -2,9 +2,10 @@ import { adminRespository,userRespository } from "../respository"
 import { userRegistration,otpVerification ,forgotPasswordUseCase,loginUseCase,updatePasswordUseCase,
          resendOtpUseCase,updateProfileUseCase,googleRegisterUseCase,refreshTokenuseCase,postCreationUseCase,
          getPostUseCase,likedUseCase,commentCreationUseCase,reportUseCase,productCreationUseCase,
-         getCreatorUseCase,getProductsUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase
+         getCreatorUseCase,getProductsUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase,
+         productEditUseCase
        } from "../../application/useCase"
-import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,verifyCreativeUseCase} from "../../application/useCase/adminUseCase"
+import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,verifyCreativeUseCase,getallReportUseCase} from "../../application/useCase/adminUseCase"
 
 
 const useCase:any={
@@ -32,7 +33,9 @@ const useCase:any={
     getProductsUseCase:getProductsUseCase,
     postEditUseCase:postEditUseCase,
     deletePostUseCase:deletePostUseCase,
-    statusProductUseCase:statusProductUseCase
+    statusProductUseCase:statusProductUseCase,
+    getallReportUseCase:getallReportUseCase,
+    productEditUseCase:productEditUseCase
 
 }
 const respository:any={

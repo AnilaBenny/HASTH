@@ -3,6 +3,7 @@ import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import PostActions from './postActions';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 interface Post {
     _id: string;
@@ -181,7 +182,10 @@ const Post: React.FC = () => {
             setError(null);
         }
     };
-    
+    const navigate=useNavigate()
+    const handleSingleUser=(user:any)=>{
+        navigate('/userPage',{state:user})
+    }
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -274,8 +278,8 @@ const Post: React.FC = () => {
                         <p className="text-gray-600 text-center py-8">No posts available.</p>
                     ) : (
                         posts.map(post => (
-                            <div key={post._id} className="bg-white p-6 rounded-lg shadow-lg mb-6">
-                                <div className="flex items-center mb-6">
+                            <div key={post._id} className="bg-white p-6 rounded-lg shadow-lg mb-6" >
+                                <div className="flex items-center mb-6" onClick={()=>handleSingleUser(posts.userId)}>
                                     <img
                                         src="images/profile.png"
                                         alt="User Avatar"

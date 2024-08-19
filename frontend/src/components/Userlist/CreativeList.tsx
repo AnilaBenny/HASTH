@@ -65,6 +65,8 @@ export default function UserList() {
 
   const handleUserBlock = async (userId: string) => {
     try {
+      console.log(userId);
+      
       const response = await axiosInstance.patch(
         `/api/auth/handleUserBlock/${userId}`
       );

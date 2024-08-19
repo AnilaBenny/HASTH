@@ -70,7 +70,7 @@ const Navbar = () => {
             <Link to="/wishlist" className="btn2">
               <MdFavoriteBorder className="text-2xl" title="Wishlist" />
             </Link>
-            <Link to="/profile" className="btn2">
+            <Link to="/userProfile" className="btn2">
               <MdPerson className="text-2xl" title="Profile" />
             </Link>
           </div>

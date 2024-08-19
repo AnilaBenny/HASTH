@@ -1,7 +1,10 @@
 import mongoose, { Schema, model } from 'mongoose';
 
 const productSchema = new Schema({
-
+   userId:{
+      type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+   },
    name: {
       type: String,
       required: true,

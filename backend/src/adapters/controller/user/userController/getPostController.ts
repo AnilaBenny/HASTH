@@ -13,6 +13,7 @@ export default (dependencies: any) => {
             const response=await executeFunction.executeFunction();
 
             if (response && response.status) {
+                
                 return res.status(200).json({ status: true, data: response.data });
             } else {
                 return res.status(404).json({ status: false, message: "Data not found" });

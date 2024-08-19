@@ -3,6 +3,8 @@ export default(dependencies: any)=> {
 
     const executeFunction = async (productId: any) => {
         try {
+            
+            
             const response = await userRespository.activeordeactiveProduct(productId);
             console.log(response);
             

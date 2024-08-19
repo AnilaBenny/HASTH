@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 interface Product {
     _id: string;
@@ -36,9 +38,11 @@ interface ValidationErrors {
 }
 
 const Product: React.FC = () => {
+    const user = useSelector(state => state.user);
     const [products, setProducts] = useState<Product[]>([]);
     const [creators, setCreators] = useState<Creator[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+    const navigate=useNavigate()
     const [newProduct, setNewProduct] = useState<Omit<Product, '_id'>>({
         collab: '',
         name: '',
@@ -182,7 +186,7 @@ const Product: React.FC = () => {
                     formData.append(key, value ? 'true' : 'false');
                 }}
             )    
-    
+                    formData.append('userId',user._id)
             const response = await axiosInstance.post('/api/auth/addProduct', formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
@@ -214,6 +218,9 @@ const Product: React.FC = () => {
             setError('An error occurred while adding the product. Please try again.');
         }
     };
+    const handleProductClick = (product:any) => {
+        navigate(`/productDetail`, { state: { product } });
+    };
 
     return (
         <div className="container mx-auto p-4">
@@ -228,11 +235,11 @@ const Product: React.FC = () => {
             </div>
 
           
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="bg-white p-6 rounded-lg shadow-lg" >
                 <h2 className="text-2xl font-semibold mb-4">Product List</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map(product => (
-                        <div key={product._id} className="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-300">
+                        <div key={product._id} className="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-300" onClick={() => handleProductClick(product)}>
                             {product.images.length > 0 && (
                                 <img 
                                     src={`http://localhost:8080/src/uploads/${product.images[0]}`} 

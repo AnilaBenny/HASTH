@@ -308,16 +308,21 @@ export default  {
   },
   createReport:async (data: ReportData) =>{
     try {
-   
-    
-  
-      const newReport = new databaseSchema.Report({
+      let newReport;
+      data.type==='post'?
+       newReport = new databaseSchema.Report({
         reportedUserId: data.reportedUserId,
         reportedPostId: data.reportedPostId,
         reportedCommentId: data.reportedCommentId,
         type: data.type,
         reason: data.reason,
-      });
+      }): newReport = new databaseSchema.Report({
+        reportedUserId: data.reportedPostId,
+        
+        reportedCommentId: data.reportedCommentId,
+        type: data.type,
+        reason: data.reason,
+      })
   
       
       const savedReport = await newReport.save(); 
@@ -329,11 +334,11 @@ export default  {
     }
   },
   createProduct:async(data:any)=>{
-    const { collab,name, description, images,brand,countInStock,price} = data;
+    const { userId,collab,name, description, images,brand,countInStock,price} = data;
     try {
   
       const product = new databaseSchema.Product({
-        collab,name, description, images,countInStock,price
+        userId,collab,name, description, images,countInStock,price
       });
   
       const response = await product.save();
@@ -374,12 +379,14 @@ export default  {
       throw new Error('Unable to fetch products');
     }
   },
-  editPost :async (data: any) => {
+  editPost: async (data: any) => {
     try {
-      const { postId, userId, caption, images, video, tag } = data;
+      console.log(data);
+      
+      const { postId, caption, images, video, tags } = data;
   
-     
       const existingPost = await databaseSchema.Post.findById(postId);
+      
       if (!existingPost) {
         return { status: false, message: 'Post not found' };
       }
@@ -388,8 +395,9 @@ export default  {
       existingPost.caption = caption || existingPost.caption;
       existingPost.images = images.length > 0 ? images : existingPost.images;
       existingPost.video = video || existingPost.video;
-      existingPost.tag = tag || existingPost.tag;
+      existingPost.tags = tags || existingPost.tags;
   
+ 
       const updatedPost = await existingPost.save();
   
       return { status: true, data: updatedPost };
@@ -398,21 +406,24 @@ export default  {
       return { status: false, message: 'Error editing post' };
     }
   },
+  
   editProduct :async (data: any) => {
     try {
-      const { productId, name, description, collab, images, brand, countInStock, isFeatured, price, popularity, list } = data;
+      console.log(data);
+      
+      const { productId,_id,name, description, collab, images, brand, countInStock, isFeatured, price, popularity, list } = data;
   
       
-      const existingProduct = await databaseSchema.Product.findById(productId);
+      const existingProduct = await databaseSchema.Product.findById(_id);
       if (!existingProduct) {
         return { status: false, message: 'Product not found' };
       }
   
-      existingProduct.name = name || existingProduct.name;
-      existingProduct.description = description || existingProduct.description;
-      existingProduct.collab = collab || existingProduct.collab;
-      existingProduct.images = images.length > 0 ? images : existingProduct.images;
-      existingProduct.brand = brand || existingProduct.brand;
+      existingProduct.name = name ?? existingProduct.name;
+      existingProduct.description = description?? existingProduct.description;
+      existingProduct.collab = collab ?? existingProduct.collab;
+      existingProduct.images = images && images.length > 0 ? images : existingProduct.images;
+      existingProduct.brand = brand ?? existingProduct.brand;
       existingProduct.countInStock = countInStock !== undefined ? countInStock : existingProduct.countInStock;
       existingProduct.isFeatured = isFeatured !== undefined ? isFeatured : existingProduct.isFeatured;
       existingProduct.price = price !== undefined ? price : existingProduct.price;
@@ -427,24 +438,21 @@ export default  {
       return { status: false, message: 'Error editing product' };
     }
   },
-  deletePost:async (data: any) => {
+  deletePost:async (postId: any) => {
     try {
-      const { postId } = data;
-  
-      const post = await databaseSchema.Post.findByIdAndDelete(postId);;
-      if (!post) {
-        return { status: false, message: 'Post not found' };
-      }
+     
+       await databaseSchema.Post.findByIdAndDelete(postId);
       return { status: true, message: 'Post deleted successfully' };
     } catch (error) {
       console.error('Error deleting post:', error);
       return { status: false, message: 'Error deleting post' };
     }
   },
-  activeordeactiveProduct:async(data:any)=>{
+  activeordeactiveProduct:async(productId:any)=>{
     try {
-      const {productId}=data;
       const product = await databaseSchema.Product.findById(productId);
+      console.log(productId,product);
+      
 
       if (!product) {
         return { status: false, message: 'Product not found' };

@@ -30,23 +30,25 @@ const {
   router.post('/liked',likedController);
   router.post('/comment',commentController);
   router.post('/report',reportController);
-  router.post('/editIdea',editPostController);
+  router.put('/editIdea',upload.fields([{ name: 'images' }, { name: 'video' }]),editPostController);
   router.delete('/deleteIdea/:postId',deletePostController);
   router.post('/addProduct',upload.fields([{ name: 'images' }]),addProductController)
   router.get('/products',getProductsController);
   router.get('/creators',getCreatorsController);
-  router.post('/editProduct',editProductController)
+  router.put('/editProduct',upload.fields([{ name: 'images' }]),editProductController)
   router.patch('/deleteProduct/:productId',statusProductController)
+
  
   
 const { 
   AdminLoginController,getAllUserController,handleUserBlockController,
-  verifyCreativeController
+  verifyCreativeController,getReportsController
 }=adminController(dependencies);
 router.post('/admin/login',AdminLoginController);
 router.get('/getAllUsers',getAllUserController);
 router.patch('/handleUserBlock/:userId',handleUserBlockController);
-router.patch('/verifyCreative/:userId',verifyCreativeController)
+router.patch('/verifyCreative/:userId',verifyCreativeController);
+router.get('/reports',getReportsController);
 
 return router;
 }

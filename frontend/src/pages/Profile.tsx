@@ -29,7 +29,7 @@ const Profile: React.FC = () => {
   const [zipCodeError, setZipCodeError] = useState<string | null>(null);
 
   const handleCancel = () => {
-    navigate("/home");
+    navigate("/userProfile");
   };
 
   const validateName = (value: string) => {

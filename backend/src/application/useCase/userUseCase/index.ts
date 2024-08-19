@@ -18,6 +18,7 @@ import getProductsUseCase from "./getProductsUseCase";
 import postEditUseCase from "./postEditUseCase";
 import deletePostUseCase from "./deletePostUseCase";
 import statusProductUseCase from "./statusProductUseCase";
+import productEditUseCase from "./productEditUseCase";
 export{
     userRegistration,
     loginUseCase,
@@ -38,6 +39,7 @@ export{
     getProductsUseCase,
     postEditUseCase,
     deletePostUseCase,
-    statusProductUseCase
+    statusProductUseCase,
+    productEditUseCase
 
 }

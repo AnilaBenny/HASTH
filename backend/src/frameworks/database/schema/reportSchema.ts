@@ -16,7 +16,7 @@ const reportSchema = new Schema({
   type: {
     type: String, 
     required: true,
-    enum: ['post', 'comment', 'user'],
+    enum: ['post', 'comment', 'creative'],
   },
   reason: {
     type: String, 

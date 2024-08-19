@@ -28,7 +28,13 @@ import ErrorPage from './pages/ErrorPage(401)';
 import CreativeManagement from './pages/CreativeManagement';
 import Innovations from './pages/Innovations';
 import ProductPage from './pages/ProductPage';
-import SingleUserProfile from './pages/SingleUserProfile'
+import UserProfilePage from './pages/UserProfilePage';
+import Adminposts from './pages/AdminPosts';
+import Adminproducts from './pages/Adminproducts';
+import ReportManagement from './pages/ReportManagement';
+import ProductDetailPage from './pages/ProductDetailPage';
+import UserDetailPage from './pages/UserDetailPage';
+
 const userRoutes = (
   <Route path='/' element={<App />}>
     <Route index={true} element={<Landingpage />} />
@@ -43,9 +49,11 @@ const userRoutes = (
     <Route element={<PrivateRoute />}>
       <Route path='home' element={<Home />} />
       <Route path='profile' element={<Profile/>}/>
-      <Route path='userProfile' element={<SingleUserProfile/>}/>
+      <Route path='userProfile' element={<UserProfilePage/>}/>
       <Route path='innovations' element={<Innovations/>}/>
       <Route path='products' element={<ProductPage/>}/>
+      <Route path='productDetail' element={<ProductDetailPage/>}/>
+      <Route path='userPage' element={<UserDetailPage/>}/>
     </Route>
   </Route>
 )
@@ -56,6 +64,9 @@ const adminRoutes=(
       <Route path='adminHome' element={<AdminHome/>}/>
       <Route path='userManagement' element={<UserManagement/>}/>
       <Route path='creativeManagement' element={<CreativeManagement/>}/>
+      <Route path='reportManagement' element={<ReportManagement/>}/>
+      <Route path='posts' element={<Adminposts/>}/>
+      <Route path='products' element={<Adminproducts/>}/>
     </Route>
   </Route>
 )
