@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import logger from '../../../../logger';
 
 interface MulterRequest extends Request {
   files: {
@@ -37,7 +38,7 @@ export default (dependencies: any) => {
       };
 
       const executeFunction = await postCreationUseCase(dependencies);
-      console.log(executeFunction);
+      logger.info(executeFunction);
      
       const response = await executeFunction.executeFunction(data);
       if (response.status) {
@@ -46,7 +47,7 @@ export default (dependencies: any) => {
         return res.status(400).json({ status: false, data: response.data });
       }
     } catch (error) {
-      console.error('Error in post creation controller:', error);
+      logger.error('Error in post creation controller:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   };

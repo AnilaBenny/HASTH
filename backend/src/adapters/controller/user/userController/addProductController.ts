@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-
+import logger from '../../../../logger';
 interface MulterRequest extends Request {
   files: {
     [fieldname: string]: Express.Multer.File[]; 
@@ -40,7 +40,7 @@ export default (dependencies: any) => {
         return res.status(400).json({ status: false, data: response.data });
       }
     } catch (error) {
-      console.error('Error in product creation controller:', error);
+      logger.error('Error in product creation controller:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   };

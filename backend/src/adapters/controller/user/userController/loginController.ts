@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, response } from "express";
 export default (dependecies: any) => {
   
   const {loginVerification}=dependecies.useCase
@@ -21,7 +21,11 @@ export default (dependecies: any) => {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 30 * 24 * 60 * 60 * 1000 
     });
-    res.json({status:true,data:responce.data})
+    const { password, ...sanitizedData } = responce.data.toObject
+            ? responce.data.toObject()
+            : responce.data;
+
+          return res.status(200).json({ status: true, data: sanitizedData });
   }else{
     res.json({status:false,message:responce.message})
   }

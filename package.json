@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "hasth": "file:"
+    "hasth": "file:",
+    "winston": "^3.14.2"
   }
 }

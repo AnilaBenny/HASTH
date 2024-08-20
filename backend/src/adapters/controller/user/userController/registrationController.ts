@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { hashPassword } from '../../../../utils';
+import logger from '../../../../logger';
 import 'express-session';
 
 declare module 'express-session' {
@@ -27,7 +28,7 @@ export default (dependencies: any) => {
 
   const registerController = async (req: Request, res: Response) => {
     try {
-      console.log(req.body);
+      
       
       const { name, email, password, mobile, skills, education, specification, street, city, state, zipcode, role } = req.body;
 
@@ -61,7 +62,7 @@ export default (dependencies: any) => {
       // console.log(response);
       if (response.status) {
         req.session.otp = response.data;
-        console.log(response);
+        logger.info(response);
         
         res.json({ status: true , data: response.data });
       } else  {
@@ -69,7 +70,7 @@ export default (dependencies: any) => {
       }
 
     } catch (error) {
-      console.error('Error in registration controller:', error);
+      logger.error('Error in registration controller:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
   };

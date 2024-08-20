@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import logger from '../../../../logger';
 
 
 export default (dependencies: any) => {
@@ -12,24 +13,25 @@ export default (dependencies: any) => {
       
         
         
-        console.log('Entered OTP:', otp,req.session.otp);
+        logger.info('Entered OTP:', otp,req.session.otp);
         
         
         if (req.session.otp === otp) {
             try {
                 const executionFunction = await otpVerification(dependencies);
-                console.log(executionFunction);
                 const response=await executionFunction.executionFunction(userData);
                 if (response.status) {
+                    logger.info(response.data)
                     res.json({ status: true, data: response.data });
                 } else {
                     res.json({ status: false, message: 'Verification failed' });
                 }
             } catch (error) {
-                console.error('Error in OTP verification:', error);
+                logger.error('Error in OTP verification:', error);
                 res.status(500).json({ status: false, message: 'Internal server error' });
             }
         } else {
+            logger.warn('wrong otp')
             res.status(400).json({ status: false, message: 'Wrong OTP' });
         }
     };

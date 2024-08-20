@@ -1,5 +1,5 @@
 import http from 'http';
-import express from 'express';
+import express,{ Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import session, { MemoryStore } from 'express-session';
 import serverConfig from './server';
@@ -11,6 +11,7 @@ import { routes } from './adapters/router';
 import passport from "passport";
 import PassportConfig  from "../src/config/passport";
 // import { middleware } from './utils/middleware/middleware';
+import logger from './logger';
 dotenv.config();
 
 const app = express();
@@ -27,10 +28,29 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }));
-app.use((req, res, next) => {
-  console.log('Session ID:', req.sessionID);
-  console.log('Session Data:', req.session);
+// app.use((req, res, next) => {
+//   console.log('Session ID:', req.sessionID);
+//   console.log('Session Data:', req.session);
+//   next();
+// });
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  logger.info(`${req.method} ${req.url}`, {
+    ip: req.ip,
+    headers: req.headers,
+  });
   next();
+});
+
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  logger.error('Unhandled error', {
+    error: err.message,
+    stack: err.stack,
+    url: req.url,
+    method: req.method,
+  });
+  res.status(500).send('Internal Server Error');
 });
 
 app.use(passport.initialize());

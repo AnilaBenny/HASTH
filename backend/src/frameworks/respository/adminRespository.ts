@@ -10,6 +10,7 @@ export default {
       
       if (Admin) {
         if (Admin.password === password) {
+          
           return { status: true, user: Admin };
         } else {
           return { status: false, message: 'Incorrect password' };

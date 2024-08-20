@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import logger from "../../../../logger";
 
 export default (dependencies: any) => {
     
@@ -13,16 +14,19 @@ export default (dependencies: any) => {
             console.log(response, '.....njb');
            
             if (response && response.status) {
-                
-                return res.status(200).json({ status: true, data: response.data });
+                const sanitizedData = Array.isArray(response.data)
+                ? response.data.map(({ password, ...rest }:any) => rest) 
+                : response.data;
+
+            return res.status(200).json({ status: true, data: sanitizedData });
+              
             } else {
                 
                 return res.status(404).json({ status: false, message: "Data not found" });
             }
         } catch (error) {
             
-            console.error("Error in getAll creator:", error);
-            
+            logger.error("Error in getAll creator:", error);
             return res.status(500).json({ status: false, message: "Internal server error" });
         }
     };

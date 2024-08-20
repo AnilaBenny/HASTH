@@ -72,6 +72,7 @@ export default  {
 
       const response = await user.save();
       if (response) {
+        
         return { status: true, data: response };
       } else {
         return { status: false, message: "User creation failed" }; 
