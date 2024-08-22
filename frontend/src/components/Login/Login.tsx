@@ -69,7 +69,9 @@ const Login: React.FC = () => {
     try {
       const response = await axiosInstance.post('/api/auth/login', values);
       console.log(response.data);
-
+      if(!response.data.status){
+        toast.error('User is not found');
+      }
       if (response.data.data.isBlocked) {
         toast.error('Your account has been blocked. Please contact support.');
       } else if (response.data.data.role !== 'user') {
@@ -146,6 +148,15 @@ const Login: React.FC = () => {
                   )}
                 </button>
               </div>
+              <div className="text-center mt-4">
+                  <button
+                    type="button"
+                    className="text-blue-500 hover:underline"
+                    onClick={() => navigate('/forgotPassword')}
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
             </Form>
           )}
         </Formik>

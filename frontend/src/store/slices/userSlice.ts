@@ -25,7 +25,7 @@ const userSlice = createSlice({
       const expirationTime = Date.now() + 30 * 24 * 60 * 60 * 1000;
       state.user = action.payload;
       state.isAuthenticated = true;
-      console.log(JSON.stringify(action.payload));
+      console.log(JSON.stringify(action.payload),'store');
       
       localStorage.setItem("user", JSON.stringify(action.payload));
       localStorage.setItem("isAuthenticated", "true");

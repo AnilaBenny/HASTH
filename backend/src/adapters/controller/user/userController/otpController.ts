@@ -22,7 +22,10 @@ export default (dependencies: any) => {
                 const response=await executionFunction.executionFunction(userData);
                 if (response.status) {
                     logger.info(response.data)
-                    res.json({ status: true, data: response.data });
+                    const { password, ...sanitizedData } = response.data.toObject
+            ? response.data.toObject()
+            : response.data;
+                    res.json({ status: true, data: response.sanitizedData });
                 } else {
                     res.json({ status: false, message: 'Verification failed' });
                 }

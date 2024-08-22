@@ -15,7 +15,10 @@ export default (dependencies: any) => {
                 console.log(executionFunction);
                 const response=await executionFunction.executionFunction(data);
                 if (response.status) {
-                    res.json({ status: true, data: response.data });
+                    const { password, ...sanitizedData } = response.data.toObject
+            ? response.data.toObject()
+            : response.data;
+                    res.json({ status: true, data: sanitizedData });
                 } else {
                     res.json({ status: false, message: 'Profile updation failed' });
                 }

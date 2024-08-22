@@ -39,7 +39,9 @@ const Navbar = () => {
 
       <div className="hidden lg:flex lg:justify-evenly lg:items-center flex-grow">
         <ul className="flex space-x-4">
-          <li>
+          
+        {isAuthenticated?
+            (<><li>
             <Link to="/home" className="btn2">
               <span>Home</span>
             </Link>
@@ -58,7 +60,30 @@ const Navbar = () => {
             <Link to="/blogs" className="btn2">
               <span>Blogs</span>
             </Link>
+          </li></>):(
+            <>
+            <li>
+            <Link to="/" className="btn2">
+              <span>Home</span>
+            </Link>
           </li>
+          <li>
+            <Link to="/" className="btn2">
+              <span>Innovations</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/" className="btn2">
+              <span>Products</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/" className="btn2">
+              <span>Blogs</span>
+            </Link>
+          </li></>
+          )}
+
         </ul>
       </div>
 

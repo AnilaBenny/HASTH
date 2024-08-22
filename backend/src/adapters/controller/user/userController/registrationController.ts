@@ -16,7 +16,7 @@ declare module 'express-session' {
       street: string;
       city: string;
       state: string;
-      zipcode: string;
+      zipCode: string;
       role: string;
     };
     otp?: string; 
@@ -30,7 +30,7 @@ export default (dependencies: any) => {
     try {
       
       
-      const { name, email, password, mobile, skills, education, specification, street, city, state, zipcode, role } = req.body;
+      const { name, email, password, mobile, skills, education, specification, street, city, state, zipCode, role } = req.body;
 
 
       const hashedPassword = await hashPassword(password);
@@ -47,7 +47,7 @@ export default (dependencies: any) => {
         street,
         city,
         state,
-        zipcode,
+        zipCode,
         role,
       };
 

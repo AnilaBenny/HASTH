@@ -1,9 +1,12 @@
+import createImage from "../../../utils/createImage";
 
 export default (dependencies: any) => {
     
     const { userRespository } = dependencies.respository; 
     const executionFunction = async (data: any) => {
         try {
+            
+            data.image=await createImage(data.name)
             const response = await userRespository.createUser(data);
             
             

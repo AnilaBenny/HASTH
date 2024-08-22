@@ -39,6 +39,7 @@ export default  {
         state,
         zipCode,
         role,
+        image
       } = data;
       let user;
       if(role==='user'){
@@ -50,8 +51,10 @@ export default  {
           skills,
           education,
           specification,
-          address: [{ street, city, state, zipCode: zipCode }], 
+          address: [{ street, city, state, zipCode }], 
           role,
+          image,
+         
           isVerified:true
         });
       }else{
@@ -62,8 +65,9 @@ export default  {
           mobile,
           skills,
           education,
+          image,
           specification,
-          address: [{ street, city, state, zipCode: zipCode }], 
+          address: [{ street, city, state, zipCode }], 
           role,
           isVerified:false
         });
@@ -167,6 +171,7 @@ export default  {
         state,
         zipCode,
         role,
+        image,
       } = data;
       const address = { street, city, state, zipCode };
       const user = await databaseSchema.User.findOneAndUpdate(
@@ -180,6 +185,7 @@ export default  {
             specification,
             address,
             role,
+            image
           },
         },
         { new: true } 

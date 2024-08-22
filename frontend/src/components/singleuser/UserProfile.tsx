@@ -128,7 +128,7 @@ const handleShowOptions = (postId: string) => {
         <img src='/images/profile.avif' alt="Cover" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black opacity-30"></div>
         <div className="absolute bottom-4 left-4 flex items-end">
-          <img src='/images/profile.avif' alt="Profile" className="w-24 h-24 rounded-full border-4 border-white" />
+          <img src={`http://localhost:8080/src/uploads/${user.image}`} alt="Profile" className="w-24 h-24 rounded-full border-4 border-white" />
           <div className="ml-4 text-white">
             <h1 className="text-3xl font-bold">{user.name}</h1>
             <p className="text-sm">{user.specification}</p>

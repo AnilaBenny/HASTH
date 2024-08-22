@@ -21,22 +21,22 @@ const {
   router.post('/checkOtp',checkOtpController);
   router.put('/resetPassword',updatePasswordController);
   router.post('/resendOtp',resendOtpController);
-  router.post('/updateProfile',middleware,updateProfileController);
+  router.put('/updateProfile',updateProfileController);
   router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
   router.get('/google/callback',passport.authenticate('google'),googleRegisterController);
   router.post('/refresh-token',refreshTokenController);
-  router.post('/innovation',upload.fields([{ name: 'images' }, { name: 'video' }]),addInnovationController);
+  router.post('/innovation',middleware,upload.fields([{ name: 'images' }, { name: 'video' }]),addInnovationController);
   router.get('/posts',getPostController);
   router.post('/liked',likedController);
-  router.post('/comment',commentController);
-  router.post('/report',reportController);
-  router.put('/editIdea',upload.fields([{ name: 'images' }, { name: 'video' }]),editPostController);
-  router.delete('/deleteIdea/:postId',deletePostController);
-  router.post('/addProduct',upload.fields([{ name: 'images' }]),addProductController)
+  router.post('/comment',middleware,commentController);
+  router.post('/report',middleware,reportController);
+  router.put('/editIdea',middleware,upload.fields([{ name: 'images' }, { name: 'video' }]),editPostController);
+  router.delete('/deleteIdea/:postId',middleware,deletePostController);
+  router.post('/addProduct',middleware,upload.fields([{ name: 'images' }]),addProductController)
   router.get('/products',getProductsController);
   router.get('/creators',getCreatorsController);
-  router.put('/editProduct',upload.fields([{ name: 'images' }]),editProductController)
-  router.patch('/deleteProduct/:productId',statusProductController)
+  router.put('/editProduct',middleware,upload.fields([{ name: 'images' }]),editProductController)
+  router.patch('/deleteProduct/:productId',middleware,statusProductController)
 
  
   

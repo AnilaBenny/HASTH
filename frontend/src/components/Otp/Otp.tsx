@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 const Otp: React.FC = () => {
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const [timer, setTimer] = useState(() => {
-    
+    localStorage.removeItem('timer');
     const savedTimer = localStorage.getItem('timer');
     return savedTimer ? parseInt(savedTimer, 10) : 60;
   });
