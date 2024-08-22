@@ -11,7 +11,7 @@ export default (dependencies:any) => {
           return res.status(401).json({ status: false, message: 'No refresh token provided' });
         }
     
-        const response = await refreshTokenUsecase.executeFunction(refreshToken);
+        const response = await refreshTokenUsecase(dependencies).executeFunction(refreshToken);
     
         if (!response.status) {
           return res.status(403).json({ status: false, message: response.message });

@@ -1,9 +1,9 @@
 export default (dependencies: any)=> {
     const {  userRespository } = dependencies.respository;
 
-    const executeFunction = async () => {
+    const executeFunction = async (page:any) => {
         try {
-            const response = await userRespository.getPosts();
+            const response = await userRespository.getPosts(page);
            
           
             if (response.status) {

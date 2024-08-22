@@ -115,7 +115,27 @@ function PostActions({ userId, post, initialLikesCount, initialCommentsCount }: 
           toast.error('An error occurred while submitting the report');
         }
       };
-      
+      const [replyText, setReplyText] = useState('');
+      const [activeCommentId, setActiveCommentId] = useState(null);
+    
+      const handleReply = async (commentId:any) => {
+        try {
+          const response = await axiosInstance.post(`/api/auth/reply/${commentId}`, {
+            text: replyText,
+            userId: userId, 
+            postId:post._id,
+            commentId:commentId
+
+          });
+    
+          
+          setActiveCommentId(null);
+          setReplyText('');
+          
+        } catch (error) {
+          console.error('Error adding reply:', error);
+        }
+      };
 
     return (
         <div className="mt-4 bg-gray-100 p-4 rounded-lg shadow-md">
@@ -201,6 +221,43 @@ function PostActions({ userId, post, initialLikesCount, initialCommentsCount }: 
                                     <strong>{comment.userId?.name || 'Unknown User'}</strong>: {comment.text}
                                 </p>
                                 <p className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString()}</p>
+                                {comment.replies && comment.replies.length > 0 && (
+              <div className="ml-4 mt-2">
+                {comment.replies.map((reply:any, index:any) => (
+                  <div key={index} className="mb-2 p-1 border-l border-gray-200">
+                    <p className="text-sm text-gray-600">
+                      <strong>{reply.userId?.name || 'Unknown User'}</strong>: {reply.text}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(reply.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                ))}
+                <button
+              className="text-blue-500 text-xs"
+              onClick={() => setActiveCommentId(comment._id)}
+            >
+              Reply
+            </button>
+            {activeCommentId === comment._id && (
+              <div className="mt-2">
+                <input
+                  type="text"
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  placeholder="Write a reply..."
+                  className="border p-1 w-full text-sm"
+                />
+                <button
+                  className="mt-1 text-xs text-white bg-blue-500 px-2 py-1 rounded"
+                  onClick={() => handleReply(comment._id)}
+                >
+                  Submit Reply
+                </button>
+              </div>
+            )}
+              </div>
+            )}
                             </div>
                         ))
                     ) : (

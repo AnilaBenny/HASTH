@@ -19,7 +19,8 @@ import getCreatorsController from './getCreatorsController';
 import editPostController from './editPostController';
 import editProductController from './editProductController';
 import deletePostController from './deletePostController';
-import statusProductController from './statusProductController'
+import statusProductController from './statusProductController';
+import commentReplyController from './commentReplyController'
 export default (dependencies:any)=>{
 return{
     registrationController:registrationController(dependencies),
@@ -43,6 +44,7 @@ return{
     editPostController:editPostController(dependencies),
     editProductController:editProductController(dependencies),
     deletePostController:deletePostController(dependencies),
-    statusProductController:statusProductController(dependencies)
+    statusProductController:statusProductController(dependencies),
+    commentReplyController:commentReplyController(dependencies)
 }
 }

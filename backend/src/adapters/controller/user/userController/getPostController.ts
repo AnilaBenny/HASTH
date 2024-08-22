@@ -5,12 +5,12 @@ export default (dependencies: any) => {
 
     const getPostController = async (req: Request, res: Response) => {
         try {
-           
+            const page = parseInt(req.query.page as string) || 1;
 
             const executeFunction = await getPostUseCase(dependencies);
             console.log(executeFunction);
 
-            const response=await executeFunction.executeFunction();
+            const response=await executeFunction.executeFunction(page);
 
             if (response && response.status) {
                 

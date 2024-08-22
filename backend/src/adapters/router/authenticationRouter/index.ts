@@ -10,7 +10,7 @@ const {
   registrationController,otpController,loginController,forgotPasswordController,checkOtpController,updatePasswordController,resendOtpController,
   updateProfileController,googleRegisterController,refreshTokenController,addInnovationController,getPostController,
   likedController,commentController,reportController,addProductController,getCreatorsController,getProductsController,
-  editPostController,editProductController,deletePostController,statusProductController
+  editPostController,editProductController,deletePostController,statusProductController,commentReplyController
 }=userController(dependencies);
 
 
@@ -25,18 +25,19 @@ const {
   router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
   router.get('/google/callback',passport.authenticate('google'),googleRegisterController);
   router.post('/refresh-token',refreshTokenController);
-  router.post('/innovation',middleware,upload.fields([{ name: 'images' }, { name: 'video' }]),addInnovationController);
+  router.post('/innovation',upload.fields([{ name: 'images' }, { name: 'video' }]),addInnovationController);
   router.get('/posts',getPostController);
   router.post('/liked',likedController);
-  router.post('/comment',middleware,commentController);
-  router.post('/report',middleware,reportController);
-  router.put('/editIdea',middleware,upload.fields([{ name: 'images' }, { name: 'video' }]),editPostController);
-  router.delete('/deleteIdea/:postId',middleware,deletePostController);
-  router.post('/addProduct',middleware,upload.fields([{ name: 'images' }]),addProductController)
+  router.post('/comment',commentController);
+  router.post('/report',reportController);
+  router.put('/editIdea',upload.fields([{ name: 'images' }, { name: 'video' }]),editPostController);
+  router.delete('/deleteIdea/:postId',deletePostController);
+  router.post('/addProduct',upload.fields([{ name: 'images' }]),addProductController)
   router.get('/products',getProductsController);
   router.get('/creators',getCreatorsController);
-  router.put('/editProduct',middleware,upload.fields([{ name: 'images' }]),editProductController)
-  router.patch('/deleteProduct/:productId',middleware,statusProductController)
+  router.put('/editProduct',upload.fields([{ name: 'images' }]),editProductController)
+  router.patch('/deleteProduct/:productId',statusProductController)
+  router.post('/reply',commentReplyController)
 
  
   

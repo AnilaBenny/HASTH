@@ -1,13 +1,31 @@
-import { databaseSchema } from "../database"; 
+import logger from "../../logger";
+import { databaseSchema } from "../database";
+
 
 interface LikeOrDislikeData {
   postId: string;
   userId: string;
 }
 
-interface Post {
+interface Comment {
+  _id: string;
+  userId: string;
+  text: string;
+  createdAt: Date;
+  updatedAt: Date;
+  replies: Reply[];
+}
+
+interface Reply {
+  userId: string;
+  text: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+interface Post  {
   _id: string;
   liked: string[];
+  comments: Comment[];
   save: () => Promise<void>;
 }
 
@@ -227,14 +245,18 @@ export default  {
       return { status: false, message: "An error occurred during post creation" };
     }
   },
-  getPosts: async () => {
+  getPosts: async (page:any) => {
     try {
+      const limit=6
+      const skip = (page - 1) * limit;
       const posts = await databaseSchema.Post.find()
-    .sort({ createdAt: -1 })
-    .populate('userId') 
-    .populate({
-        path: 'comments.userId', 
-    });
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .populate('userId')
+          .populate({
+              path: 'comments.userId',
+          });
 
       return {status:true,data:posts};
     } catch (error) {
@@ -311,6 +333,47 @@ export default  {
       console.error('Error creating comment:',error);
       return {status:false,message:'Error creating comment'};
 
+  }
+  },
+  createCommentReply:async(data:any)=>{
+    try{
+    const { userId, commentId, postId, text } = data;
+
+    if (!userId || !commentId || !postId || !text) {
+      throw new Error('User ID, Comment ID, Post ID, and text are required');
+    }
+
+    const updatedPost = await databaseSchema.Post.findById(postId)
+      .populate('userId') 
+      .populate({
+        path: 'comments.userId',
+        select: 'name', 
+      }).exec();
+
+    if (!updatedPost) {
+      throw new Error('Post not found');
+    }
+  const post=updatedPost as any;
+    const comment = post?.comments.find((c: Comment) => c._id.toString() === commentId);
+
+    if (!comment) {
+      throw new Error('Comment not found');
+    }
+
+    comment.replies.push({
+      userId,
+      text,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    await updatedPost.save();
+
+    console.log('Reply added successfully');
+    return { status: true, data: updatedPost };
+  } catch (error) {
+    logger.error('Error creating comment reply:', error);
+    return { status: false, message: 'Error creating comment reply' };
   }
   },
   createReport:async (data: ReportData) =>{
