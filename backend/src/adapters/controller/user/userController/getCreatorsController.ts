@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import logger from "../../../../logger";
 
+
 export default (dependencies: any) => {
     
 
@@ -17,6 +18,8 @@ export default (dependencies: any) => {
                 const sanitizedData = Array.isArray(response.data)
                 ? response.data.map(({ password, ...rest }:any) => rest) 
                 : response.data;
+                console.log(sanitizedData);
+                
 
             return res.status(200).json({ status: true, data: sanitizedData });
               

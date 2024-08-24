@@ -11,6 +11,7 @@ export default (dependencies: any) => {
         userId,
         text,
         commentId,
+        postId
       };
 
       const executeFunction = commentReplyUseCase(dependencies);

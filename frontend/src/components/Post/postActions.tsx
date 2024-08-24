@@ -2,16 +2,21 @@ import { useState, useEffect } from 'react';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import Modal from 'react-modal';
 import { toast } from 'react-toastify';
+import { BiPin,BiDotsVerticalRounded  } from 'react-icons/bi';
 
 interface PostActionsProps {
     post: any;
+    isAuthor:boolean;
     userId: string;
     initialLikesCount: number;
     initialCommentsCount: number;
 }
 
-function PostActions({ userId, post, initialLikesCount, initialCommentsCount }: PostActionsProps) {
+function PostActions({ userId, post, initialLikesCount, initialCommentsCount,isAuthor }: PostActionsProps) {
+    console.log(userId, post, initialLikesCount, initialCommentsCount,isAuthor);
+    
     const [liked, setLiked] = useState(false);
+    const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
     const [showComment, setShowComment] = useState(false);
     const [showReportOptions, setShowReportOptions] = useState(false);
     const [likesCount, setLikesCount] = useState(initialLikesCount);
@@ -21,14 +26,21 @@ function PostActions({ userId, post, initialLikesCount, initialCommentsCount }: 
     const [comments, setComments] = useState(post.comments || []);
     const [currentPost, setCurrentPost] = useState(post);
     const [reportReason, setReportReason] = useState('');
+    const [expandedComments, setExpandedComments] = useState<string[]>([]);
+   
 
     useEffect(() => {
         if (currentPost.liked.includes(userId)) {
             setLiked(true);
         }
-        
     }, [currentPost, userId]);
-
+    const toggleReplies = (commentId: string) => {
+        setExpandedComments(prev =>
+            prev.includes(commentId)
+                ? prev.filter(id => id !== commentId)
+                : [...prev, commentId]
+        );
+    };
     const handleLike = async () => {
         if (isLiking) return;
         setIsLiking(true);
@@ -116,27 +128,73 @@ function PostActions({ userId, post, initialLikesCount, initialCommentsCount }: 
         }
       };
       const [replyText, setReplyText] = useState('');
-      const [activeCommentId, setActiveCommentId] = useState(null);
+      
     
-      const handleReply = async (commentId:any) => {
+      const handleReply = async (commentId: any) => {
+        if (!replyText.trim()) return;
         try {
-          const response = await axiosInstance.post(`/api/auth/reply/${commentId}`, {
+          const response = await axiosInstance.post(`/api/auth/reply`, {
             text: replyText,
-            userId: userId, 
-            postId:post._id,
-            commentId:commentId
-
+            userId: userId,
+            postId: post._id,
+            commentId: commentId
           });
-    
-          
-          setActiveCommentId(null);
-          setReplyText('');
-          
+      
+          if (response.data.status) {
+           
+            setComments((prevComments:any) => prevComments.map((comment:any) => 
+            comment._id === commentId 
+              ? { ...comment, replies: [...(comment.replies || []), response.data.data] }
+              : comment
+          ));
+              
+      
+            setActiveCommentId(null);
+            setReplyText('');
+          } else {
+            toast.error(response.data.message || 'Failed to add reply');
+          }
         } catch (error) {
           console.error('Error adding reply:', error);
+          toast.error('An error occurred while adding the reply');
         }
       };
+      const handlePinComment = async (commentId: string) => {
+        try {
+            const response = await axiosInstance.patch(`/api/auth/pinComment`, {
+                postId: post._id,
+                commentId: commentId,
+                userId: userId,
+            });
+    
+            if (response.data.status) {
+                setComments((prevComments: any) => {
+                    const updatedComments = prevComments.map((comment: any) => 
+                        comment._id === commentId
+                            ? { ...comment, isPinned: !comment.isPinned }
+                            : { ...comment, isPinned: false } 
+                    );
+    
+                    return updatedComments.sort((a: any, b: any) => {
+                        if (a.isPinned === b.isPinned) return 0;
+                        return a.isPinned ? -1 : 1; 
+                    });
+                });
+            } else {
+                toast.error('Failed to update comment pin status.');
+            }
+        } catch (error) {
+            console.error('Error pinning comment:', error);
+            toast.error('An error occurred while pinning the comment.');
+        }
+    };
+    
+    
 
+    const toggleOptionsMenu = (commentId: string) => {
+        setActiveCommentId(prev => (prev === commentId ? null : commentId));
+    };
+    
     return (
         <div className="mt-4 bg-gray-100 p-4 rounded-lg shadow-md">
             <div className="flex justify-between items-center">
@@ -185,83 +243,134 @@ function PostActions({ userId, post, initialLikesCount, initialCommentsCount }: 
                 isOpen={showComment}
                 onRequestClose={handleCloseModal}
                 contentLabel="Comments Modal"
-                className="bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto mt-10 max-h-[80vh] relative"
+                className="bg-white p-10 rounded-lg shadow-lg max-w-2xl mx-auto mt-10 max-h-[80vh] overflow-y-auto relative"
                 overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
             >
                 <button
                     onClick={handleCloseModal}
-                    className="absolute top-2 left-2 text-gray-500 hover:text-gray-700"
+                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
                 
-                <h2 className="text-xl font-bold mb-4 pr-8">Comments</h2>
-                <textarea
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Enter your comment..."
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows={3}
-                />
-                <button
-                    onClick={handleCommentSubmit}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
-                >
-                    Submit
-                </button>
+                <h2 className="text-2xl font-bold mb-4">Comments</h2>
+                <div className="mb-4">
+                    <textarea
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        placeholder="Enter your comment..."
+                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        rows={3}
+                    />
+                    {commentText.trim() && (
+                        <button
+                            onClick={handleCommentSubmit}
+                            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
+                        >
+                            Submit
+                        </button>
+                    )}
+                </div>
                 
-                <div className="mt-4 max-h-[40vh] overflow-y-auto">
-                    <h3 className="text-lg font-medium mb-2">Existing Comments</h3>
+                <div className="space-y-4">
+                    <h3 className="text-xl font-semibold">Existing Comments</h3>
                     {comments.length > 0 ? (
-                        comments.map((comment:any) => (
-                            <div key={comment._id} className="mb-4 p-2 border-b border-gray-200">
-                                <p className="text-sm text-gray-700">
-                                    <strong>{comment.userId?.name || 'Unknown User'}</strong>: {comment.text}
-                                </p>
-                                <p className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString()}</p>
-                                {comment.replies && comment.replies.length > 0 && (
-              <div className="ml-4 mt-2">
-                {comment.replies.map((reply:any, index:any) => (
-                  <div key={index} className="mb-2 p-1 border-l border-gray-200">
-                    <p className="text-sm text-gray-600">
-                      <strong>{reply.userId?.name || 'Unknown User'}</strong>: {reply.text}
+                        comments.map((comment: any) => (
+                            <div key={comment._id} className={`bg-gray-50 p-3 rounded-lg mb-2 ${comment.isPinned ? 'border-l-4 border-blue-500' : ''}`}>
+            <div className="flex justify-between items-start">
+                <div>
+                    <p className="text-sm text-gray-700">
+                        <strong>{comment.userId?.name || 'Unknown User'}</strong>: {comment.text}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      {new Date(reply.createdAt).toLocaleString()}
-                    </p>
-                  </div>
-                ))}
+                    <p className="text-xs text-gray-500 mt-1">{new Date(comment.createdAt).toLocaleString()}</p>
+                </div>
+                {isAuthor && (
+                  <>
+                  <button
+                        className="text-gray-500 hover:text-blue-700"
+                        onClick={() => toggleOptionsMenu(comment._id)}
+                    >
+                        <BiDotsVerticalRounded size={20} />
+                    </button>
+                        {comment.isPinned&&
+                        <><BiPin size={20} className={comment.isPinned ? 'text-blue-500' : 'text-gray-500'} />
+                        <span className="ml-1">{comment.isPinned ? '' : 'Pinned'}</span></>}
+                    
+                    {activeCommentId === comment._id && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                            <button
+                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                                onClick={() => {
+                                    handlePinComment(comment._id);
+                                    setActiveCommentId(null); 
+                                }}
+                            >
+                                {comment.isPinned ? 'Unpin Comment' : 'Pin Comment'}
+                            </button>
+                          
+                        </div>
+                    )}
+                  </>
+                   
+                
+                )}
+            </div>
+            {comment.replies && comment.replies.length > 0 && (
+                <>
+                    <button
+                        className="text-blue-500 text-sm mt-2 hover:underline"
+                        onClick={() => toggleReplies(comment._id)}
+                    >
+                        {expandedComments.includes(comment._id) ? 'Hide Replies' : `Show Replies (${comment.replies.length})`}
+                    </button>
+                    {expandedComments.includes(comment._id) && (
+                        <div className="ml-4 mt-2 space-y-2">
+                            {comment.replies.map((reply: any, index: number) => (
+                                <div key={index} className="bg-white p-2 rounded-md">
+                                    <p className="text-sm text-gray-600">
+                                        <strong>{reply.userId?.name || 'Unknown User'}</strong>: {reply.text}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        {new Date(reply.createdAt).toLocaleString()}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </>
+            )}
+            
+            {activeCommentId === comment._id ? (
+                <div className="mt-2">
+                    <input
+                        type="text"
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        placeholder="Write a reply..."
+                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    {replyText.trim() && (
+                        <button
+                            className="mt-1 px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors duration-200"
+                            onClick={() => handleReply(comment._id)}
+                        >
+                            Submit Reply
+                        </button>
+                    )}
+                </div>
+            ) : (
                 <button
-              className="text-blue-500 text-xs"
-              onClick={() => setActiveCommentId(comment._id)}
-            >
-              Reply
-            </button>
-            {activeCommentId === comment._id && (
-              <div className="mt-2">
-                <input
-                  type="text"
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  placeholder="Write a reply..."
-                  className="border p-1 w-full text-sm"
-                />
-                <button
-                  className="mt-1 text-xs text-white bg-blue-500 px-2 py-1 rounded"
-                  onClick={() => handleReply(comment._id)}
+                    className="mt-2 text-blue-500 text-sm hover:underline"
+                    onClick={() => setActiveCommentId(comment._id)}
                 >
-                  Submit Reply
+                    Reply
                 </button>
-              </div>
             )}
-              </div>
-            )}
-                            </div>
-                        ))
-                    ) : (
-                        <p>No comments yet.</p>
+        </div>)
+                    )) : (
+                        <p className="text-gray-500 italic">No comments yet.</p>
                     )}
                 </div>
             </Modal>

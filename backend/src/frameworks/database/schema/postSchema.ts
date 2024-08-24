@@ -6,6 +6,7 @@ const CommentSchema: Schema = new Schema({
     ref: 'User',
     required: true,
   },
+  isPinned:{type:Boolean,default:false},
   text: {type: String },
   liked: {
     type: [Schema.Types.ObjectId],

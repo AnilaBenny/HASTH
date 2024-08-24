@@ -20,7 +20,10 @@ import editPostController from './editPostController';
 import editProductController from './editProductController';
 import deletePostController from './deletePostController';
 import statusProductController from './statusProductController';
-import commentReplyController from './commentReplyController'
+import commentReplyController from './commentReplyController';
+import pinCommentController from './pinCommentController';
+import addtocartController from './addtocartController';
+import removecartitemController from './removecartitemController';
 export default (dependencies:any)=>{
 return{
     registrationController:registrationController(dependencies),
@@ -45,6 +48,9 @@ return{
     editProductController:editProductController(dependencies),
     deletePostController:deletePostController(dependencies),
     statusProductController:statusProductController(dependencies),
-    commentReplyController:commentReplyController(dependencies)
+    commentReplyController:commentReplyController(dependencies),
+    pinCommentController:pinCommentController(dependencies),
+    addtocartController:addtocartController(dependencies),
+    removecartitemController:removecartitemController(dependencies)
 }
 }

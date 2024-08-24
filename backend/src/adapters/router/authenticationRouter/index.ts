@@ -10,7 +10,8 @@ const {
   registrationController,otpController,loginController,forgotPasswordController,checkOtpController,updatePasswordController,resendOtpController,
   updateProfileController,googleRegisterController,refreshTokenController,addInnovationController,getPostController,
   likedController,commentController,reportController,addProductController,getCreatorsController,getProductsController,
-  editPostController,editProductController,deletePostController,statusProductController,commentReplyController
+  editPostController,editProductController,deletePostController,statusProductController,commentReplyController,
+  pinCommentController,addtocartController,removecartitemController
 }=userController(dependencies);
 
 
@@ -38,6 +39,10 @@ const {
   router.put('/editProduct',upload.fields([{ name: 'images' }]),editProductController)
   router.patch('/deleteProduct/:productId',statusProductController)
   router.post('/reply',commentReplyController)
+  router.patch('/pinComment',pinCommentController)
+  router.post('/addtocart',addtocartController)
+  router.post('/removecartitem',removecartitemController)
+  
 
  
   

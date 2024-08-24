@@ -34,6 +34,8 @@ import Adminproducts from './pages/Adminproducts';
 import ReportManagement from './pages/ReportManagement';
 import ProductDetailPage from './pages/ProductDetailPage';
 import UserDetailPage from './pages/UserDetailPage';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 const userRoutes = (
   <Route path='/' element={<App />}>
@@ -54,6 +56,8 @@ const userRoutes = (
       <Route path='products' element={<ProductPage/>}/>
       <Route path='productDetail' element={<ProductDetailPage/>}/>
       <Route path='userPage' element={<UserDetailPage/>}/>
+      <Route path='cart' element={<CartPage/>}/>
+      <Route path='checkout' element={<CheckoutPage/>}/>
     </Route>
   </Route>
 )

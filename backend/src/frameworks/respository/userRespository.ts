@@ -1,3 +1,4 @@
+import { log } from "console";
 import logger from "../../logger";
 import { databaseSchema } from "../database";
 
@@ -14,6 +15,7 @@ interface Comment {
   createdAt: Date;
   updatedAt: Date;
   replies: Reply[];
+  isPinned: boolean;
 }
 
 interface Reply {
@@ -256,9 +258,12 @@ export default  {
           .populate('userId')
           .populate({
               path: 'comments.userId',
+          }).populate({
+            path: 'comments.replies.userId',
+            
           });
 
-      return {status:true,data:posts};
+      return {status:true,data:posts.reverse()};
     } catch (error) {
       console.error('Error fetching posts:', error);
       throw new Error('Unable to fetch posts');
@@ -348,7 +353,10 @@ export default  {
       .populate({
         path: 'comments.userId',
         select: 'name', 
-      }).exec();
+      }).populate({
+        path: 'comments.replies.userId',
+        
+      });
 
     if (!updatedPost) {
       throw new Error('Post not found');
@@ -365,12 +373,13 @@ export default  {
       text,
       createdAt: new Date(),
       updatedAt: new Date(),
-    });
+    })
+    
 
     await updatedPost.save();
 
     console.log('Reply added successfully');
-    return { status: true, data: updatedPost };
+    return { status: true, data: updatedPost};
   } catch (error) {
     logger.error('Error creating comment reply:', error);
     return { status: false, message: 'Error creating comment reply' };
@@ -476,7 +485,6 @@ export default  {
       return { status: false, message: 'Error editing post' };
     }
   },
-  
   editProduct :async (data: any) => {
     try {
       console.log(data);
@@ -541,10 +549,127 @@ export default  {
       return { status: false, message: 'Error updating product status' };
     }
    
+  },
+  pinunpinComment:async(data:any)=>{
+    try {
+      const { userId, commentId, postId } = data;
+  
+      if (!userId || !commentId || !postId) {
+        throw new Error('User ID, Comment ID, and Post ID are required');
+      }
+  
+      const updatedPost= await databaseSchema.Post.findById(postId)
+        .populate('userId') 
+        .populate({
+          path: 'comments.userId',
+          select: 'name', 
+        })
+        .populate({
+          path: 'comments.replies.userId',
+          select: 'name', 
+        });
+  
+      if (!updatedPost) {
+        throw new Error('Post not found');
+      }
+      const post:any=updatedPost.comments
+      const comment = post.find((c: Comment) => c._id.toString() === commentId);
+  
+      if (!comment) {
+        throw new Error('Comment not found');
+      }
+  
+      comment.isPinned = !comment.isPinned;
+      await updatedPost.save();
+  
+      return {
+        status: true,
+        message: `Comment ${comment.isPinned ? 'pinned' : 'unpinned'} successfully`,
+        post,
+      };
+    } catch (error) {
+      logger.error('Error in pinunpinComment:', error);
+      return {
+        status: false,
+        message: error,
+      };
+    }
+  },
+  addtocart:async(data:any)=>{
+    try {
+      const { productId, userId } = data;
+      const product = await databaseSchema.Product.findById(productId);
+  
+      if (!product) {
+          return { status: false, message: 'Product not found' };
+      }
+  
+      if (product.countInStock === 0) {
+          return { status: false, message: 'OUT_OF_STOCK' };
+      }
+  
+      let cart = await databaseSchema.Cart.findOne({ userId }).populate('items.productId');
+  
+      if (cart) {
+          const existingItemIndex = cart.items.findIndex(
+              (item) => item.productId.toString() === productId.toString()
+          );
+  
+          if (existingItemIndex !== -1) {
+              if (cart.items[existingItemIndex].quantity >= 5) {
+                  return { status: false, message: 'PRODUCT_LIMIT_EXCEEDED' };
+              }
+              cart.items[existingItemIndex].quantity += 1;
+              cart.items[existingItemIndex].price = product.price;
+          } else {
+              cart.items.push({
+                  productId: product._id,
+                  quantity: 1,
+                  price: product.price
+              });
+          }
+      } else {
+          cart = new databaseSchema.Cart({
+              userId,
+              items: [{
+                  productId: product._id,
+                  quantity: 1,
+                  price: product.price
+              }]
+          });
+      }
+  
+      await cart.save();
+      const populatedCart = await databaseSchema.Cart.findById(cart._id)
+      .populate('items.productId');
+      return { status: true, data: populatedCart };
+  } catch (error) {
+      console.error('Error adding to cart:', error);
+      return { status: false, message: 'Error adding to cart' };
   }
   
+  },
+  deleteCartItem:async(data:any)=>{
+      const { userId, itemId } = data;
+      const cart = await databaseSchema.Cart.findOne({ userId });
+      if (!cart) {
+        return { status: false, message: 'Cart not found' };
+      }
+
+      const itemIndex = cart.items.findIndex(item => item && item._id?.toString() === itemId);
+    
+      if (itemIndex !== -1) {
+     
+        cart.items.splice(itemIndex, 1);
+        await cart.save();
+        return { status: true, message: 'Item deleted' };
+      } else {
+        return { status: false, message: 'Item not found in cart' };
+      }
+    },
+    
   
-  
+
 };
 
 

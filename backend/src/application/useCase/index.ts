@@ -2,7 +2,7 @@ import { userRegistration,otpVerification,loginUseCase,forgotPasswordUseCase,upd
     updateProfileUseCase,googleRegisterUseCase,refreshTokenuseCase,postCreationUseCase,getPostUseCase,
     likedUseCase,commentCreationUseCase,reportUseCase,productCreationUseCase,getProductsUseCase,
     getCreatorUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase,productEditUseCase,
-    commentReplyUseCase,
+    commentReplyUseCase,pinCommentUseCase,addtocartUseCase,deletecartItemUseCase
 } from "./userUseCase"
 export{
     userRegistration,
@@ -26,7 +26,10 @@ export{
     deletePostUseCase,
     statusProductUseCase,
     productEditUseCase,
-    commentReplyUseCase
+    commentReplyUseCase,
+    pinCommentUseCase,
+    addtocartUseCase,
+    deletecartItemUseCase
 }
 import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,getallReportUseCase } from "./adminUseCase"
 export{

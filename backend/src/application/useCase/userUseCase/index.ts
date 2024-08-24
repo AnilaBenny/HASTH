@@ -20,6 +20,9 @@ import deletePostUseCase from "./deletePostUseCase";
 import statusProductUseCase from "./statusProductUseCase";
 import productEditUseCase from "./productEditUseCase";
 import commentReplyUseCase from "./commentReplyUseCase";
+import pinCommentUseCase from "./pinCommentUseCase";
+import addtocartUseCase from './addtocartUseCase';
+import deletecartItemUseCase from "./deletecartItemUseCase";
 export{
     userRegistration,
     loginUseCase,
@@ -42,6 +45,10 @@ export{
     deletePostUseCase,
     statusProductUseCase,
     productEditUseCase,
-    commentReplyUseCase
+    commentReplyUseCase,
+    pinCommentUseCase,
+    addtocartUseCase,
+    deletecartItemUseCase
+    
 
 }

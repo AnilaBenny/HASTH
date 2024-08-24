@@ -386,7 +386,7 @@ const Post: React.FC = () => {
                             <div key={post._id} className="bg-white p-6 rounded-lg shadow-lg mb-6" >
                                 <div className="flex items-center mb-6" onClick={() => handleSingleUser(post.userId)}>
                                     <img
-                                        src={`http://localhost:8080/src/uploads/${post.userId.image}`}
+                                        src={`http://localhost:8080/src/uploads/${post.userId?.image}`}
                                         alt="User Avatar"
                                         className="w-12 h-12 rounded-full object-cover mr-4 border-2 border-blue-500"
                                     />
@@ -429,10 +429,11 @@ const Post: React.FC = () => {
                                     )}
                                 </div>
                                 <PostActions 
-                                    userId={user._id} 
+                                    userId={user?._id} 
                                     post={post} 
                                     initialLikesCount={post.liked?.length || 0} 
                                     initialCommentsCount={post.comments?.length || 0} 
+                                    isAuthor={user?._id===post.userId._id}
                                 />
                             </div>
                         ))
