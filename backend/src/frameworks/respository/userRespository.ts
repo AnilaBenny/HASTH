@@ -40,7 +40,6 @@ interface ReportData {
 }
 
 
-
 export default  {
   createUser: async (data: any) => {
     try {
@@ -612,7 +611,7 @@ export default  {
   
       if (cart) {
           const existingItemIndex = cart.items.findIndex(
-              (item) => item.productId.toString() === productId.toString()
+              (item) => item.productId._id.toString() === productId.toString()
           );
   
           if (existingItemIndex !== -1) {
@@ -667,8 +666,60 @@ export default  {
         return { status: false, message: 'Item not found in cart' };
       }
     },
-    
+  order:async(data:any)=>{
+    try {
+      const { cart, paymentMethod, shippingAddress } = data;
   
+  
+      if (!cart || !cart.userId) {
+        throw new Error('Invalid cart or user ID');
+      }
+  
+      
+      const orderItems = cart.items.map((item: any) => ({
+        product: item.productId,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+  
+     
+      const user = await databaseSchema.User.findById(cart.userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+  
+     
+      const newOrder = new databaseSchema.Order({
+        userId: user._id,
+        orderId:'ORD-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        items: orderItems,
+        totalAmount: cart.totalPrice,
+        shippingAddress: user.address[0],
+        paymentMethod: paymentMethod,
+        paymentStatus: 'Paid',
+        orderStatus: 'Processing',
+      });
+  
+      
+      const savedOrder = await newOrder.save();
+  
+      await databaseSchema.Cart.findByIdAndUpdate(
+        cart._id,
+        { items: [], totalPrice: 0 }
+      );
+        if(savedOrder){
+          return { status: true, data: savedOrder };
+        }else{
+          return { status: false };
+        }
+      
+    } catch (error) {
+      logger.error(error);
+      return { status: false, error: error }; 
+    }
+    },
+    
 
 };
 

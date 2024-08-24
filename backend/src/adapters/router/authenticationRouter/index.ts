@@ -11,7 +11,7 @@ const {
   updateProfileController,googleRegisterController,refreshTokenController,addInnovationController,getPostController,
   likedController,commentController,reportController,addProductController,getCreatorsController,getProductsController,
   editPostController,editProductController,deletePostController,statusProductController,commentReplyController,
-  pinCommentController,addtocartController,removecartitemController
+  pinCommentController,addtocartController,removecartitemController,razorpayController,orderController
 }=userController(dependencies);
 
 
@@ -33,15 +33,17 @@ const {
   router.post('/report',reportController);
   router.put('/editIdea',upload.fields([{ name: 'images' }, { name: 'video' }]),editPostController);
   router.delete('/deleteIdea/:postId',deletePostController);
-  router.post('/addProduct',upload.fields([{ name: 'images' }]),addProductController)
+  router.post('/addProduct',upload.fields([{ name: 'images' }]),addProductController);
   router.get('/products',getProductsController);
   router.get('/creators',getCreatorsController);
-  router.put('/editProduct',upload.fields([{ name: 'images' }]),editProductController)
-  router.patch('/deleteProduct/:productId',statusProductController)
-  router.post('/reply',commentReplyController)
-  router.patch('/pinComment',pinCommentController)
-  router.post('/addtocart',addtocartController)
-  router.post('/removecartitem',removecartitemController)
+  router.put('/editProduct',upload.fields([{ name: 'images' }]),editProductController);
+  router.patch('/deleteProduct/:productId',statusProductController);
+  router.post('/reply',commentReplyController);
+  router.patch('/pinComment',pinCommentController);
+  router.post('/addtocart',addtocartController);
+  router.post('/removecartitem',removecartitemController);
+  router.post('/order/createOnlineOrder',razorpayController);
+  router.post('/order',orderController);
   
 
  

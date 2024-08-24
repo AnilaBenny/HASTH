@@ -52,6 +52,7 @@
     "parser": "^0.1.4",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "razorpay": "^2.9.4",
     "redux-persist": "^6.0.0",
     "server": "file:",
     "sharp": "^0.33.5",

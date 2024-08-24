@@ -13,8 +13,8 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction) => {
-        state.cart = action.payload;
-        localStorage.setItem("cart", JSON.stringify(action.payload));
+        state.cart = action.payload
+        localStorage.setItem("cart", JSON.stringify(state.cart));
       },
       clearCart: (state) => {
         state.cart = null;

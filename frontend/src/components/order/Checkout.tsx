@@ -2,143 +2,219 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { clearCart } from '../../store/slices/cartSlice';
-
-interface ShippingInfo {
-  fullName: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  country: string;
-}
+import axiosInstance from '../../Axiosconfig/Axiosconfig';
+import HandlePayPal from './HandlePayPal';
 
 export default () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state: any) => state.cart.cart);
+  const user = useSelector((state: any) => state.user.user);
 
-  const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
-    fullName: '',
-    address: '',
-    city: '',
-    postalCode: '',
-    country: '',
-  });
+  const [useExistingAddress, setUseExistingAddress] = useState(true);
+  const [paymentMethod, setPaymentMethod] = useState('');
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setShippingInfo(prev => ({ ...prev, [name]: value }));
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Order placed', { shippingInfo, order: cart });
-    dispatch(clearCart());
-    navigate('/order-confirmation');
+  const handleRazorpayPayment = async () => {
+    const res = await loadRazorpayScript();
+
+    if (!res) {
+      alert("Razorpay SDK failed to load. Are you online?");
+      return;
+    }
+
+    const orderData = await axiosInstance.post('/api/auth/order/createOnlineOrder', {
+      amount: cart.totalPrice,
+      currency: 'INR',
+      receipt: `receipt_order_${Math.random() * 1000}`,
+      paymentMethod:'Razorpay'
+    });
+
+    const { amount, id: order_id, currency } = orderData.data;
+   
+    const options = {
+      key: "rzp_test_2sQVid1X3uLewM",
+      amount: amount,
+      currency: currency,
+      name: "Hasth",
+      description: "Test Transaction",
+      order_id: order_id,
+      handler: async function (response:any) {
+        console.log(response);
+        
+        try{
+        const paymentData = {
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id:order_id,
+          razorpay_signature: response.razorpay_signature,
+        };
+        const res = await axiosInstance.post('/api/auth/order', { cart,paymentData ,paymentMethod:'Razorpay'});
+        console.log(res);
+        
+        
+
+          if (res.status===200) {
+            console.log("Order created successfully:");
+            dispatch(clearCart());
+          
+            navigate('/order-confirmation', { state: { order:res?.data.data } });
+          } else {
+            console.error("Order creation failed");
+            alert("Order creation failed. Please try again.");
+          }
+        } catch (error) {
+          console.error("Error during payment processing:", error);
+          alert("An error occurred while processing your payment. Please try again.");
+        }
+        
+      },
+      prefill: {
+        name: user.name,
+        email: user.email,
+        contact: user.phone,
+      },
+      notes: {
+        address: "Razorpay Corporate Office",
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
   };
+
+
+
+  const handleSubmit = async () => {
+    let response;
+  
+    if (paymentMethod === 'Razorpay') {
+      response = await handleRazorpayPayment();
+    }else if(paymentMethod === 'PayPal'){
+      response = await handleRazorpayPayment();
+    }
+  
+    if (response) {
+      try {
+        const order = await axiosInstance.post('/api/auth/order', { cart,paymentMethod});
+        if (order.data.status) {
+          dispatch(clearCart());
+          navigate('/order-confirmation');
+        } else {
+    
+          console.error('Order creation failed:', order.data.message);
+          alert('Order creation failed. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error creating order:', error);
+        alert('An error occurred while processing your order. Please try again.');
+      }
+    }
+  };
+  
 
   if (!cart || cart.items.length === 0) {
     return (
       <div className="container mx-auto p-8 text-center">
-        <h1 className="text-3xl font-bold mb-4">Checkout</h1>
-        <p className="text-xl">Your cart is empty. Please add some items before checking out.</p>
+        <h1 className="text-4xl font-bold mb-4 text-gray-800">Checkout</h1>
+        <p className="text-xl text-gray-600">Your cart is empty. Please add some items before checking out.</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Shipping Information</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label htmlFor="fullName" className="block text-gray-700 mb-2">Full Name</label>
-              <input
-                type="text"
-                id="fullName"
-                name="fullName"
-                value={shippingInfo.fullName}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+    <div className="container mx-auto p-8 bg-gray-50">
+      <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">Checkout</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="bg-white shadow-lg rounded-lg p-6">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-700">Shipping Information</h2>
+          {user && user.address && (
+            <div className="mb-6">
+              <div className="bg-gray-100 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-2 text-gray-700">Shipping Address</h3>
+                <p className="text-gray-600">{user.address.street}</p>
+                <p className="text-gray-600">{user.address.city}, {user.address.state} {user.address.zipCode}</p>
+                
+                <label className="flex items-center mt-4 text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={useExistingAddress}
+                    onChange={() => setUseExistingAddress(!useExistingAddress)}
+                    className="mr-2 form-checkbox h-5 w-5 text-blue-600"
+                  />
+                  Use existing address
+                </label>
+              </div>
             </div>
-            <div className="mb-4">
-              <label htmlFor="address" className="block text-gray-700 mb-2">Address</label>
-              <input
-                type="text"
-                id="address"
-                name="address"
-                value={shippingInfo.address}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="city" className="block text-gray-700 mb-2">City</label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                value={shippingInfo.city}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="postalCode" className="block text-gray-700 mb-2">Postal Code</label>
-              <input
-                type="text"
-                id="postalCode"
-                name="postalCode"
-                value={shippingInfo.postalCode}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="country" className="block text-gray-700 mb-2">Country</label>
-              <input
-                type="text"
-                id="country"
-                name="country"
-                value={shippingInfo.country}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300"
-            >
-              Place Order
-            </button>
-          </form>
+          )}  
         </div>
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
+        <div className="bg-white shadow-lg rounded-lg p-6">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-700">Order Summary</h2>
           <div className="bg-gray-100 p-4 rounded-lg">
             {cart.items.map((item: any) => (
-              <div key={item._id} className="flex justify-between items-center mb-2">
-                <span>{item.name} x {item.quantity}</span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
+              <div key={item._id} className="flex justify-between items-center mb-2 text-gray-700">
+                <span>{item.productId.name} x {item.quantity}</span>
+                <span className="font-semibold">₹{(item.price * item.quantity)}</span>
               </div>
             ))}
-            <div className="border-t border-gray-300 my-2"></div>
-            <div className="flex justify-between items-center font-semibold">
+            <div className="border-t border-gray-300 my-4"></div>
+            <div className="flex justify-between items-center font-semibold text-lg text-gray-800">
               <span>Total:</span>
-              <span>${cart.totalPrice.toFixed(2)}</span>
+              <span>₹{cart.totalPrice}</span>
             </div>
           </div>
         </div>
       </div>
+
+      <div className="mt-12 bg-white shadow-lg rounded-lg p-6">
+        <h2 className="text-2xl font-semibold mb-6 text-gray-700">Payment Method</h2>
+        <div className="mb-6">
+          <label className="block text-gray-700 mb-2">Select Payment Method</label>
+          <div className="flex flex-wrap gap-4">
+            {['Stripe', 'PayPal', 'Razorpay', 'COD'].map((method) => (
+              <label key={method} className="inline-flex items-center">
+                <input
+                  type="radio"
+                  value={method}
+                  checked={paymentMethod === method}
+                  onChange={() => setPaymentMethod(method)}
+                  className="form-radio h-5 w-5 text-blue-600"
+                />
+                <span className="ml-2 text-gray-700">{method}</span>
+              </label>
+            ))}
+            {
+              paymentMethod==='PayPal'&&(
+                <HandlePayPal cart={cart}/>
+              )
+            }
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={!paymentMethod}
+          onClick={handleSubmit}
+          className=" bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition duration-300 disabled:bg-gray-400 text-lg font-semibold"
+        >
+          Place Order
+        </button>
+      </div>
     </div>
   );
 };
-
-

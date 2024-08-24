@@ -61,13 +61,13 @@ export default () => {
           {cart.items.map((item: any) => (
             <div key={item._id} className="flex items-center border-b border-gray-200 py-6 last:border-b-0">
               <img 
-                src={`http://localhost:8080/src/uploads/${item.productId.images[0]}`} 
+                src={`http://localhost:8080/src/uploads/${item.productId?.images[0]}`} 
                 alt={item.name} 
                 className="w-24 h-24 object-cover rounded-md shadow-sm mr-6" 
               />
               <div className="flex-grow">
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">{item.name}</h2>
-                <p className="text-gray-600 text-lg mb-3">${item.price.toFixed(2)}</p>
+                <p className="text-gray-600 text-lg mb-3">${item.price}</p>
                 <div className="flex items-center">
                   <label htmlFor={`quantity-${item._id}`} className="mr-3 text-gray-700">Quantity:</label>
                   <select
@@ -98,7 +98,7 @@ export default () => {
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Order Summary</h2>
             <div className="flex justify-between mb-4 text-gray-700">
               <span>Subtotal:</span>
-              <span className="font-semibold">₹{cart.totalPrice.toFixed(2)}</span>
+              <span className="font-semibold">₹{cart.totalPrice}</span>
             </div>
             <div className="flex justify-between mb-4 text-gray-700">
               <span>Shipping:</span>
@@ -107,7 +107,7 @@ export default () => {
             <div className="border-t border-gray-200 my-4"></div>
             <div className="flex justify-between font-semibold text-xl mt-4 text-gray-800">
               <span>Total:</span>
-              <span>₹{cart.totalPrice.toFixed(2)}</span>
+              <span>₹{cart.totalPrice}</span>
             </div>
             <button className="w-full bg-blue-400 text-gray-900 py-3 px-4 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-300 mt-6 font-semibold text-lg"
             onClick={()=>navigate('/checkout')}>

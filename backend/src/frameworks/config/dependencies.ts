@@ -3,7 +3,8 @@ import { userRegistration,otpVerification ,forgotPasswordUseCase,loginUseCase,up
          resendOtpUseCase,updateProfileUseCase,googleRegisterUseCase,refreshTokenuseCase,postCreationUseCase,
          getPostUseCase,likedUseCase,commentCreationUseCase,reportUseCase,productCreationUseCase,
          getCreatorUseCase,getProductsUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase,
-         productEditUseCase,commentReplyUseCase,pinCommentUseCase,addtocartUseCase,deletecartItemUseCase
+         productEditUseCase,commentReplyUseCase,pinCommentUseCase,addtocartUseCase,deletecartItemUseCase,
+         orderUseCase
        } from "../../application/useCase"
 import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,verifyCreativeUseCase,getallReportUseCase} from "../../application/useCase/adminUseCase"
 
@@ -39,7 +40,8 @@ const useCase:any={
     commentReplyUseCase:commentReplyUseCase,
     pinCommentUseCase:pinCommentUseCase,
     addtocartUseCase:addtocartUseCase,
-    deletecartItemUseCase:deletecartItemUseCase
+    deletecartItemUseCase:deletecartItemUseCase,
+    orderUseCase:orderUseCase
 
 }
 const respository:any={

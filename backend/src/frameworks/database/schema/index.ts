@@ -5,6 +5,7 @@ import { Post } from "./postSchema";
 import { Report } from "./reportSchema";
 import { Product } from "./productSchema";
 import {Cart} from './cartSchema';
+import {Order} from './orderSchema';
 
 interface DatabaseSchemaType {
   User: typeof User;
@@ -14,6 +15,7 @@ interface DatabaseSchemaType {
   Report:typeof Report;
   Product:typeof Product;
   Cart:typeof Cart;
+  Order:typeof Order;
 }
 
 const databaseSchema: DatabaseSchemaType = {
@@ -23,7 +25,8 @@ const databaseSchema: DatabaseSchemaType = {
   Post,
   Report,
   Product,
-  Cart
+  Cart,
+  Order
 };
 
 export default databaseSchema;

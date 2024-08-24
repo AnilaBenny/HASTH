@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import {toast} from 'react-toastify';
-import { addToCart } from '../../store/slices/cartSlice';
+import { addToCart,updateQuantity } from '../../store/slices/cartSlice';
  
 
 interface Product {
@@ -180,13 +180,32 @@ const Product: React.FC = () => {
         
 
     const dispatch=useDispatch()
+    const cart=useSelector((state:any)=>state.cart.cart)
 const handleAddToCart = async (productId: string) => {
+    
     try {
         const response = await axiosInstance.post('/api/auth/addtocart', { productId,userId:user._id});
         console.log(response,'product');
         if (response.data.status) {
-            dispatch(addToCart(response.data.data))
-            toast.success('Product added to cart successfully');
+            if (cart && cart.items) {
+                const existingCartItem = cart.items.find((item: any) => item.productId._id=== productId);
+                console.log(existingCartItem,'exist....');
+                
+                if (existingCartItem) {
+                    console.log(existingCartItem._id,existingCartItem.quantity + 1,'.....cart');
+                    
+                    dispatch(updateQuantity({
+                        itemId: existingCartItem._id,
+                        quantity: existingCartItem.quantity + 1
+                    }));
+                    toast.success('Product quantity updated in cart');
+                } else {
+                dispatch(addToCart(response.data.data));
+                toast.success('Product added to cart successfully');
+            }}else {
+                dispatch(addToCart(response.data.data));
+                toast.success('Product added to cart successfully');
+            }
         } else {
             if (response.data.message === 'PRODUCT_LIMIT_EXCEEDED') {
                 toast.error('You cannot add more than 5 products to your cart');

@@ -24,6 +24,8 @@ import commentReplyController from './commentReplyController';
 import pinCommentController from './pinCommentController';
 import addtocartController from './addtocartController';
 import removecartitemController from './removecartitemController';
+import razorpayController from './razorpayController';
+import orderController from './orderController';
 export default (dependencies:any)=>{
 return{
     registrationController:registrationController(dependencies),
@@ -51,6 +53,8 @@ return{
     commentReplyController:commentReplyController(dependencies),
     pinCommentController:pinCommentController(dependencies),
     addtocartController:addtocartController(dependencies),
-    removecartitemController:removecartitemController(dependencies)
+    removecartitemController:removecartitemController(dependencies),
+    razorpayController:razorpayController(),
+    orderController:orderController(dependencies)
 }
 }
