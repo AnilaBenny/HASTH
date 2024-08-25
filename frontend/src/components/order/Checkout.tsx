@@ -4,8 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { clearCart } from '../../store/slices/cartSlice';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import HandlePayPal from './HandlePayPal';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-export default () => {
+const stripePromise = loadStripe('pk_test_51PrKKwJKak3nsLbf6XEzehMZVJUSBQ4E9QWdUPTNFxGj1vveGo0NHx95qmJFcy5kyQ8Za7wOt6wLO9o4UjK2dex100vPyO4esO');
+
+const CheckoutForm = () => {
+  const stripe = useStripe();
+  const elements = useElements();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state: any) => state.cart.cart);
@@ -27,6 +33,9 @@ export default () => {
       document.body.appendChild(script);
     });
   };
+
+
+ 
 
   const handleRazorpayPayment = async () => {
     const res = await loadRazorpayScript();
@@ -98,32 +107,89 @@ export default () => {
     paymentObject.open();
   };
 
+  const handleStripePayment = async () => {
+  
+  
+    if (!stripe || !elements) {
+      alert('Stripe has not loaded. Please try again.');
+      return;
+    }
+  
+    // Get the card element from Stripe Elements
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      alert('Card element not found. Please try again.');
+      return;
+    }
+  
+    try {
+      console.log(cardElement);
+      
+      const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
+      });
+  
+      if (paymentMethodError) {
+        
+          alert(paymentMethodError.message);
+        
+        return;
+      }
+  
+      // Send the payment method to your server to create a payment intent
+      const response = await axiosInstance.post('/api/auth/order/createOnlineOrder', {
+        amount: cart.totalPrice * 100, // Amount in cents or smallest currency unit
+        currency: 'INR',
+        paymentMethod: 'Stripe',
+        paymentMethodId: paymentMethod.id, 
+      });
+  
+      // Confirm the payment on the client-side with the client secret
+      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
+        response.data.clientSecret,
+        {
+          payment_method: paymentMethod.id,
+        }
+      );
+  
+      if (confirmError) {
+        throw new Error(confirmError.message);
+      }
+  
+      if (!paymentIntent || paymentIntent.status !== 'succeeded') {
+        throw new Error('Payment failed');
+      }
+  
+      // Finalize the order and clear the cart
+      const orderResponse = await axiosInstance.post('/api/auth/order', {
+        cart,
+        paymentData: { id: paymentIntent.id },
+        paymentMethod: 'Stripe',
+      });
+  
+      if (orderResponse.status === 200) {
+        dispatch(clearCart());
+        navigate('/order-confirmation', { state: { order: orderResponse.data.data } });
+      } else {
+        throw new Error('Order creation failed');
+      }
+    } catch (error) {
+      console.error('Error during payment processing:', error);
+      alert(`An error occurred: ${error instanceof Error ? error.message : 'Please try again.'}`);
+    }
+  };
+  
+  
+  
 
 
   const handleSubmit = async () => {
-    let response;
-  
+
     if (paymentMethod === 'Razorpay') {
-      response = await handleRazorpayPayment();
-    }else if(paymentMethod === 'PayPal'){
-      response = await handleRazorpayPayment();
-    }
-  
-    if (response) {
-      try {
-        const order = await axiosInstance.post('/api/auth/order', { cart,paymentMethod});
-        if (order.data.status) {
-          dispatch(clearCart());
-          navigate('/order-confirmation');
-        } else {
-    
-          console.error('Order creation failed:', order.data.message);
-          alert('Order creation failed. Please try again.');
-        }
-      } catch (error) {
-        console.error('Error creating order:', error);
-        alert('An error occurred while processing your order. Please try again.');
-      }
+       handleRazorpayPayment();
+    }else if(paymentMethod==='Stripe'){
+      handleStripePayment();
     }
   };
   
@@ -203,6 +269,10 @@ export default () => {
                 <HandlePayPal cart={cart}/>
               )
             }
+            <div className="mt-4">
+            {paymentMethod === 'Stripe' && (<CardElement />)}
+</div>
+
           </div>
         </div>
 
@@ -218,3 +288,8 @@ export default () => {
     </div>
   );
 };
+export default () => (
+  <Elements stripe={stripePromise}>
+    <CheckoutForm />
+  </Elements>
+);

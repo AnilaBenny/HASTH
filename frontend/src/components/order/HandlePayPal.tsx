@@ -6,13 +6,12 @@ const HandlePayPal = ({ cart }) => {
   const [message, setMessage] = useState("");
 
   const initialOptions = {
-    "client-id": "ATZmcKTW6nef9b_2Qayo0GnQbgiWDwPsLlPUOqXmqv_zl9kMR3VBfiCaP7BlwphZr9o5gpFEdwoP8cdP",
+    "client-id": "AZaAdOu9K91RGsPoKX1O6SKANymTXoPu7pTTjpcTkKJGAuyn8t1ou8hLwwhW9OpZxA5uXNzTm0SYGOUF",
     "enable-funding": "venmo",
     "disable-funding": "",
-    country: "US",
     currency: "USD",
-    "data-page-type": "product-details",
     components: "buttons",
+    "data-page-type": "product-details",
     "data-sdk-integration-source": "developer-studio",
   };
 
@@ -24,29 +23,31 @@ const HandlePayPal = ({ cart }) => {
           layout: "vertical",
           color: "gold",
           label: "paypal",
-        }} 
+        }}
         createOrder={async () => {
           try {
-            const response = await axiosInstance.post("/api/auth/createOnlineOrder", { paymentMethod: 'PayPal', cart });
-            if (response.data && response.data.orderData && response.data.orderData.id) {
-              return response.data.orderData.id;
+            const response = await axiosInstance.post("/api/auth/order/createOnlineOrder", { paymentMethod: 'PayPal', cart });
+            console.log(response,'....paypal');
+            
+            if (response.status && response.data && response.data.id) {
+              return response.data.id;
             } else {
-              const errorDetail = response.data?.orderData?.details?.[0];
+              const errorDetail = response.data?.details?.[0];
               const errorMessage = errorDetail
-                ? `${errorDetail.issue} ${errorDetail.description} (${response.data.orderData.debug_id})`
-                : JSON.stringify(response.data.orderData);
+                ? `${errorDetail.issue} ${errorDetail.description} (${response.data.debug_id})`
+                : JSON.stringify(response.data);
 
               throw new Error(errorMessage);
             }
           } catch (error) {
             console.error(error);
             setMessage(`Could not initiate PayPal Checkout...${error}`);
-            throw error; 
+            throw error;
           }
         }}
         onApprove={async (data, actions) => {
           try {
-            const response = await axiosInstance.post(`/api/auth/order`,{cart,paymentMethod:'PayPal'});
+            const response = await axiosInstance.post(`/api/auth/order`, { cart, paymentMethod: 'PayPal' });
             const orderData = response.data;
 
             const errorDetail = orderData?.details?.[0];
@@ -64,7 +65,7 @@ const HandlePayPal = ({ cart }) => {
             console.error(error);
             setMessage(`Sorry, your transaction could not be processed...${error}`);
           }
-        }} 
+        }}
       />
       {message && <div>{message}</div>}
     </PayPalScriptProvider>
