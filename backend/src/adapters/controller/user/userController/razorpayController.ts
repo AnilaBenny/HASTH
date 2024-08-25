@@ -53,32 +53,32 @@ export default()=>{
         res.status(500).json({ error: error });
       }
     } else if (req.body.paymentMethod === 'Stripe') {
-      const { amount, currency } = req.body;
+      const { amount, currency, paymentMethodId } = req.body;
     
       try {
-     
-        if (!amount || !currency) {
+        if (!amount || !currency || !paymentMethodId) {
           return res.status(400).json({ error: 'Missing required parameters' });
         }
     
-       
-        const amountInCents = Math.round(parseFloat(amount) * 100);
+        const amountInCents = Math.round(parseFloat(amount));
     
         const paymentIntent = await stripe.paymentIntents.create({
           amount: amountInCents,
           currency: currency.toLowerCase(),
-          payment_method_types: ['card'],
+          payment_method: paymentMethodId,
+          confirm: true,
         });
     
-        return res.json({ 
+        return res.json({
           clientSecret: paymentIntent.client_secret,
-          paymentIntentId: paymentIntent.id 
+          paymentIntentId: paymentIntent.id,
+          status: paymentIntent.status,
         });
       } catch (error) {
         console.error('Error creating PaymentIntent:', error);
-        return res.status(500).json({ 
+        return res.status(500).json({
           error: 'An error occurred while processing your payment',
-          details: error
+          details: error.message
         });
       }
     }

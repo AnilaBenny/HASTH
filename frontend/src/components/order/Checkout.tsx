@@ -124,12 +124,16 @@ const CheckoutForm = () => {
   
     try {
       console.log(cardElement);
+
       
       const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
         type: 'card',
         card: cardElement,
       });
-  
+      if (!paymentMethod) {
+        alert('Please select a payment method');
+        return;
+      }
       if (paymentMethodError) {
         
           alert(paymentMethodError.message);
@@ -270,7 +274,18 @@ const CheckoutForm = () => {
               )
             }
             <div className="mt-4">
-            {paymentMethod === 'Stripe' && (<CardElement />)}
+            {paymentMethod === 'Stripe' && (
+  <div className="mt-4">
+    <CardElement options={{
+      style: {
+        base: {
+          fontSize: '16px',
+          color: '#424770',
+        },
+      },
+    }} />
+  </div>
+)}
 </div>
 
           </div>
