@@ -156,6 +156,10 @@ const handleShowOptions = (postId: string) => {
             <h2 className="text-2xl font-semibold text-gray-800">{products.length}</h2>
             <p className="text-gray-600">Products</p>
           </div>
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-800">{products.length}</h2>
+            <p className="text-gray-600">Orders</p>
+          </div>
           
         </div>
       </div>
@@ -177,6 +181,14 @@ const handleShowOptions = (postId: string) => {
         >
           Products
         </button>
+        {/* <button
+          onClick={() => setActiveTab('orders')}
+          className={`flex-1 py-3 ${
+            activeTab === 'orders' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'
+          }`}
+        >
+          Orders
+        </button> */}
       </div>
 
       <div className="p-6">

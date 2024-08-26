@@ -9,14 +9,14 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 
 const stripePromise = loadStripe('pk_test_51PrKKwJKak3nsLbf6XEzehMZVJUSBQ4E9QWdUPTNFxGj1vveGo0NHx95qmJFcy5kyQ8Za7wOt6wLO9o4UjK2dex100vPyO4esO');
 
-const CheckoutForm = () => {
-  const stripe = useStripe();
-  const elements = useElements();
+export default () => {
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state: any) => state.cart.cart);
   const user = useSelector((state: any) => state.user.user);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [useExistingAddress, setUseExistingAddress] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('');
 
@@ -33,9 +33,6 @@ const CheckoutForm = () => {
       document.body.appendChild(script);
     });
   };
-
-
- 
 
   const handleRazorpayPayment = async () => {
     const res = await loadRazorpayScript();
@@ -107,93 +104,13 @@ const CheckoutForm = () => {
     paymentObject.open();
   };
 
-  const handleStripePayment = async () => {
-  
-  
-    if (!stripe || !elements) {
-      alert('Stripe has not loaded. Please try again.');
-      return;
-    }
-  
-    // Get the card element from Stripe Elements
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      alert('Card element not found. Please try again.');
-      return;
-    }
-  
-    try {
-      console.log(cardElement);
-
-      
-      const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
-        card: cardElement,
-      });
-      if (!paymentMethod) {
-        alert('Please select a payment method');
-        return;
-      }
-      if (paymentMethodError) {
-        
-          alert(paymentMethodError.message);
-        
-        return;
-      }
-  
-      // Send the payment method to your server to create a payment intent
-      const response = await axiosInstance.post('/api/auth/order/createOnlineOrder', {
-        amount: cart.totalPrice * 100, // Amount in cents or smallest currency unit
-        currency: 'INR',
-        paymentMethod: 'Stripe',
-        paymentMethodId: paymentMethod.id, 
-      });
-  
-      // Confirm the payment on the client-side with the client secret
-      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
-        response.data.clientSecret,
-        {
-          payment_method: paymentMethod.id,
-        }
-      );
-  
-      if (confirmError) {
-        throw new Error(confirmError.message);
-      }
-  
-      if (!paymentIntent || paymentIntent.status !== 'succeeded') {
-        throw new Error('Payment failed');
-      }
-  
-      // Finalize the order and clear the cart
-      const orderResponse = await axiosInstance.post('/api/auth/order', {
-        cart,
-        paymentData: { id: paymentIntent.id },
-        paymentMethod: 'Stripe',
-      });
-  
-      if (orderResponse.status === 200) {
-        dispatch(clearCart());
-        navigate('/order-confirmation', { state: { order: orderResponse.data.data } });
-      } else {
-        throw new Error('Order creation failed');
-      }
-    } catch (error) {
-      console.error('Error during payment processing:', error);
-      alert(`An error occurred: ${error instanceof Error ? error.message : 'Please try again.'}`);
-    }
-  };
-  
-  
-  
-
 
   const handleSubmit = async () => {
 
     if (paymentMethod === 'Razorpay') {
        handleRazorpayPayment();
-    }else if(paymentMethod==='Stripe'){
-      handleStripePayment();
+    }else if (paymentMethod === 'Stripe') {
+      setIsModalOpen(true);
     }
   };
   
@@ -273,20 +190,31 @@ const CheckoutForm = () => {
                 <HandlePayPal cart={cart}/>
               )
             }
-            <div className="mt-4">
-            {paymentMethod === 'Stripe' && (
-  <div className="mt-4">
-    <CardElement options={{
-      style: {
-        base: {
-          fontSize: '16px',
-          color: '#424770',
-        },
-      },
-    }} />
+{paymentMethod === 'Stripe' && isModalOpen && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Stripe Payment</h2>
+        <button
+          onClick={() => setIsModalOpen(false)}
+          className="text-gray-400 hover:text-gray-600"
+        >
+          &times;
+        </button>
+      </div>
+      <Elements stripe={stripePromise}>
+        <PaymentForm
+          cart={cart}
+          user={user}
+          dispatch={dispatch}
+          navigate={navigate}
+          closeModal={() => setIsModalOpen(false)}
+        />
+      </Elements>
+    </div>
   </div>
 )}
-</div>
+
 
           </div>
         </div>
@@ -303,8 +231,103 @@ const CheckoutForm = () => {
     </div>
   );
 };
-export default () => (
-  <Elements stripe={stripePromise}>
-    <CheckoutForm />
-  </Elements>
-);
+
+const PaymentForm = ({ cart, user, dispatch, navigate }: any) => {
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const handleStripePayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    if (!stripe || !elements) {
+      alert('Stripe has not loaded. Please try again.');
+      return;
+    }
+
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      alert('Card element not found. Please try again.');
+      return;
+    }
+
+    try {
+      const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
+      });
+
+      if (paymentMethodError) {
+        alert(paymentMethodError.message);
+        return;
+      }
+
+      const response = await axiosInstance.post('/api/auth/order/createOnlineOrder', {
+        amount: cart.totalPrice,
+        currency: 'USD',
+        paymentMethod: 'Stripe',
+        paymentMethodId: paymentMethod.id,
+      });
+console.log(response,'....stripjb');
+let paymentIntent=response.data.paymentIntent;
+if (paymentIntent.status === 'requires_confirmation' || paymentIntent.status === 'requires_action') {
+      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
+        response.data.clientSecret,
+        {
+          payment_method: paymentMethod.id,
+        }
+      );
+
+      if (confirmError) {
+        throw new Error(confirmError.message);
+      }
+    }
+
+      if (paymentIntent && paymentIntent.status === 'succeeded') {
+        const orderResponse = await axiosInstance.post('/api/auth/order', {
+          cart,
+          paymentData: { id: paymentIntent.id },
+          paymentMethod: 'Stripe',
+        });
+
+        if (orderResponse.status === 200) {
+          dispatch(clearCart());
+          navigate('/order-confirmation', { state: { order: orderResponse.data.data } });
+        } else {
+          throw new Error('Order creation failed');
+        }
+      } else {
+        throw new Error('Payment failed');
+      }
+    } catch (error) {
+      console.error('Error during payment processing:', error);
+      alert(`An error occurred: ${error instanceof Error ? error.message : 'Please try again.'}`);
+    }
+  };
+
+  return (
+    <form onSubmit={handleStripePayment}>
+      <div className="mt-4">
+        <CardElement
+          options={{
+            style: {
+              base: {
+                fontSize: '16px',
+                color: '#424770',
+                '::placeholder': {
+                  color: '#aab7c4',
+                },
+              },
+              invalid: {
+                color: '#9e2146',
+              },
+            },
+          }}
+        />
+      </div>
+      <button type="submit" className="bg-green-500 text-white py-2 px-4 rounded mt-4">
+        Pay with Stripe
+      </button>
+    </form>
+  );
+};
+

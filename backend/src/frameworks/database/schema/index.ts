@@ -6,6 +6,7 @@ import { Report } from "./reportSchema";
 import { Product } from "./productSchema";
 import {Cart} from './cartSchema';
 import {Order} from './orderSchema';
+import { RealTimeChat } from "./RealTimeChatSchema";
 
 interface DatabaseSchemaType {
   User: typeof User;
@@ -16,6 +17,7 @@ interface DatabaseSchemaType {
   Product:typeof Product;
   Cart:typeof Cart;
   Order:typeof Order;
+  RealTimeChat:typeof RealTimeChat;
 }
 
 const databaseSchema: DatabaseSchemaType = {
@@ -26,7 +28,8 @@ const databaseSchema: DatabaseSchemaType = {
   Report,
   Product,
   Cart,
-  Order
+  Order,
+  RealTimeChat
 };
 
 export default databaseSchema;

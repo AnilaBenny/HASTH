@@ -719,6 +719,34 @@ export default  {
       return { status: false, error: error }; 
     }
     },
+  sendMesseges:async(data:any)=>{
+      try {
+        const { content,
+          recieverId,
+          senderId,
+          type,
+          converstationId
+        } = data
+  
+        const message = new databaseSchema.RealTimeChat({
+          converstationId: converstationId,
+          content: content,
+          senderId: senderId,
+          receiverId: recieverId,
+          type: type,
+        })
+        const responce = await message.save()
+        if (responce) {
+          return { status: true, data: data }
+        } else {
+          return { status: true, message: "Message failed..!" }
+        }
+  
+      } catch (error) {
+        console.log(error);
+        return { status: true, message: `something went wrong failed ${error}` }
+      }
+    }
     
 
 };

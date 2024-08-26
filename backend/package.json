@@ -55,9 +55,12 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "razorpay": "^2.9.4",
+    "redis": "^4.7.0",
     "redux-persist": "^6.0.0",
     "server": "file:",
     "sharp": "^0.33.5",
+    "socket.io": "^4.7.5",
+    "socket.io-redis": "^6.1.1",
     "stripe": "^16.8.0",
     "winston": "^3.14.2"
   }

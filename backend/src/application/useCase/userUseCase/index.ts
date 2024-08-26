@@ -24,6 +24,7 @@ import pinCommentUseCase from "./pinCommentUseCase";
 import addtocartUseCase from './addtocartUseCase';
 import deletecartItemUseCase from "./deletecartItemUseCase";
 import orderUseCase from "./orderUseCase";
+import sendMessegesUseCase from './sendMessagesUseCase';
 export{
     userRegistration,
     loginUseCase,
@@ -50,7 +51,8 @@ export{
     pinCommentUseCase,
     addtocartUseCase,
     deletecartItemUseCase,
-    orderUseCase
+    orderUseCase,
+    sendMessegesUseCase
     
 
 }

@@ -4,7 +4,7 @@ import { userRegistration,otpVerification ,forgotPasswordUseCase,loginUseCase,up
          getPostUseCase,likedUseCase,commentCreationUseCase,reportUseCase,productCreationUseCase,
          getCreatorUseCase,getProductsUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase,
          productEditUseCase,commentReplyUseCase,pinCommentUseCase,addtocartUseCase,deletecartItemUseCase,
-         orderUseCase
+         orderUseCase,sendMessegesUseCase
        } from "../../application/useCase"
 import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,verifyCreativeUseCase,getallReportUseCase} from "../../application/useCase/adminUseCase"
 
@@ -41,7 +41,8 @@ const useCase:any={
     pinCommentUseCase:pinCommentUseCase,
     addtocartUseCase:addtocartUseCase,
     deletecartItemUseCase:deletecartItemUseCase,
-    orderUseCase:orderUseCase
+    orderUseCase:orderUseCase,
+    sendMessegesUseCase:sendMessegesUseCase
 
 }
 const respository:any={

@@ -5,7 +5,7 @@ import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import './Navbar.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectIsUserAuthenticated, clearUser } from '../../store/slices/userSlice';
-import { MdShoppingCart, MdFavoriteBorder, MdPerson } from 'react-icons/md';
+import { MdShoppingCart,MdChat, MdPerson } from 'react-icons/md';
 const Navbar = () => {
   const [navOpen, setNavOpen] = useState(false);
   const dispatch = useDispatch();
@@ -57,6 +57,11 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
+            <Link to="/orders" className="btn2">
+              <span>Orders</span>
+            </Link>
+          </li>
+          <li>
             <Link to="/blogs" className="btn2">
               <span>Blogs</span>
             </Link>
@@ -79,6 +84,11 @@ const Navbar = () => {
           </li>
           <li>
             <Link to="/" className="btn2">
+              <span>Orders</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/" className="btn2">
               <span>Blogs</span>
             </Link>
           </li></>
@@ -92,8 +102,9 @@ const Navbar = () => {
             <Link to="/cart" className="btn2">
               <MdShoppingCart className="text-2xl" title="Cart" />
             </Link>
-            <Link to="/wishlist" className="btn2">
-              <MdFavoriteBorder className="text-2xl" title="Wishlist" />
+            <Link to="/chat" className="btn2">
+            <MdChat className="text-2xl text-black-500 hover:text-blue-700" title="Chat" />
+
             </Link>
             <Link to="/userProfile" className="btn2">
               <MdPerson className="text-2xl" title="Profile" />
@@ -139,6 +150,9 @@ const Navbar = () => {
           </Link>
           <Link to="/products" className="btn2" onClick={() => setNavOpen(false)}>
             <span>Products</span>
+          </Link>
+          <Link to="/orders" className="btn2" onClick={() => setNavOpen(false)}>
+            <span>Orders</span>
           </Link>
           <Link to="/blogs" className="btn2" onClick={() => setNavOpen(false)}>
             <span>Blogs</span>
