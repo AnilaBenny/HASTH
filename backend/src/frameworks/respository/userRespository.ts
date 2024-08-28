@@ -719,6 +719,10 @@ export default  {
       return { status: false, error: error }; 
     }
     },
+  allorderbyuser:async(userId:any)=>{
+    const orders=await databaseSchema.Order.find({userId:userId})
+    return {status:true,data:orders}
+    },
   sendMesseges:async(data:any)=>{
       try {
         const { content,
@@ -746,7 +750,137 @@ export default  {
         console.log(error);
         return { status: true, message: `something went wrong failed ${error}` }
       }
-    }
+    },
+  getConversation: async (data: any) => {
+      try {
+        const { id, role } = data;
+        let conversations: any;
+    
+      
+        if (role === 'user') {
+          conversations = await databaseSchema.Conversation.find({ "members.userId": id });
+          const creativeConversations: any = [];
+    
+          for (let i = 0; i < conversations.length; i++) {
+            const conversation = conversations[i];
+            const memberIds = conversation.members.map((member: any) => member.creativeId);
+      
+           
+            const receiverId = memberIds.find((memberId: string) => memberId !== id);
+      
+            const creative = await databaseSchema.User.findById(receiverId);
+      
+            const creativeConversation = {
+              creative: creative,
+              conversation: conversation,
+            };
+      
+            creativeConversations.push(creativeConversation);
+          }
+      
+          if (creativeConversations.length > 0) {
+            return { status: true, data: creativeConversations };
+          } else {
+            return { status: true, data: [] };
+          }
+        } else {
+          conversations = await databaseSchema.Conversation.find({ "members.creativeId": id });
+          const userConversations: any = [];
+      for (let i = 0; i < conversations.length; i++) {
+
+        const userId = conversations[i].members[0].userId;
+
+
+        const user: any = await databaseSchema.User.findById(userId);
+        console.log(userId,"THIS IS USER ",i);
+        
+        if(user){
+          const userConversation = {
+            user: user,
+            conversation: conversations[i]
+          };
+          userConversations.push(userConversation);
+        }
+       
+      }
+
+      if (userConversations.length > 0) {
+
+        return { status: true, data: userConversations }
+
+      }
+
+      else {
+        return { status: true, data: [] }
+      }
+        }
+    
+     
+      } catch (error) {
+        console.error("An error occurred while fetching conversations:", error);
+        return { status: false, message: "An error occurred while fetching conversations" };
+      }
+    },
+    
+    createConversation: async (data: any) => {
+      try {
+        const { senderId, recieverId } = data;
+   
+  
+  
+   
+        const existingConversation = await databaseSchema.Conversation.findOne({
+          members: {
+            $elemMatch: {
+              creativeId: recieverId,
+              userId: senderId
+            }
+          }
+        });
+  
+        if (existingConversation) {
+          return { status: true, data: existingConversation };
+        } else {
+
+          const conversation = new databaseSchema.Conversation({
+            members: [
+              {
+                creativeId: recieverId,
+                userId: senderId
+              }
+            ]
+          });
+  
+          const response = await conversation.save();
+  
+        
+  
+          if (response) {
+            return { status: true, data: response };
+  
+          } else {
+            return { status: false, message: "No conversation created..!" };
+          }
+        }
+      } catch (error) {
+        return { status: false, message: `Something went wrong: ${error}` };
+      }
+    },
+    getConverstationById: async (data: any) => {
+      try {
+        const { id } = data
+        const response = await databaseSchema.RealTimeChat.find({ converstationId: id })
+  
+        if (response) {
+          return { status: true, data: response }
+        } else {
+          return { status: false, message: "Messages not found ..!" }
+        }
+      } catch (error) {
+        console.log(error);
+        return { status: false, message: `Messages not found ..!${error}` }
+      }
+    },
     
 
 };

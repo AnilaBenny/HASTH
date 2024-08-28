@@ -25,6 +25,10 @@ import addtocartUseCase from './addtocartUseCase';
 import deletecartItemUseCase from "./deletecartItemUseCase";
 import orderUseCase from "./orderUseCase";
 import sendMessegesUseCase from './sendMessagesUseCase';
+import allorderUseCase from "./allorderUseCase";
+import createConverstationUseCase from "./createConverstationUseCase";
+import getConverstationsUseCase from './getConverstationsUseCase';
+import getConverstationByIdUseCase from './getConverstationByIdUseCase';
 export{
     userRegistration,
     loginUseCase,
@@ -52,7 +56,11 @@ export{
     addtocartUseCase,
     deletecartItemUseCase,
     orderUseCase,
-    sendMessegesUseCase
+    sendMessegesUseCase,
+    allorderUseCase,
+    createConverstationUseCase,
+    getConverstationsUseCase,
+    getConverstationByIdUseCase
     
 
 }

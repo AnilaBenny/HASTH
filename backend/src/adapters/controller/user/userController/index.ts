@@ -26,6 +26,11 @@ import addtocartController from './addtocartController';
 import removecartitemController from './removecartitemController';
 import razorpayController from './razorpayController';
 import orderController from './orderController';
+import allorderController from './allorderController';
+import allMessagesController from './allMessagesController';
+import getConversationsController from './getConversationsController';
+import createConverstationController from './createConverstationController';
+import getConverstationByIdController from './getConverstationByIdController'
 export default (dependencies:any)=>{
 return{
     registrationController:registrationController(dependencies),
@@ -55,6 +60,11 @@ return{
     addtocartController:addtocartController(dependencies),
     removecartitemController:removecartitemController(dependencies),
     razorpayController:razorpayController(),
-    orderController:orderController(dependencies)
+    orderController:orderController(dependencies),
+    allorderController:allorderController(dependencies),
+    allMessagesController:allMessagesController(dependencies),
+    getConversationsController:getConversationsController(dependencies),
+    createConverstationController:createConverstationController(dependencies),
+    getConverstationByIdController:getConverstationByIdController(dependencies)
 }
 }

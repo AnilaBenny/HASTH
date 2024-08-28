@@ -254,8 +254,13 @@ const Post: React.FC = () => {
     };
 
     const handleSingleUser = (user: any) => {
+        
+        
         navigate('/userPage', { state: user });
     };
+    const handleSelfPage=()=>{
+        navigate('/userProfile')
+    }
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -384,7 +389,7 @@ const Post: React.FC = () => {
                     ) : (
                         posts.map(post => (
                             <div key={post._id} className="bg-white p-6 rounded-lg shadow-lg mb-6" >
-                                <div className="flex items-center mb-6" onClick={() => handleSingleUser(post.userId)}>
+                                <div className="flex items-center mb-6 cursor-pointer" onClick={() => (post.userId!==storedUser._id)?handleSingleUser(post.userId):handleSelfPage()}>
                                     <img
                                         src={`http://localhost:8080/src/uploads/${post.userId?.image}`}
                                         alt="User Avatar"

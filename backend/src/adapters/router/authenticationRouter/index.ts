@@ -11,7 +11,9 @@ const {
   updateProfileController,googleRegisterController,refreshTokenController,addInnovationController,getPostController,
   likedController,commentController,reportController,addProductController,getCreatorsController,getProductsController,
   editPostController,editProductController,deletePostController,statusProductController,commentReplyController,
-  pinCommentController,addtocartController,removecartitemController,razorpayController,orderController
+  pinCommentController,addtocartController,removecartitemController,razorpayController,orderController,
+  allorderController,allMessagesController,getConversationsController,createConverstationController,
+  getConverstationByIdController
 }=userController(dependencies);
 
 
@@ -44,6 +46,12 @@ const {
   router.post('/removecartitem',removecartitemController);
   router.post('/order/createOnlineOrder',razorpayController);
   router.post('/order',orderController);
+  router.get('/allorders/:userId',allorderController);
+  router.get('/messages/:conversationId',allMessagesController);
+  router.post('/createConverstation', createConverstationController)
+  router.get('/getconversations',getConversationsController);
+  router.get('/getConverstationById',getConverstationByIdController);
+  
   
 
  

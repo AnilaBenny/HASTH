@@ -4,7 +4,8 @@ import { userRegistration,otpVerification ,forgotPasswordUseCase,loginUseCase,up
          getPostUseCase,likedUseCase,commentCreationUseCase,reportUseCase,productCreationUseCase,
          getCreatorUseCase,getProductsUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase,
          productEditUseCase,commentReplyUseCase,pinCommentUseCase,addtocartUseCase,deletecartItemUseCase,
-         orderUseCase,sendMessegesUseCase
+         orderUseCase,sendMessegesUseCase,allorderUseCase,createConverstationUseCase,getConverstationsUseCase,
+         getConverstationByIdUseCase
        } from "../../application/useCase"
 import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,verifyCreativeUseCase,getallReportUseCase} from "../../application/useCase/adminUseCase"
 
@@ -42,7 +43,11 @@ const useCase:any={
     addtocartUseCase:addtocartUseCase,
     deletecartItemUseCase:deletecartItemUseCase,
     orderUseCase:orderUseCase,
-    sendMessegesUseCase:sendMessegesUseCase
+    sendMessegesUseCase:sendMessegesUseCase,
+    allorderUseCase:allorderUseCase,
+    createConverstationUseCase:createConverstationUseCase,
+    getConverstationsUseCase:getConverstationsUseCase,
+    getConverstationByIdUseCase:getConverstationByIdUseCase
 
 }
 const respository:any={

@@ -1,14 +1,12 @@
-
-
-
 export default function sendMessegesUseCase(dependencies: any) {
-    const { userRepositery } = dependencies.repositery;
+    const { userRespository}=dependencies.respository;
 
     const executeFunction = async (data: any) => {
+        console.log(data);
+        
 
-
-        const response = await userRepositery.sendMesseges(data)
-        console.log(response, "use ressssop");
+        const response = await userRespository.sendMesseges(data)
+  
 
         if (response.status) {
             return { status: true, data: response.data };

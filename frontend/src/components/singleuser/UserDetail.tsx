@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { FaEllipsisV } from 'react-icons/fa';
+import { FaEllipsisV,FaComments } from 'react-icons/fa';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import PostActions from '../Post/postActions';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useSocket } from '../RealTimeChat/socket';
+import { Socket } from 'socket.io-client';
+import { useSelector } from 'react-redux';
 
 interface Post {
   _id: string;
@@ -33,20 +36,32 @@ interface Product {
 }
 
 export default () => {
+const location = useLocation();
+const user = location.state
+console.log('user',user);
+const currentUser=useSelector((state:any)=>state.user.user)
+
+if (!user) {
+  return <div>No user data available</div>;
+}
   useEffect(() => {
     fetchPosts();
     fetchProducts();
   }, []);
 
-  const user = useSelector((state: any) => state.user.user);
+
+
   const [posts, setPosts] = useState<Post[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [activeTab, setActiveTab] = useState<'posts' | 'products'>('posts');
+  const navigate=useNavigate()
 
   const fetchPosts = async () => {
     try {
       const response = await axiosInstance.get('/api/auth/posts');
-      setPosts(response.data.data);
+      const filterData=response.data.data.filter((val:any)=>val.userId._id===user._id)
+      setPosts(filterData);
+
     } catch (error) {
       console.log('Error fetching posts:', error);
     }
@@ -55,7 +70,8 @@ export default () => {
   const fetchProducts = async () => {
     try {
       const response = await axiosInstance.get('/api/auth/products');
-      setProducts(response.data.data);
+      const filterData=response.data.data.filter((val:any)=>val.userId._id===user._id)
+      setProducts(filterData);
     } catch (error) {
       console.log('Error fetching products:', error);
     }
@@ -67,6 +83,29 @@ export default () => {
   const handleReportClick = () => {
     setShowDropdown(!showDropdown);
   };
+
+  const handleChatClick = async() => {
+    try{
+        const data = {
+          senderId: currentUser._id,
+          recieverId: user?._id,
+        };
+  
+        const response = await axiosInstance.post(
+          "/api/auth/createConverstation",
+          data
+        );
+        if (response.status) {
+         
+  
+          toast.success("conversation Created");
+          navigate(`/chat`);
+        }
+      } catch (error) {}
+
+
+  };
+  
 
   const handleSelectReason = async (reason: string) => {
     setSelectedReason(reason);
@@ -141,6 +180,9 @@ export default () => {
               </ul>
             </div>
           )}
+           <button onClick={handleChatClick} className="ms-5 text-blue-500 hover:text-blue-700 text-2xl">
+            <FaComments />
+          </button>
         </div>
         <p className="text-gray-600">{user.email}</p>
         <p className="text-gray-600 mt-2">Skills: {user.skills}</p>

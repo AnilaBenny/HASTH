@@ -37,6 +37,8 @@ import UserDetailPage from './pages/UserDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPages from './pages/OrderConfirmationPages';
+import OrderPage from './pages/OrderPage'
+import ChatPage from './pages/ChatPage';
 
 const userRoutes = (
   <Route path='/' element={<App />}>
@@ -60,6 +62,8 @@ const userRoutes = (
       <Route path='cart' element={<CartPage/>}/>
       <Route path='checkout' element={<CheckoutPage/>}/>
       <Route path='order-confirmation' element={<OrderConfirmationPages/>}/>
+      <Route path='orders' element={<OrderPage/>}/>
+      <Route path='chat' element={<ChatPage/>}/>
     </Route>
   </Route>
 )
