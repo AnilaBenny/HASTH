@@ -39,6 +39,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPages from './pages/OrderConfirmationPages';
 import OrderPage from './pages/OrderPage'
 import ChatPage from './pages/ChatPage';
+import VideoCall from './pages/VideoCall';
 
 const userRoutes = (
   <Route path='/' element={<App />}>
@@ -64,6 +65,7 @@ const userRoutes = (
       <Route path='order-confirmation' element={<OrderConfirmationPages/>}/>
       <Route path='orders' element={<OrderPage/>}/>
       <Route path='chat' element={<ChatPage/>}/>
+      <Route path='/videoCall/:roomId' element={<VideoCall/>} ></Route>
     </Route>
   </Route>
 )

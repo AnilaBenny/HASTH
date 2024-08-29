@@ -16,6 +16,7 @@ import { Server, Socket } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { log } from 'console';
+import { Conversation } from './frameworks/database/schema/conversationSchema';
 const socketIORedis = require('socket.io-redis');
 dotenv.config();
 
@@ -203,7 +204,44 @@ io.on("connection",(socket:Socket)=>{
       }
  
     
-  })
+  });
+  socket.on('videoCall', async (data, callback) => {
+    try {
+      const { creativeId, userId, roomId, userName, creativeName } = data;
+  
+      const sender = await getUser(userId);
+      const recipient = await getUser(creativeId);
+  
+      if (recipient && sender) {
+        io.to(recipient.socketId).emit('incomingCall', { 
+          roomId, 
+          caller: userName 
+        });
+  
+        io.to(sender.socketId).emit('callInitiated', { 
+          roomId, 
+          recipient: creativeName 
+        });
+  
+        if (callback) callback({ success: true });
+      } else {
+        if (callback) callback({ success: false, message: 'User or recipient not found' });
+      }
+    } catch (error) {
+      console.error('Error handling video call:', error);
+      if (callback) callback({ success: false, message: 'Internal server error' });
+    }
+  });
+  
+  
+  socket.on('rejectCall', ({ roomId, rejectedBy }) => {
+    const caller = users.find((user:any) => user.userId !== rejectedBy);
+    if (caller) {
+      io.to(caller.socketId).emit('callRejected', { roomId, rejectedBy });
+    }
+  });
+  
+  
 
 socket.on('disconnect', () => {
     users = users.filter((user:any) => user.socketId !== socket.id);

@@ -7,6 +7,8 @@ import EmojiPicker from 'emoji-picker-react';
 import 'react-h5-audio-player/lib/styles.css';
 import { useSocket } from './socket';
 import { Socket } from 'socket.io-client';
+import VideoCall from './VideoCall';
+import { useNavigate } from 'react-router-dom';
 
 interface Message {
   senderId: string;
@@ -45,7 +47,9 @@ const QuickChat: React.FC = () => {
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
+  const [incomingCall,setIncomingCall]=useState(null);
+  const [isCallPending, setIsCallPending] = useState(false);
+  
   useEffect(() => {
     fetchConversations();
   }, [user.user._id, user.user.role]);
@@ -287,6 +291,72 @@ const sendVoiceMessage = () => {
     reader.readAsDataURL(audioData);
   }
 };
+const navigate=useNavigate()
+const initiateVideoCall = () => {
+  if (!selectedConversation || !socket) return;
+
+  let roomId = "";
+  const chars = "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP";
+  const maxPos = chars.length;
+  const len = 6;
+  for (let i = 0; i < len; i++) {
+    roomId += chars.charAt(Math.floor(Math.random() * maxPos));
+  }
+
+  setIsCallPending(true);
+
+  socket.emit("videoCall", {
+    userId: user.user._id,
+    creativeId: selectedConversation.creative._id,
+    roomId: roomId,
+    userName:user.user.name,
+    creativeName:selectedConversation.creative.name
+  }, (response: { success: boolean; message?: string }) => {
+    if (response.success) {
+      console.log("Waiting for recipient to accept the call...");
+    } else {
+      console.error("Failed to initiate video call:", response.message);
+      setIsCallPending(false);
+    }
+  });
+
+  socket.on('callAccepted', ({ roomId }) => {
+    setIsCallPending(false);
+    navigate(`/videoCall/${roomId}`);
+  });
+
+ 
+  socket.on('callRejected', () => {
+    setIsCallPending(false);
+    console.log("Call was rejected");
+
+  });
+};
+useEffect(() => {
+  if (socket) {
+    socket.on('incomingCall', (data: { roomId: string; caller: string }) => {
+      setIncomingCall(data);
+    });
+
+    return () => {
+      socket.off('incomingCall');
+    };
+  }
+}, [socket]);
+const acceptCall = () => {
+  if (incomingCall) {
+    navigate(`/videoCall/${incomingCall.roomId}`);
+    setIncomingCall(null);
+  }
+};
+
+const rejectCall = () => {
+  if (incomingCall && socket) {
+    socket.emit('rejectCall', { roomId: incomingCall.roomId, rejectedBy: user.user.name });
+    setIncomingCall(null);
+  }
+};
+
   return (
     <div className="bg-gray-100 rounded-2xl flex justify-evenly">
       {/* Conversation List */}
@@ -336,7 +406,7 @@ const sendVoiceMessage = () => {
                 {user.user.role === 'user' ? selectedConversation.creative.name : selectedConversation.user.name}
               </h3>
               </div>
-              <VideoCameraIcon className="w-6 h-6 me-3 text-gray-600 cursor-pointer hover:text-blue-500 " />
+              <VideoCameraIcon className="w-6 h-6 me-3 text-gray-600 cursor-pointer hover:text-blue-500 " onClick={initiateVideoCall} />
             </div>
 
        
@@ -381,6 +451,17 @@ const sendVoiceMessage = () => {
                         </button>
                       </div>
                     )}
+                    {incomingCall && (
+  <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="bg-white p-4 rounded-lg shadow-lg">
+      <p className="mb-4">Incoming call from {incomingCall.caller}</p>
+      <div className="flex justify-around">
+        <button onClick={acceptCall} className="bg-green-500 text-white px-4 py-2 rounded">Accept</button>
+        <button onClick={rejectCall} className="bg-red-500 text-white px-4 py-2 rounded">Reject</button>
+      </div>
+    </div>
+  </div>
+)}
 
             {/* Message Input */}
             <div className="bg-white p-4 border-t shadow-sm flex items-center">
