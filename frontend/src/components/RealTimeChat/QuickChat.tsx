@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { format } from 'date-fns';
-import { PhotoIcon, XMarkIcon, PaperAirplaneIcon, MicrophoneIcon, TrashIcon, PauseIcon, PlayIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, XMarkIcon, PaperAirplaneIcon, MicrophoneIcon, TrashIcon, PauseIcon, PlayIcon,VideoCameraIcon  } from '@heroicons/react/24/outline';
 import EmojiPicker from 'emoji-picker-react';
-import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import { useSocket } from './socket';
 import { Socket } from 'socket.io-client';
@@ -289,43 +288,45 @@ const sendVoiceMessage = () => {
   }
 };
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="bg-gray-100 rounded-2xl flex justify-evenly">
       {/* Conversation List */}
-      <div className="w-1/3 bg-white border-r shadow-lg">
-        <h2 className="text-2xl font-bold p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">Welcome to chat room</h2>
-        <div className="overflow-y-auto h-[calc(100vh-80px)]">
-          {conversations.map((conv) => (
-            <div
-              key={conv.conversation._id}
-              className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors duration-150 ${
-                selectedConversation?.conversation._id === conv.conversation._id ? 'bg-blue-50' : ''
-              }`}
-              onClick={() => handleConversationSelect(conv)}
-            >
-              <div className="flex items-center">
-                <img
-                  src={`http://localhost:8080/src/uploads/${user.user.role === 'user' ? conv.creative.image : conv.user.image}`}
-                  alt={user.user.role === 'user' ? conv.creative.name : conv.user.name}
-                  className="w-12 h-12 rounded-full mr-4 object-cover border-2 border-blue-200"
-                />
-                <div>
-                  <p className="font-semibold text-gray-800">{user.user.role === 'user' ? conv.creative.name : conv.user.name}</p>
-                  <p className="text-sm text-gray-500 truncate">
-                    {conv.conversation.lastMessage?.content || 'Start a conversation'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
+      <div className="w-1/3 h-1/3 bg-white border-r shadow-lg">
+  <h2 className="text-2xl font-bold p-6 bg-gradient-to-r from-blue-300 to-blue-600 text-white rounded-t-2xl">
+    Welcome to chat room
+  </h2>
+  <div className="overflow-y-auto p-2 ">
+    {conversations.map((conv) => (
+      <div
+        key={conv.conversation._id}
+        className={`flex items-center p-3 my-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors duration-150 shadow-sm ${
+          selectedConversation?.conversation._id === conv.conversation._id ? 'bg-blue-50 border border-blue-200' : 'border border-transparent'
+        }`}
+        onClick={() => handleConversationSelect(conv)}
+      >
+        <img
+          src={`http://localhost:8080/src/uploads/${user.user.role === 'user' ? conv.creative.image : conv.user.image}`}
+          alt={user.user.role === 'user' ? conv.creative.name : conv.user.name}
+          className="w-10 h-10 rounded-full object-cover border-2 border-blue-200 mr-3"
+        />
+        <div className="flex-1">
+          <p className="font-semibold text-gray-800">{user.user.role === 'user' ? conv.creative.name : conv.user.name}</p>
+          <p className="text-sm text-gray-500 truncate">
+            {conv.conversation.lastMessage?.content || 'Start a conversation'}
+          </p>
         </div>
       </div>
+    ))}
+  </div>
+</div>
+
 
       
-      <div className="flex-1 flex flex-col bg-gray-50">
+      <div className="bg-gray-50">
         {selectedConversation ? (
           <>
          
-            <div className="bg-white p-4 border-b shadow-sm flex items-center">
+            <div className="bg-white p-4 border-b shadow-sm flex justify-between">
+              <div className='flex items-center  ms-3'>
               <img
                 src={`http://localhost:8080/src/uploads/${user.user.role === 'user' ? selectedConversation.creative.image : selectedConversation.user.image}`}
                 alt={user.user.role === 'user' ? selectedConversation.creative.name : selectedConversation.user.name}
@@ -334,33 +335,42 @@ const sendVoiceMessage = () => {
               <h3 className="text-xl font-semibold text-gray-800">
                 {user.user.role === 'user' ? selectedConversation.creative.name : selectedConversation.user.name}
               </h3>
+              </div>
+              <VideoCameraIcon className="w-6 h-6 me-3 text-gray-600 cursor-pointer hover:text-blue-500 " />
             </div>
 
        
-            <div className="flex-1 overflow-y-auto p-6">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex ${message.senderId === user.user._id ? 'justify-end' : 'justify-start'}`}
-                  ref={messageRef}
-                >
-                  <div
-                    className={`p-4 rounded-lg shadow-sm mb-4 max-w-xs ${
-                      message.senderId === user.user._id ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
-                    }`}
-                  >
-                    {message.type === 'text' && <p>{message.content}</p>}
-                    {message.type === 'image' && (
-                      <img src={message.content} alt="Image" className="rounded-lg max-w-full max-h-64 object-cover" />
-                    )} 
-                   {message.type === 'voice_note' && (
-                    
-                      <audio src={message.content} controls className="w-56 h-8" />
-                    
-                  )}
-
- 
-                    {imagePreview && (
+            <div className="ms-60 overflow-hidden ">
+  <div className="overflow-y-auto h-80 pr-2">
+    {messages.map((message, index) => (
+      <div
+        key={index}
+        className={`flex ${message.senderId === user.user._id ? 'justify-end' : 'justify-start'} mb-4`}
+        ref={messageRef}
+      >
+        <div
+          className={`relative p-4 rounded-xl shadow-lg max-w-xs ${
+            message.senderId === user.user._id ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'
+          }`}
+        >
+          {message.type === 'text' && <p>{message.content}</p>}
+          {message.type === 'image' && (
+            <img src={message.content} alt="Image" className="rounded-lg max-w-full max-h-64 object-cover mt-2" />
+          )}
+          {message.type === 'voice_note' && (
+            <audio src={message.content} controls className="w-56 h-8 mt-2 rounded">
+              Your browser does not support the audio element.
+            </audio>
+          )}
+          <p className="text-xs mt-2 text-gray-300 text-right">
+            {format(new Date(message.timestamp), 'p, MMM d')}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+{imagePreview && (
                       <div className="absolute bottom-16 left-4 bg-white p-2 border rounded-lg shadow-lg flex items-center">
                         <img src={imagePreview} alt="Preview" className="w-24 h-24 object-cover rounded-lg" />
                         <button
@@ -371,12 +381,6 @@ const sendVoiceMessage = () => {
                         </button>
                       </div>
                     )}
-                   
-                    <p className="text-xs mt-2 text-gray-500 text-right">{format(new Date(message.timestamp), 'p, MMM d')}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
 
             {/* Message Input */}
             <div className="bg-white p-4 border-t shadow-sm flex items-center">
