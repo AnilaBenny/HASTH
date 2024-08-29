@@ -30,6 +30,7 @@ import createConverstationUseCase from "./createConverstationUseCase";
 import getConverstationsUseCase from './getConverstationsUseCase';
 import getConverstationByIdUseCase from './getConverstationByIdUseCase';
 import sendImageUseCase from './sendImageUseCase';
+import sendAudioUseCase from './sendAudioUseCase';
 export{
     userRegistration,
     loginUseCase,
@@ -62,7 +63,8 @@ export{
     createConverstationUseCase,
     getConverstationsUseCase,
     getConverstationByIdUseCase,
-    sendImageUseCase
+    sendImageUseCase,
+    sendAudioUseCase
     
 
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { format } from 'date-fns';
-import { PhotoIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, XMarkIcon, PaperAirplaneIcon, MicrophoneIcon, TrashIcon, PauseIcon, PlayIcon } from '@heroicons/react/24/outline';
 import EmojiPicker from 'emoji-picker-react';
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
@@ -39,9 +39,13 @@ const QuickChat: React.FC = () => {
   const user = useSelector((state: any) => state.user);
   const messageRef = useRef<HTMLDivElement>(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [audioData, setAudioData] = useState<Blob | null>(null);
+  const [audioURL, setAudioURL] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     fetchConversations();
@@ -176,27 +180,112 @@ const QuickChat: React.FC = () => {
     setEmojiPickerOpen(false);
   };
 //audio
+
 const startRecording = async () => {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     try {
-      setIsRecording(true); 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setAudioStream(stream); 
+      setAudioStream(stream);
 
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
 
+      const chunks: BlobPart[] = [];
       mediaRecorder.ondataavailable = (event) => {
-        console.log("Data available:", event.data.size, event.data.type); 
-        setAudioData(new Blob([event.data], { type: 'audio/wav' })); 
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+        }
       };
 
-      mediaRecorder.start(); 
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        setAudioData(blob);
+        setAudioURL(URL.createObjectURL(blob));
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      startTimer();
     } catch (error) {
       console.error("Error accessing microphone:", error);
     }
-  } else {
-    console.error("getUserMedia is not supported in this browser");
+  }
+};
+
+const stopRecording = () => {
+  if (mediaRecorderRef.current && isRecording) {
+    mediaRecorderRef.current.stop();
+    setIsRecording(false);
+    setIsPaused(false);
+    stopTimer();
+    if (audioStream) {
+      audioStream.getTracks().forEach(track => track.stop());
+    }
+  }
+};
+
+const pauseRecording = () => {
+  if (mediaRecorderRef.current && isRecording && !isPaused) {
+    mediaRecorderRef.current.pause();
+    setIsPaused(true);
+    stopTimer();
+  }
+};
+
+const resumeRecording = () => {
+  if (mediaRecorderRef.current && isRecording && isPaused) {
+    mediaRecorderRef.current.resume();
+    setIsPaused(false);
+    startTimer();
+  }
+};
+
+const deleteRecording = () => {
+  setAudioData(null);
+  setAudioURL(null);
+  setRecordingDuration(0);
+};
+
+const startTimer = () => {
+  if (recordingIntervalRef.current) clearInterval(recordingIntervalRef.current);
+  recordingIntervalRef.current = setInterval(() => {
+    setRecordingDuration(prev => prev + 1);
+  }, 1000);
+};
+
+const stopTimer = () => {
+  if (recordingIntervalRef.current) {
+    clearInterval(recordingIntervalRef.current);
+  }
+};
+
+const formatDuration = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};
+
+const sendVoiceMessage = () => {
+  if (audioData && socket && selectedConversation) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64Audio = reader.result as string;
+      const newMessage: Message = {
+        senderId: user.user._id,
+        recieverId: user.user.role === 'user' ? selectedConversation.creative._id : selectedConversation.user._id,
+        content: base64Audio,
+        type: 'voice_note',
+        conversationId: selectedConversation.conversation._id,
+        timestamp: new Date().toISOString(),
+      };
+      
+      socket.emit('audioStream', newMessage, () => {
+       
+      });
+
+      deleteRecording();
+    };
+    reader.readAsDataURL(audioData);
   }
 };
   return (
@@ -263,7 +352,14 @@ const startRecording = async () => {
                     {message.type === 'text' && <p>{message.content}</p>}
                     {message.type === 'image' && (
                       <img src={message.content} alt="Image" className="rounded-lg max-w-full max-h-64 object-cover" />
-                    )}    
+                    )} 
+                   {message.type === 'voice_note' && (
+                    
+                      <audio src={message.content} controls className="w-56 h-8" />
+                    
+                  )}
+
+ 
                     {imagePreview && (
                       <div className="absolute bottom-16 left-4 bg-white p-2 border rounded-lg shadow-lg flex items-center">
                         <img src={imagePreview} alt="Preview" className="w-24 h-24 object-cover rounded-lg" />
@@ -275,7 +371,7 @@ const startRecording = async () => {
                         </button>
                       </div>
                     )}
-                    {message.type === 'voice_note' && <AudioPlayer src={message.content} />}
+                   
                     <p className="text-xs mt-2 text-gray-500 text-right">{format(new Date(message.timestamp), 'p, MMM d')}</p>
                   </div>
                 </div>
@@ -284,56 +380,77 @@ const startRecording = async () => {
 
             {/* Message Input */}
             <div className="bg-white p-4 border-t shadow-sm flex items-center">
-            <button onClick={startRecording}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 1a5 5 0 0 1 5 5v6a5 5 0 0 1-10 0V6a5 5 0 0 1 5-5z" />
-              <path d="M19 11v2a7 7 0 0 1-7 7 7 7 0 0 1-7-7v-2" />
-              <path d="M12 19v4" />
-            </svg>
+            {!isRecording && !audioURL && (
+          <button 
+            onClick={startRecording}
+            className="mr-2 p-2 rounded-full bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            <MicrophoneIcon className="w-5 h-5" />
           </button>
-              <button className="mr-2" onClick={toggleEmojiPicker}>
-                😊
+        )}
+        {isRecording && (
+          <div className="flex items-center mr-2">
+            <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse mr-2"></div>
+            <span className="text-red-500 font-medium">{formatDuration(recordingDuration)}</span>
+            {!isPaused ? (
+              <button onClick={pauseRecording} className="ml-2 text-gray-600 hover:text-gray-800">
+                <PauseIcon className="w-5 h-5" />
               </button>
-              <input
-                type="file"
-                id="fileInput"
-                className="hidden"
-                onChange={handleFileChange}
-                accept="image/*"
-              />
-              <label htmlFor="fileInput" className="cursor-pointer">
-                <PhotoIcon className="w-6 h-6 text-gray-500" />
-              </label>
-              <input
-                type="text"
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                placeholder="Type a message..."
-                className="flex-1 mx-2 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                onClick={imagePreview ? sendImage : sendMessage}
-                className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600"
-              >
-                <PaperAirplaneIcon className="w-6 h-6 transform rotate-90" />
+            ) : (
+              <button onClick={resumeRecording} className="ml-2 text-gray-600 hover:text-gray-800">
+                <PlayIcon className="w-5 h-5" />
               </button>
-              {emojiPickerOpen && (
-                <div className="absolute bottom-16 left-4">
-                  <EmojiPicker onEmojiClick={onEmojiClick} />
-                </div>
-              )}
-          
-            </div>
+            )}
+            <button onClick={stopRecording} className="ml-2 text-gray-600 hover:text-gray-800">
+              <XMarkIcon className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+        {audioURL && (
+          <div className="flex items-center mr-2">
+            <audio src={audioURL} controls className="w-32 h-8" />
+            <button onClick={deleteRecording} className="ml-2 text-red-500 hover:text-red-700">
+              <TrashIcon className="w-5 h-5" />
+            </button>
+            <button onClick={sendVoiceMessage} className="ml-2 text-blue-500 hover:text-blue-700">
+              <PaperAirplaneIcon className="w-5 h-5 transform rotate-90" />
+            </button>
+          </div>
+        )}
+        <button className="mr-2" onClick={toggleEmojiPicker}>
+          😊
+        </button>
+        <input
+          type="file"
+          id="fileInput"
+          className="hidden"
+          onChange={handleFileChange}
+          accept="image/*"
+        />
+        <label htmlFor="fileInput" className="cursor-pointer">
+          <PhotoIcon className="w-6 h-6 text-gray-500" />
+        </label>
+        <input
+          type="text"
+          value={messageInput}
+          onChange={(e) => setMessageInput(e.target.value)}
+          placeholder="Type a message..."
+          className="flex-1 mx-2 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          onClick={imagePreview ? sendImage : sendMessage}
+          className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600"
+        >
+          <PaperAirplaneIcon className="w-6 h-6 transform rotate-90" />
+        </button>
+        {emojiPickerOpen && (
+          <div className="absolute bottom-16 left-4">
+            <EmojiPicker onEmojiClick={onEmojiClick} />
+          </div>
+        )}
+     
+    </div>
+            
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center">

@@ -172,6 +172,38 @@ io.on("connection",(socket:Socket)=>{
         callback({ success: true, data:response.data });
       }
   });
+  socket.on('audioStream',async({senderId,recieverId,content,conversationId,type,timestamp},callback)=>{
+    const { sendAudioUseCase } = dependencies.useCase;
+    const data = {
+      content,
+      recieverId,
+      senderId,
+      type,
+      conversationId,
+      timestamp, 
+    };
+
+    const response = await sendAudioUseCase(dependencies).executeFunction(data);
+    if(response && response.status && response.data){
+      const recipient = getUser(recieverId);
+      const sender = getUser(senderId);
+      console.log(recipient,sender);
+      
+
+      if (recipient && sender) {
+        io.to(recipient.socketId).to(sender.socketId).emit('getMessage', data);
+      } else if (recipient) {
+        io.to(recipient.socketId).emit('getMessage', data);
+      } else if (sender) {
+        io.to(sender.socketId).emit('getMessage', data);
+      }
+      }
+      if (callback) {
+        callback({ success: true, data:response.data });
+      }
+ 
+    
+  })
 
 socket.on('disconnect', () => {
     users = users.filter((user:any) => user.socketId !== socket.id);

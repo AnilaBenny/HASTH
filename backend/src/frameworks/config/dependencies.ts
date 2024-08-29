@@ -5,7 +5,7 @@ import { userRegistration,otpVerification ,forgotPasswordUseCase,loginUseCase,up
          getCreatorUseCase,getProductsUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase,
          productEditUseCase,commentReplyUseCase,pinCommentUseCase,addtocartUseCase,deletecartItemUseCase,
          orderUseCase,sendMessegesUseCase,allorderUseCase,createConverstationUseCase,getConverstationsUseCase,
-         getConverstationByIdUseCase,sendImageUseCase
+         getConverstationByIdUseCase,sendImageUseCase,sendAudioUseCase
        } from "../../application/useCase"
 import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,verifyCreativeUseCase,getallReportUseCase} from "../../application/useCase/adminUseCase"
 
@@ -48,7 +48,8 @@ const useCase:any={
     createConverstationUseCase:createConverstationUseCase,
     getConverstationsUseCase:getConverstationsUseCase,
     getConverstationByIdUseCase:getConverstationByIdUseCase,
-    sendImageUseCase:sendImageUseCase
+    sendImageUseCase:sendImageUseCase,
+    sendAudioUseCase:sendAudioUseCase
 
 }
 const respository:any={

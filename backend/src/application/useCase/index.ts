@@ -4,7 +4,7 @@ import { userRegistration,otpVerification,loginUseCase,forgotPasswordUseCase,upd
     getCreatorUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase,productEditUseCase,
     commentReplyUseCase,pinCommentUseCase,addtocartUseCase,deletecartItemUseCase,orderUseCase,
     sendMessegesUseCase,allorderUseCase,createConverstationUseCase,getConverstationsUseCase,getConverstationByIdUseCase,
-    sendImageUseCase
+    sendImageUseCase,sendAudioUseCase
 
 } from "./userUseCase"
 export{
@@ -39,7 +39,8 @@ export{
     createConverstationUseCase,
     getConverstationsUseCase,
     getConverstationByIdUseCase,
-    sendImageUseCase
+    sendImageUseCase,
+    sendAudioUseCase
 }
 import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,getallReportUseCase } from "./adminUseCase"
 export{
