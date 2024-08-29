@@ -29,6 +29,7 @@ import allorderUseCase from "./allorderUseCase";
 import createConverstationUseCase from "./createConverstationUseCase";
 import getConverstationsUseCase from './getConverstationsUseCase';
 import getConverstationByIdUseCase from './getConverstationByIdUseCase';
+import sendImageUseCase from './sendImageUseCase';
 export{
     userRegistration,
     loginUseCase,
@@ -60,7 +61,8 @@ export{
     allorderUseCase,
     createConverstationUseCase,
     getConverstationsUseCase,
-    getConverstationByIdUseCase
+    getConverstationByIdUseCase,
+    sendImageUseCase
     
 
 }

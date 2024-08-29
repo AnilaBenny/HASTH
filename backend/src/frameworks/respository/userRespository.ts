@@ -729,11 +729,11 @@ export default  {
           recieverId,
           senderId,
           type,
-          converstationId
+          conversationId
         } = data
   
         const message = new databaseSchema.RealTimeChat({
-          converstationId: converstationId,
+          conversationId: conversationId,
           content: content,
           senderId: senderId,
           receiverId: recieverId,
@@ -751,6 +751,34 @@ export default  {
         return { status: true, message: `something went wrong failed ${error}` }
       }
     },
+  sendImage:async(data:any)=>{
+    try {
+      const { content,
+        recieverId,
+        senderId,
+        type,
+        conversationId
+      } = data
+
+      const message = new databaseSchema.RealTimeChat({
+        conversationId: conversationId,
+        content: content,
+        senderId: senderId,
+        receiverId: recieverId,
+        type: type,
+      })
+      const responce = await message.save()
+      if (responce) {
+        return { status: true, data: data }
+      } else {
+        return { status: true, message: "Message failed..!" }
+      }
+
+    } catch (error) {
+      console.log(error);
+      return { status: true, message: `something went wrong failed ${error}` }
+    }
+  },
   getConversation: async (data: any) => {
       try {
         const { id, role } = data;

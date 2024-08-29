@@ -14,7 +14,7 @@ interface Message {
   recieverId: string;
   content: string;
   type: 'text' | 'image' | 'voice_note';
-  converstationId: string;
+  conversationId: string;
   timestamp: string;
 }
 
@@ -38,6 +38,10 @@ const QuickChat: React.FC = () => {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const user = useSelector((state: any) => state.user);
   const messageRef = useRef<HTMLDivElement>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioData, setAudioData] = useState<Blob | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     fetchConversations();
@@ -53,7 +57,7 @@ const QuickChat: React.FC = () => {
     if (socket) {
       socket.on('getMessage', (data: Message) => {
         console.log('Received message:', data);
-        if (data.converstationId === selectedConversation?.conversation._id) {
+        if (data.conversationId === selectedConversation?.conversation._id) {
           setMessages((prevMessages) => [...prevMessages, data]);
         }
         
@@ -106,7 +110,7 @@ const QuickChat: React.FC = () => {
         recieverId: user.user.role === 'user' ? selectedConversation.creative._id : selectedConversation.user._id,
         content: messageInput,
         type: 'text',
-        converstationId: selectedConversation.conversation._id,
+        conversationId: selectedConversation.conversation._id,
         timestamp: new Date().toISOString(),
       };
   
@@ -136,41 +140,65 @@ const QuickChat: React.FC = () => {
   };
 
   const sendImage = () => {
-    if (selectedFile && socket && selectedConversation) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64Image = reader.result as string;
-        const newMessage: Message = {
-          senderId: user.user._id,
-          recieverId: user.user.role === 'user' ? selectedConversation.creative._id : selectedConversation.user._id,
-          content: base64Image,
-          type: 'image',
-          converstationId: selectedConversation.conversation._id,
-          timestamp: new Date().toISOString(),
-        };
-
-        socket.emit('sendImage', newMessage, (response: any) => {
-          console.log('Image sent:', response);
-          if (response.status === 'success') {
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-            setImagePreview(null);
-            setSelectedFile(null);
-          } else {
-            console.error('Failed to send image:', response.error);
-          }
-        });
-      };
-      reader.readAsDataURL(selectedFile);
+    if (!selectedFile || !socket || !selectedConversation) {
+      console.error('Missing required data for sending image');
+      return;
     }
+  
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64Image = reader.result as string;
+      const newMessage: Message = {
+        senderId: user.user._id,
+        recieverId: user.user.role === 'user' ? selectedConversation.creative._id : selectedConversation.user._id,
+        content: base64Image,
+        type: 'image',
+        conversationId: selectedConversation.conversation._id,
+        timestamp: new Date().toISOString(),
+      };
+      console.log(newMessage);
+      setImagePreview(null);
+          setSelectedFile(null);
+      
+      socket.emit('sendImage', newMessage, () => {
+     
+      });
+    };
+    reader.onerror = (error) => {
+      console.error('Error reading file:', error);
+    };
+    reader.readAsDataURL(selectedFile);
   };
-
   const toggleEmojiPicker = () => setEmojiPickerOpen(!emojiPickerOpen);
 
   const onEmojiClick = (emoji: any) => {
     setMessageInput((prev) => prev + (emoji.native || emoji.emoji || ''));
     setEmojiPickerOpen(false);
   };
+//audio
+const startRecording = async () => {
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    try {
+      setIsRecording(true); 
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setAudioStream(stream); 
 
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (event) => {
+        console.log("Data available:", event.data.size, event.data.type); 
+        setAudioData(new Blob([event.data], { type: 'audio/wav' })); 
+      };
+
+      mediaRecorder.start(); 
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+    }
+  } else {
+    console.error("getUserMedia is not supported in this browser");
+  }
+};
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Conversation List */}
@@ -203,11 +231,11 @@ const QuickChat: React.FC = () => {
         </div>
       </div>
 
-      {/* Chat Area */}
+      
       <div className="flex-1 flex flex-col bg-gray-50">
         {selectedConversation ? (
           <>
-            {/* Chat Header */}
+         
             <div className="bg-white p-4 border-b shadow-sm flex items-center">
               <img
                 src={`http://localhost:8080/src/uploads/${user.user.role === 'user' ? selectedConversation.creative.image : selectedConversation.user.image}`}
@@ -219,7 +247,7 @@ const QuickChat: React.FC = () => {
               </h3>
             </div>
 
-            {/* Messages */}
+       
             <div className="flex-1 overflow-y-auto p-6">
               {messages.map((message, index) => (
                 <div
@@ -235,6 +263,17 @@ const QuickChat: React.FC = () => {
                     {message.type === 'text' && <p>{message.content}</p>}
                     {message.type === 'image' && (
                       <img src={message.content} alt="Image" className="rounded-lg max-w-full max-h-64 object-cover" />
+                    )}    
+                    {imagePreview && (
+                      <div className="absolute bottom-16 left-4 bg-white p-2 border rounded-lg shadow-lg flex items-center">
+                        <img src={imagePreview} alt="Preview" className="w-24 h-24 object-cover rounded-lg" />
+                        <button
+                          onClick={() => setImagePreview(null)}
+                          className="ml-2 text-gray-600 hover:text-red-500"
+                        >
+                          <XMarkIcon className="w-6 h-6" />
+                        </button>
+                      </div>
                     )}
                     {message.type === 'voice_note' && <AudioPlayer src={message.content} />}
                     <p className="text-xs mt-2 text-gray-500 text-right">{format(new Date(message.timestamp), 'p, MMM d')}</p>
@@ -245,6 +284,23 @@ const QuickChat: React.FC = () => {
 
             {/* Message Input */}
             <div className="bg-white p-4 border-t shadow-sm flex items-center">
+            <button onClick={startRecording}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 1a5 5 0 0 1 5 5v6a5 5 0 0 1-10 0V6a5 5 0 0 1 5-5z" />
+              <path d="M19 11v2a7 7 0 0 1-7 7 7 7 0 0 1-7-7v-2" />
+              <path d="M12 19v4" />
+            </svg>
+          </button>
               <button className="mr-2" onClick={toggleEmojiPicker}>
                 😊
               </button>
@@ -276,17 +332,7 @@ const QuickChat: React.FC = () => {
                   <EmojiPicker onEmojiClick={onEmojiClick} />
                 </div>
               )}
-              {imagePreview && (
-                <div className="absolute bottom-16 left-4 bg-white p-2 border rounded-lg shadow-lg flex items-center">
-                  <img src={imagePreview} alt="Preview" className="w-24 h-24 object-cover rounded-lg" />
-                  <button
-                    onClick={() => setImagePreview(null)}
-                    className="ml-2 text-gray-600 hover:text-red-500"
-                  >
-                    <XMarkIcon className="w-6 h-6" />
-                  </button>
-                </div>
-              )}
+          
             </div>
           </>
         ) : (

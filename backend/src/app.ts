@@ -1,5 +1,5 @@
 import http from 'http';
-import express,{ Request, Response, NextFunction } from 'express';
+import express,{ Request, Response, NextFunction, response } from 'express';
 import dotenv from 'dotenv';
 import session, { MemoryStore } from 'express-session';
 import serverConfig from './server';
@@ -111,14 +111,14 @@ io.on("connection",(socket:Socket)=>{
     io.to(chatId).emit('message', `User ${id} has joined the chat.`);
   });
 
-  socket.on('sendMessage',async({senderId,recieverId,content,converstationId,type,timestamp},callback)=>{
+  socket.on('sendMessage',async({senderId,recieverId,content,conversationId,type,timestamp},callback)=>{
     const {sendMessegesUseCase}=dependencies.useCase;
     const data={
       content,
       recieverId,
       senderId,
       type,
-      converstationId,
+      conversationId,
       timestamp, 
     };
     console.log('....user',data);
@@ -146,7 +146,32 @@ io.on("connection",(socket:Socket)=>{
       
     
 
-  })
+  });
+
+  socket.on('sendImage',async({senderId,recieverId,content,conversationId,type,timestamp},callback)=>{
+    const {sendImageUseCase}=dependencies.useCase;
+    const data={
+      senderId,recieverId,content,conversationId,type,timestamp
+    };
+    const response=await sendImageUseCase(dependencies).executeFunction(data);
+    if(response && response.status && response.data){
+      const recipient = getUser(recieverId);
+      const sender = getUser(senderId);
+      console.log(recipient,sender);
+      
+
+      if (recipient && sender) {
+        io.to(recipient.socketId).to(sender.socketId).emit('getMessage', data);
+      } else if (recipient) {
+        io.to(recipient.socketId).emit('getMessage', data);
+      } else if (sender) {
+        io.to(sender.socketId).emit('getMessage', data);
+      }
+      }
+      if (callback) {
+        callback({ success: true, data:response.data });
+      }
+  });
 
 socket.on('disconnect', () => {
     users = users.filter((user:any) => user.socketId !== socket.id);
