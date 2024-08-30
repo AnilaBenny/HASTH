@@ -4,10 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import {toast} from 'react-toastify';
-import { addToCart,updateQuantity } from '../../store/slices/cartSlice';
- 
-
+import { toast } from 'react-toastify';
+import { addToCart, updateQuantity } from '../../store/slices/cartSlice';
 interface Product {
     _id: string;
     name: string;
@@ -57,6 +55,7 @@ const Product: React.FC = () => {
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [addtocart,setAddtoCart]=useState(true)
     const navigate=useNavigate()
     const initialValues={
         collab: '',
@@ -98,7 +97,8 @@ const Product: React.FC = () => {
         try {
             const response = await axiosInstance.get<{ data: Product[] }>('/api/auth/products');
             console.log(response);
-            setProducts(response.data.data);
+            const filteredData=response.data.data.filter((product)=>user._id!==product?.userId&&user._id!==product?.collab)
+            setProducts(filteredData);
         } catch (error) {
             console.error('Error fetching products:', error);
         
@@ -220,81 +220,114 @@ const handleAddToCart = async (productId: string) => {
         toast.error('An error occurred while adding the product to cart');
     }
 };
+const showyourproducts=async()=>{
+    const response = await axiosInstance.get<{ data: Product[] }>('/api/auth/products');
+    console.log(response);
+    const filteredData=response.data.data.filter((product)=>user._id===product?.userId||user._id===product?.collab)
+    setProducts(filteredData);
+    setAddtoCart(false)
+}
 
-    return (
-        <div className="bg-gray-100 min-h-screen">
-    <div className="container mx-auto p-4">
-        <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Product Management</h1>
-            <button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-blue-400 text-gray-900 py-2 px-4 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-300"
-            >
-                Add Product
-            </button>
-        </div>
+return (
+    <div className="bg-gray-100 min-h-screen">
+        <div className="container mx-auto p-6">
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-4xl font-bold text-gray-800">Product Management</h1>
+                <div className="space-x-4">
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-blue-500 text-white py-2 px-6 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition duration-300 shadow-md"
+                    >
+                        Add Product
+                    </button>
+                    <button
+                    onClick={() => {
+                        if (addtocart) {
+                        showyourproducts(); 
+                        } else {
+                        setAddtoCart(true);
+                        window.location.reload()
+                        }
+                    }}
+                    className="bg-green-500 text-white py-2 px-6 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 transition duration-300 shadow-md"
+                    >
+                    {addtocart ? "Show Your Products" : "See Other Products"}
+                    </button>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-900">Product List</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {products.map(product => (
-                    <div key={product._id} className="border rounded-lg p-4 shadow-sm hover:shadow-md transition duration-300">
-                        <div className="cursor-pointer" onClick={() => handleProductClick(product)}>
-                            {product.images.length > 0 && (
-                                <img
-                                    src={`http://localhost:8080/src/uploads/${product.images[0]}`}
-                                    alt={product.name}
-                                    className="w-full h-48 object-contain rounded-md mb-4"
-                                />
-                            )}
-                            <h3 className="text-lg font-semibold mb-2 text-blue-600 hover:text-orange-500">{product.name}</h3>
-                            <div className="flex items-center mb-2">
-                                <span className="text-blue-400 mr-1">★★★★☆</span>
-                                <span className="text-gray-600 text-sm">(123)</span>
-                            </div>
-                            <p className="text-red-600 font-bold text-xl mb-2">₹{product.price.toFixed(2)}</p>
-                            <p className="text-gray-600 mb-2 line-clamp-2 text-sm">{product.description}</p>
-                            <p className="text-gray-500 text-sm">Brand: {product.brand}</p>
-                            <p className="text-gray-500 text-sm mt-1">
-                                {product.countInStock > 0 ? (
-                                    <span className="text-green-600">In Stock: {product.countInStock}</span>
-                                ) : (
-                                    <span className="text-red-600">Out of Stock</span>
+                </div>
+            </div>
+
+            <div className="bg-white p-8 rounded-xl shadow-lg">
+                <h2 className="text-3xl font-semibold mb-6 text-gray-800">Product List</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {products.map(product => (
+                        <div key={product._id} className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                            <div className="cursor-pointer" onClick={() => handleProductClick(product)}>
+                                {product.images.length > 0 && (
+                                    <img
+                                        src={`http://localhost:8080/src/uploads/${product.images[0]}`}
+                                        alt={product.name}
+                                        className="w-full h-56 object-cover"
+                                    />
                                 )}
-                            </p>
+                                <div className="p-4">
+                                    <h3 className="text-xl font-semibold mb-2 text-gray-800 hover:text-blue-600">{product.name}</h3>
+                                    <div className="flex items-center mb-2">
+                                        <span className="text-yellow-400 mr-1">★★★★☆</span>
+                                        <span className="text-gray-600 text-sm">(123)</span>
+                                    </div>
+                                    <p className="text-red-600 font-bold text-2xl mb-2">₹{product.price.toFixed(2)}</p>
+                                    <p className="text-gray-600 mb-3 line-clamp-2 text-sm">{product.description}</p>
+                                    <p className="text-gray-500 text-sm">Brand: {product.brand}</p>
+                                    <p className="text-gray-500 text-sm mt-1">
+                                        {product.countInStock > 0 ? (
+                                            <span className="text-green-600">In Stock: {product.countInStock}</span>
+                                        ) : (
+                                            <span className="text-red-600">Out of Stock</span>
+                                        )}
+                                    </p>
+                                </div>
+                            </div>
+                            {addtocart && (
+                                <div className="px-4 pb-4">
+                                    <button
+                                        onClick={() => handleAddToCart(product._id)}
+                                        className={`w-full py-2 px-4 rounded-full transition duration-300 ${
+                                            product.countInStock > 0
+                                                ? 'bg-blue-500 text-white hover:bg-blue-600'
+                                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        }`}
+                                        disabled={product.countInStock === 0}
+                                    >
+                                        {product.countInStock > 0 ? 'Add to Cart' : 'Out of Stock'}
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                        <button
-                            onClick={() => handleAddToCart(product._id)}
-                            className="mt-4 w-full bg-blue-400 text-gray-900 py-2 px-4 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-300"
-                            disabled={product.countInStock === 0}
-                        >
-                            {product.countInStock > 0 ? 'Add to Cart' : 'Out of Stock'}
-                        </button>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </div>
-    </div>
 
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md max-h-screen sm:max-h-[80vh] overflow-y-auto">
-                        <h2 className="text-2xl font-semibold mb-4">Add New Product</h2>
-                        {error && <p className="text-red-500 mb-4">{error}</p>}
-                        <Formik
-                            initialValues={initialValues}
-                            validationSchema={validationSchema}
-                            onSubmit={handleSubmit}
-                        >
-                            {({ setFieldValue }) => (
-                                <Form className="space-y-4">
+        {isModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 mt-9">
+                <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                    <h2 className="text-3xl font-semibold mb-6 text-gray-800">Add New Product</h2>
+                    {error && <p className="text-red-500 mb-4">{error}</p>}
+                    <Formik
+                        initialValues={initialValues}
+                        validationSchema={validationSchema}
+                        onSubmit={handleSubmit}
+                    >
+                        {({ setFieldValue }) => (
+                            <Form className="space-y-6">
                                 <div>
-                                    <label htmlFor="collab" className="block text-sm font-medium text-gray-700">Collab with</label>
+                                    <label htmlFor="collab" className="block text-sm font-medium text-gray-700 mb-1">Collab with</label>
                                     <Field
                                         as="select"
                                         id="collab"
                                         name="collab"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="">Select a creator</option>
                                         {creators.map((creator) => (
@@ -303,68 +336,68 @@ const handleAddToCart = async (productId: string) => {
                                     </Field>
                                     <ErrorMessage name="collab" component="p" className="text-red-500 text-xs mt-1" />
                                 </div>
-                                
+
                                 <div>
-                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                                     <Field
                                         type="text"
                                         id="name"
                                         name="name"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <ErrorMessage name="name" component="p" className="text-red-500 text-xs mt-1" />
                                 </div>
-                            
+
                                 <div>
-                                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+                                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                                     <Field
                                         as="textarea"
                                         id="description"
                                         name="description"
                                         rows={3}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <ErrorMessage name="description" component="p" className="text-red-500 text-xs mt-1" />
                                 </div>
-                            
+
                                 <div>
-                                    <label htmlFor="brand" className="block text-sm font-medium text-gray-700">Brand</label>
+                                    <label htmlFor="brand" className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
                                     <Field
                                         type="text"
                                         id="brand"
                                         name="brand"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <ErrorMessage name="brand" component="p" className="text-red-500 text-xs mt-1" />
                                 </div>
-                            
+
                                 <div>
-                                    <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price</label>
+                                    <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">Price</label>
                                     <Field
                                         type="number"
                                         id="price"
                                         name="price"
                                         min="99"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <ErrorMessage name="price" component="p" className="text-red-500 text-xs mt-1" />
                                 </div>
-                            
+
                                 <div>
-                                    <label htmlFor="countInStock" className="block text-sm font-medium text-gray-700">Stock</label>
+                                    <label htmlFor="countInStock" className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
                                     <Field
                                         type="number"
                                         id="countInStock"
                                         name="countInStock"
                                         min="0"
                                         max="300"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <ErrorMessage name="countInStock" component="p" className="text-red-500 text-xs mt-1" />
                                 </div>
-                                
+
                                 <div>
-                                    <label htmlFor="images" className="block text-sm font-medium text-gray-700">Images</label>
+                                    <label htmlFor="images" className="block text-sm font-medium text-gray-700 mb-1">Images</label>
                                     <input
                                         type="file"
                                         id="images"
@@ -372,7 +405,7 @@ const handleAddToCart = async (productId: string) => {
                                         onChange={(e) => handleImageChange(e, setFieldValue)}
                                         multiple
                                         accept="image/*"
-                                        className="mt-1 block w-full"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <ErrorMessage name="images" component="p" className="text-red-500 text-xs mt-1" />
                                     {imagePreviews.length > 0 && (
@@ -383,30 +416,30 @@ const handleAddToCart = async (productId: string) => {
                                         </div>
                                     )}
                                 </div>
-                            
-                                <div className="flex justify-end space-x-2">
+
+                                <div className="flex justify-end space-x-4 mt-8">
                                     <button
                                         type="button"
                                         onClick={() => setIsModalOpen(false)}
-                                        className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition duration-300"
+                                        className="px-6 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition duration-300"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
-                                        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300"
+                                        className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300"
                                     >
                                         Add Product
                                     </button>
                                 </div>
                             </Form>
-                            )}
-                        </Formik>
-                    </div>
+                        )}
+                    </Formik>
                 </div>
-            )}
-        </div>
-    );
+            </div>
+        )}
+    </div>
+);
 };
 
 export default Product;

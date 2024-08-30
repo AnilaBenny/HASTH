@@ -37,12 +37,22 @@ const AdminSidebar: React.FC = () => {
         </li>
         <li className="sidebar-item mb-2"> 
           <NavLink
+            to="/admin/reportManagement"
+            className="text-blue-950 font-bold hover:bg-blue-800; rounded-xl p-3 flex items-center"
+            
+          >
+            <FaUserCog className="mr-3"/>
+            Report MANAGEMENT
+          </NavLink>
+        </li>
+        <li className="sidebar-item mb-2"> 
+          <NavLink
             to="/admin/posts"
             className="text-blue-950 font-bold hover:bg-blue-800; rounded-xl p-3 flex items-center"
             
           >
             <FaUserCog className="mr-3"/>
-            Posts
+            Post List
           </NavLink>
         </li>
         <li className="sidebar-item mb-2"> 
@@ -52,19 +62,20 @@ const AdminSidebar: React.FC = () => {
             
           >
             <FaUserCog className="mr-3"/>
-            Products
+            Product List
           </NavLink>
         </li>
         <li className="sidebar-item mb-2"> 
           <NavLink
-            to="/admin/reportManagement"
+            to="/admin/orders"
             className="text-blue-950 font-bold hover:bg-blue-800; rounded-xl p-3 flex items-center"
             
           >
             <FaUserCog className="mr-3"/>
-            Report MANAGEMENT
+            Order List
           </NavLink>
         </li>
+
       </ul>
       
     </div>
