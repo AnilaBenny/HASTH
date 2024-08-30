@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import SearchBar from "./SearchBar";
-import axiosInstance from "../../Axiosconfig/Axiosconfig";
+import axiosInstance, {  setAuthInfo } from "../../Axiosconfig/Axiosconfig";
 import { User } from "../../interfaces/user/userInterface";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux';
@@ -17,6 +17,8 @@ const UserList: React.FC = () => {
   const [blockStatus, setBlockStatus] = useState<Record<string, boolean>>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUserModal, setSelectedUserModal] = useState<User | null>(null);
+  const [confirmation,setConfirmation]=useState(false)
   const usersPerPage = 8; 
 
   useEffect(() => {
@@ -58,9 +60,14 @@ const UserList: React.FC = () => {
     setFilteredUsers(filtered);
   };
   
+  const handleUserBlock=(userId:any)=>{
+    setConfirmation(true);
+    setSelectedUser(userId)
+  }
 
-  const handleUserBlock = async (userId: string) => {
+  const handleConfirm = async () => {
     try {
+      const userId=selectedUser;
       const response = await axiosInstance.patch(
         `/api/auth/handleUserBlock/${userId}`
       );
@@ -88,9 +95,12 @@ const UserList: React.FC = () => {
         dispatch(clearUser());
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
+        setAuthInfo(null)
         navigate('/login');
         toast.error('You have been logged out because your account is blocked.');
       }
+      setConfirmation(false)
+      setSelectedUser(null)
     } catch (error) {
       console.error("Error toggling block status:", error);
     }
@@ -118,8 +128,12 @@ const UserList: React.FC = () => {
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const handleViewDetails = (user: User) => {
-    setSelectedUser(user);
+    setSelectedUserModal(user);
   };
+  const handleCancel=()=>{
+    setConfirmation(false);
+    setSelectedUser(null)
+  }
 
   return (
     <div className="pl-64 flex justify-center items-center">
@@ -209,10 +223,33 @@ const UserList: React.FC = () => {
           setCurrentPage={setCurrentPage}
         />
       </div>
-      {selectedUser && (
-        <ViewUser user={selectedUser} onClose={() => setSelectedUser(null)} />
+      {selectedUserModal && (
+        <ViewUser user={selectedUserModal} onClose={() => setSelectedUserModal(null)} />
       )}
+{confirmation && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
+    <p>Are you sure you want to {selectedUser?.isBlocked ? 'unblock' : 'block'} this user?</p>
+      <div className="mt-4 flex justify-between">
+        <button
+          onClick={handleConfirm}
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Yes
+        </button>
+        <button
+          onClick={handleCancel}
+          className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
+        >
+          No
+        </button>
+      </div>
     </div>
+  </div>
+)}
+
+    </div>
+    
   );
 };
 

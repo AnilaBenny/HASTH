@@ -49,6 +49,7 @@ const QuickChat: React.FC = () => {
   const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [incomingCall,setIncomingCall]=useState(null);
   const [isCallPending, setIsCallPending] = useState(false);
+  const [IsCallInitiated,setIsCallInitiated]=useState(false);
   
   useEffect(() => {
     fetchConversations();
@@ -292,18 +293,21 @@ const sendVoiceMessage = () => {
   }
 };
 const navigate=useNavigate()
+let roomId = "";
+const chars = "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP";
+const maxPos = chars.length;
+const len = 6;
+for (let i = 0; i < len; i++) {
+  roomId += chars.charAt(Math.floor(Math.random() * maxPos));
+}
 const initiateVideoCall = () => {
   if (!selectedConversation || !socket) return;
 
-  let roomId = "";
-  const chars = "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP";
-  const maxPos = chars.length;
-  const len = 6;
-  for (let i = 0; i < len; i++) {
-    roomId += chars.charAt(Math.floor(Math.random() * maxPos));
-  }
+
+
 
   setIsCallPending(true);
+  setIsCallInitiated(true);
 
   socket.emit("videoCall", {
     userId: user.user._id,
@@ -317,10 +321,13 @@ const initiateVideoCall = () => {
     } else {
       console.error("Failed to initiate video call:", response.message);
       setIsCallPending(false);
+      setIsCallInitiated(false)
     }
+    navigate(`/videoCall/${roomId}`);
   });
 
-  socket.on('callAccepted', ({ roomId }) => {
+  socket.on('callAccepted', ({ roomId,userId }) => {
+   
     setIsCallPending(false);
     navigate(`/videoCall/${roomId}`);
   });
@@ -342,12 +349,14 @@ useEffect(() => {
       socket.off('incomingCall');
     };
   }
+
 }, [socket]);
 const acceptCall = () => {
   if (incomingCall) {
     navigate(`/videoCall/${incomingCall.roomId}`);
     setIncomingCall(null);
   }
+ 
 };
 
 const rejectCall = () => {
@@ -358,7 +367,7 @@ const rejectCall = () => {
 };
 
   return (
-    <div className="bg-gray-100 rounded-2xl flex justify-evenly">
+    <div className=" rounded-2xl flex justify-evenly">
       {/* Conversation List */}
       <div className="w-1/3 h-1/3 bg-white border-r shadow-lg">
   <h2 className="text-2xl font-bold p-6 bg-gradient-to-r from-blue-300 to-blue-600 text-white rounded-t-2xl">
@@ -391,11 +400,11 @@ const rejectCall = () => {
 
 
       
-      <div className="bg-gray-50">
+      <div className="bg-gray-50 w-1/3">
         {selectedConversation ? (
           <>
          
-            <div className="bg-white p-4 border-b shadow-sm flex justify-between">
+            <div className="bg-white p-4 border-b shadow-sm flex justify-between rounded-t-3xl">
               <div className='flex items-center  ms-3'>
               <img
                 src={`http://localhost:8080/src/uploads/${user.user.role === 'user' ? selectedConversation.creative.image : selectedConversation.user.image}`}
@@ -410,7 +419,7 @@ const rejectCall = () => {
             </div>
 
        
-            <div className="ms-60 overflow-hidden ">
+            <div className="p-2 overflow-hidden ">
   <div className="overflow-y-auto h-80 pr-2">
     {messages.map((message, index) => (
       <div
@@ -441,7 +450,7 @@ const rejectCall = () => {
   </div>
 </div>
 {imagePreview && (
-                      <div className="absolute bottom-16 left-4 bg-white p-2 border rounded-lg shadow-lg flex items-center">
+                      <div className="absolute bottom-16 left-4 bg-white p-2 border rounded-lg shadow-lg flex items-center rounded-b-2xl">
                         <img src={imagePreview} alt="Preview" className="w-24 h-24 object-cover rounded-lg" />
                         <button
                           onClick={() => setImagePreview(null)}
@@ -462,6 +471,8 @@ const rejectCall = () => {
     </div>
   </div>
 )}
+
+
 
             {/* Message Input */}
             <div className="bg-white p-4 border-t shadow-sm flex items-center">
@@ -538,7 +549,7 @@ const rejectCall = () => {
             
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex  items-center justify-center">
             <p className="text-xl text-gray-500">Select a conversation to start chatting</p>
           </div>
         )}

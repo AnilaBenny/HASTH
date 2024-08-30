@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearAdmin, setAdmin, selectIsAdminAuthenticated } from '../store/slices/adminSlice';
 import { toast } from 'react-toastify';
-import axiosInstance from '../Axiosconfig/Axiosconfig';
+import axiosInstance,{setAuthInfo} from '../Axiosconfig/Axiosconfig';
 import { AiOutlineMail, AiOutlineLock, AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
 const AdminLogin: React.FC = () => {
@@ -59,6 +59,7 @@ const AdminLogin: React.FC = () => {
       if (response.data && response.data.status) {
         dispatch(clearAdmin());
         dispatch(setAdmin(response.data.user));
+        setAuthInfo(response.data.accessToken,'admin')
         localStorage.setItem('admin', JSON.stringify(response.data.user));
         toast.success('Login successful');
         navigate('/admin/adminHome');

@@ -25,7 +25,7 @@ export default (dependecies: any) => {
             ? responce.data.toObject()
             : responce.data;
 
-          return res.status(200).json({ status: true, data: sanitizedData });
+          return res.status(200).json({ status: true, data: sanitizedData,accessToken:responce.token.accessToken });
   }else{
     res.json({status:false,message:responce.message})
   }

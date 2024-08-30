@@ -16,8 +16,8 @@ export default function loginUseCase(dependencies: any) {
         const isPasswordCorrect = await verifyHashPassword(data.password, user.password);
 
         if (isPasswordCorrect) {
-          const token=await generateToken(data);
-          return { status: true, data: user,token };
+          const token=await generateToken({userId:user._id});
+          return { status: true, data:user,token };
         } else {
           return { status: false, message: 'Incorrect password' };
         }

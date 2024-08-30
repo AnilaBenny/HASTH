@@ -4,7 +4,7 @@ import './Login.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearUser, setUser, selectIsUserAuthenticated } from '../../store/slices/userSlice';
 import { toast } from 'react-toastify';
-import axiosInstance from '../../Axiosconfig/Axiosconfig';
+import axiosInstance, { setAuthInfo } from '../../Axiosconfig/Axiosconfig';
 import { AiOutlineMail, AiOutlineLock, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { GoogleLogin } from '@react-oauth/google';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -36,6 +36,7 @@ const CreativeLogin: React.FC = () => {
   const handleLogin = async (values: { email: string; password: string }, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
     try {
       const response = await axiosInstance.post('/api/auth/login', values);
+      setAuthInfo(response.data.accessToken,response.data.data.role);
      
       
       if(!response.data.status){

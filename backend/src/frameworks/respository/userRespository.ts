@@ -234,7 +234,8 @@ export default  {
         tags:tag
       });
   
-      const response = await post.save();
+       await post.save();
+       const response =await databaseSchema.Post.find().sort({ createdAt: -1 })
   
       if (response) {
         return { status: true, data: response };
@@ -262,7 +263,7 @@ export default  {
             
           });
 
-      return {status:true,data:posts.reverse()};
+      return {status:true,data:posts};
     } catch (error) {
       console.error('Error fetching posts:', error);
       throw new Error('Unable to fetch posts');

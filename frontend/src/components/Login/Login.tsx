@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearUser, setUser, selectIsUserAuthenticated } from '../../store/slices/userSlice';
 import { toast } from 'react-toastify';
-import axiosInstance from '../../Axiosconfig/Axiosconfig';
+import axiosInstance,{ setAuthInfo } from '../../Axiosconfig/Axiosconfig';
 import { AiOutlineMail, AiOutlineLock, AiOutlineEyeInvisible } from 'react-icons/ai';
 import Loading from '../../Loading/Loading';
 import './Login.css';
@@ -70,6 +70,7 @@ const Login: React.FC = () => {
       const response = await axiosInstance.post('/api/auth/login', values);
       console.log(response.data);
       if(!response.data.status){
+       
         toast.error('User is not found');
       }
       if (response.data.data.isBlocked) {
@@ -78,6 +79,7 @@ const Login: React.FC = () => {
         toast.error('Please login with the correct credentials');
       } else if (response.data && response.data.status) {
         toast.success('Login successful');
+        setAuthInfo(response.data.accessToken,response.data.data.role)
         dispatch(clearUser());
         dispatch(setUser(response.data.data));
         localStorage.setItem('user', JSON.stringify(response.data));

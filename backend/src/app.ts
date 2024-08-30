@@ -218,10 +218,6 @@ io.on("connection",(socket:Socket)=>{
           caller: userName 
         });
   
-        io.to(sender.socketId).emit('callInitiated', { 
-          roomId, 
-          recipient: creativeName 
-        });
   
         if (callback) callback({ success: true });
       } else {

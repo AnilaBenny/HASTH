@@ -1,10 +1,7 @@
 import { Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-interface GenerateTokenOptions {
-  userId: any;
-}
-const generateToken = ({  userId }: GenerateTokenOptions)=> {
+const generateToken = ({ userId }: { userId: string })=> {
   
   const accessToken= jwt.sign({ userId }, "anila@123", {
     expiresIn: '30m',
@@ -20,5 +17,6 @@ export default generateToken;
 export const verifyToken = (token: string) => {
    return jwt.verify(token, "anila@123");
  };
+
 
 

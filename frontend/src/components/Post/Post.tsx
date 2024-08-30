@@ -272,7 +272,7 @@ const Post: React.FC = () => {
                     <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Creative List 3</li>
                 </ul>
             </div>
-            <div className="flex-1 p-4 space-y-8">
+            <div className="flex-1 p-20 space-y-8">
                 <div className="bg-white p-4 rounded-lg shadow-md">
                     <h2 className="text-lg font-bold mb-3 text-gray-800">Share Your Thoughts</h2>
                     <Formik
@@ -420,18 +420,24 @@ const Post: React.FC = () => {
                                             />
                                         </div>
                                     )}
-                                    {post.images && post.images.length > 0 && (
-                                        <div className={`grid gap-4 ${post.images.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                                            {post.images.map((img, index) => (
-                                                <img
-                                                    key={index}
-                                                    src={`http://localhost:8080/src/uploads/${img}`}
-                                                    alt={`Post Image ${index + 1}`}
-                                                    className="w-full h-72 object-cover rounded-lg"
-                                                />
-                                            ))}
-                                        </div>
-                                    )}
+{post.images && post.images.length > 0 && (
+  <div
+    className={`grid gap-4 ${
+      post.images.length === 2 ? 'grid-cols-2' : 'grid-cols-1'
+    }`}
+  >
+    {post.images.map((img, index) => (
+      <div key={index} className="w-full h-72 overflow-hidden rounded-lg">
+        <img
+          src={`http://localhost:8080/src/uploads/${img}`}
+          alt={`Post Image ${index + 1}`}
+          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+        />
+      </div>
+    ))}
+  </div>
+)}
+
                                 </div>
                                 <PostActions 
                                     userId={user?._id} 
