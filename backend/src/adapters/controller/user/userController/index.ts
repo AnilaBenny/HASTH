@@ -30,7 +30,11 @@ import allorderController from './allorderController';
 import allMessagesController from './allMessagesController';
 import getConversationsController from './getConversationsController';
 import createConverstationController from './createConverstationController';
-import getConverstationByIdController from './getConverstationByIdController'
+import getConverstationByIdController from './getConverstationByIdController';
+import updateOrderStatusController from './updateOrderStatusController';
+import cancelOrderController from './cancelOrderController';
+import reviewController from './reviewController';
+import dialogflowController from './dialogflowController';
 export default (dependencies:any)=>{
 return{
     registrationController:registrationController(dependencies),
@@ -65,6 +69,12 @@ return{
     allMessagesController:allMessagesController(dependencies),
     getConversationsController:getConversationsController(dependencies),
     createConverstationController:createConverstationController(dependencies),
-    getConverstationByIdController:getConverstationByIdController(dependencies)
+    getConverstationByIdController:getConverstationByIdController(dependencies),
+    updateOrderStatusController:updateOrderStatusController(dependencies),
+    cancelOrderController:cancelOrderController(dependencies),
+    reviewController:reviewController(dependencies),
+    dialogflowController:dialogflowController(dependencies),
+
+
 }
 }

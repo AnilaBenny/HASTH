@@ -32,6 +32,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "@google-cloud/dialogflow": "^6.8.0",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@socket.io/redis-adapter": "^8.3.0",
     "@types/express-session": "^1.18.0",

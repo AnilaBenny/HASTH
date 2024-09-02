@@ -139,5 +139,41 @@ export default {
       console.log("Error in adminRepository.getAllreports", error);
       return { status: false, message: 'Error occurred during get reports' };
   }
-  }
+  },
+  getAllOrders:async(data:any)=>{
+    try {
+
+      const page = data.page || 1;
+      const limit = data.limit || 8;
+      const skip = (page - 1) * limit;
+
+      const orders = await databaseSchema.Order.find().populate('items.product').populate('userId')
+          .skip(skip)
+          .limit(limit);
+          console.log(orders);
+          
+
+  
+      const totalOrders = await databaseSchema.Order.countDocuments();
+
+      if (orders && orders.length > 0) {
+        
+        
+          return {
+              status: true,
+              data: {
+                orders,
+                  total: totalOrders,
+                  currentPage: page,
+                  totalPages: Math.ceil(totalOrders / limit)
+              }
+          };
+          
+      } else {
+          return { status: false, message: 'Orders not found' };
+      }
+  } catch (error) {
+      console.log("Error in adminRepository.getAllOrders", error);
+      return { status: false, message: 'Error occurred during get orders' };
+  }},
 };

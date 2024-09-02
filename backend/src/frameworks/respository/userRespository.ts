@@ -721,7 +721,7 @@ export default  {
     }
     },
   allorderbyuser:async(userId:any)=>{
-    const orders=await databaseSchema.Order.find({userId:userId})
+    const orders=await databaseSchema.Order.find({userId:userId}).populate('items.product')
     return {status:true,data:orders}
     },
   sendMesseges:async(data:any)=>{
@@ -878,8 +878,7 @@ export default  {
         return { status: false, message: "An error occurred while fetching conversations" };
       }
     },
-    
-    createConversation: async (data: any) => {
+  createConversation: async (data: any) => {
       try {
         const { senderId, recieverId } = data;
    
@@ -923,7 +922,7 @@ export default  {
         return { status: false, message: `Something went wrong: ${error}` };
       }
     },
-    getConverstationById: async (data: any) => {
+  getConverstationById: async (data: any) => {
       try {
         const { id } = data
         const response = await databaseSchema.RealTimeChat.find({ converstationId: id })
@@ -938,6 +937,78 @@ export default  {
         return { status: false, message: `Messages not found ..!${error}` }
       }
     },
+  cancelOrder:async(data:any)=>{
+    const { OrderId} = data;
+    const order = await databaseSchema.Order.findById(OrderId).populate('items.product');
+
+    if (!order) {
+      return { status: false, message: 'order not found' };
+    }
+    order.items.forEach((item) => {
+      const product = item.product as any; 
+      if (product) {
+        product.countInStock += item.quantity;
+      }
+    });
+    order.orderStatus='Cancelled'
+      await order.save();
+      return { status: true, data:order };
+  
+    },
+  updateOrderStatus:async(data:any)=>{
+    const { OrderId, newStatus } = data;
+    const order = await databaseSchema.Order.findById(OrderId).populate('items.product');
+    if (!order) {
+      return { status: false, message: 'Order not found' };
+    }
+    if(newStatus==='Cancelled'){
+      order.items.forEach((item) => {
+        const product = item.product as any;
+        if (product) {
+          product.countInStock += item.quantity;
+        }
+      }); 
+    }
+    order.orderStatus=newStatus
+      await order.save();
+      return { status: true, data:order };
+    },
+    review:async(data:any)=>{
+      try{
+      const {
+        orderId,
+        rating,
+        comment,
+        userId } = data;
+      const order = await databaseSchema.Order.findById(orderId).populate('items.product');
+      if (!order) {
+        return { status: false, message: 'Order not found' };
+      }
+ 
+      order.items.forEach(async (item) => {
+        const productId = item.product as any;
+        const product = await databaseSchema.Product.findById(productId._id);
+      
+        if (product) {
+          product.review.push({
+            user: userId,
+            rating: rating,
+            reviewdescription: comment,
+          });
+      
+          await product.save();
+        }
+      });
+      
+
+        await order.save();
+        return { status: true, data:order };
+    }
+  catch(err){
+    logger.error(err)
+  }
+  }
+    
     
 
 };

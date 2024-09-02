@@ -67,7 +67,7 @@ const AdminSidebar: React.FC = () => {
         </li>
         <li className="sidebar-item mb-2"> 
           <NavLink
-            to="/admin/orders"
+            to="/admin/orderList"
             className="text-blue-950 font-bold hover:bg-blue-800; rounded-xl p-3 flex items-center"
             
           >

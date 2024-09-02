@@ -103,7 +103,27 @@ export default () => {
     const paymentObject = new window.Razorpay(options);
     paymentObject.open();
   };
+  const handleCod=async()=>{
+    try{
+    const res = await axiosInstance.post('/api/auth/order', { cart ,paymentMethod:'COD'});
+    console.log(res);
+    
+    
 
+      if (res.status===200) {
+        console.log("Order created successfully:");
+        dispatch(clearCart());
+      
+        navigate('/order-confirmation', { state: { order:res?.data.data } });
+      } else {
+        console.error("Order creation failed");
+        alert("Order creation failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during payment processing:", error);
+      alert("An error occurred while processing your payment. Please try again.");
+    }
+  }
 
   const handleSubmit = async () => {
 
@@ -111,6 +131,8 @@ export default () => {
        handleRazorpayPayment();
     }else if (paymentMethod === 'Stripe') {
       setIsModalOpen(true);
+    }else if(paymentMethod === 'COD'){
+      handleCod()
     }
   };
   

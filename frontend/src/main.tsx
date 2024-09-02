@@ -40,6 +40,8 @@ import OrderConfirmationPages from './pages/OrderConfirmationPages';
 import OrderPage from './pages/OrderPage'
 import ChatPage from './pages/ChatPage';
 import VideoCall from './pages/VideoCall';
+import OrderDetailPage from './pages/OrderDetailPage';
+import AdminOrders from './pages/AdminOrders';
 
 const userRoutes = (
   <Route path='/' element={<App />}>
@@ -66,6 +68,7 @@ const userRoutes = (
       <Route path='orders' element={<OrderPage/>}/>
       <Route path='chat' element={<ChatPage/>}/>
       <Route path='/videoCall/:roomId' element={<VideoCall/>} ></Route>
+      <Route path='/orderDetail' element={<OrderDetailPage/>} ></Route>
     </Route>
   </Route>
 )
@@ -79,6 +82,7 @@ const adminRoutes=(
       <Route path='reportManagement' element={<ReportManagement/>}/>
       <Route path='posts' element={<Adminposts/>}/>
       <Route path='products' element={<Adminproducts/>}/>
+      <Route path='orderList' element={<AdminOrders/>}/>
     </Route>
   </Route>
 )

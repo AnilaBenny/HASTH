@@ -1,5 +1,6 @@
 import Banner from "../components/Banner/Banner";
 import Bannerafterfeature from "../components/Banner/Bannerafterfeature";
+import Chatbot from "../components/ChatBot/Chatbot";
 import FeaturedTag from "../components/Featured/FeaturedTag";
 import Featuredproducts from "../components/Featured/Featuredproducts";
 import Featuredinnovations from "../components/Featured/Feturedinnovations";
@@ -48,6 +49,8 @@ return(
       <br/>
       <FooterBanner/>
       <Footer/>
+      
+      <Chatbot/>
 </>
 )
 }

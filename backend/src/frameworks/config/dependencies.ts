@@ -5,9 +5,11 @@ import { userRegistration,otpVerification ,forgotPasswordUseCase,loginUseCase,up
          getCreatorUseCase,getProductsUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase,
          productEditUseCase,commentReplyUseCase,pinCommentUseCase,addtocartUseCase,deletecartItemUseCase,
          orderUseCase,sendMessegesUseCase,allorderUseCase,createConverstationUseCase,getConverstationsUseCase,
-         getConverstationByIdUseCase,sendImageUseCase,sendAudioUseCase
+         getConverstationByIdUseCase,sendImageUseCase,sendAudioUseCase,cancelOrderUseCase,updatestatusUseCase,
+         reviewUseCase
        } from "../../application/useCase"
-import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,verifyCreativeUseCase,getallReportUseCase} from "../../application/useCase/adminUseCase"
+import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,verifyCreativeUseCase,getallReportUseCase,
+        getallOrderUseCase} from "../../application/useCase/adminUseCase"
 
 
 const useCase:any={
@@ -49,7 +51,11 @@ const useCase:any={
     getConverstationsUseCase:getConverstationsUseCase,
     getConverstationByIdUseCase:getConverstationByIdUseCase,
     sendImageUseCase:sendImageUseCase,
-    sendAudioUseCase:sendAudioUseCase
+    sendAudioUseCase:sendAudioUseCase,
+    getallOrderUseCase:getallOrderUseCase,
+    cancelOrderUseCase:cancelOrderUseCase,
+    updatestatusUseCase:updatestatusUseCase,
+    reviewUseCase:reviewUseCase
 
 }
 const respository:any={

@@ -31,6 +31,9 @@ import getConverstationsUseCase from './getConverstationsUseCase';
 import getConverstationByIdUseCase from './getConverstationByIdUseCase';
 import sendImageUseCase from './sendImageUseCase';
 import sendAudioUseCase from './sendAudioUseCase';
+import updatestatusUseCase from "./updatestatusUseCase";
+import cancelOrderUseCase from "./cancelOrderUseCase";
+import reviewUseCase from "./reviewUseCase";
 export{
     userRegistration,
     loginUseCase,
@@ -64,7 +67,10 @@ export{
     getConverstationsUseCase,
     getConverstationByIdUseCase,
     sendImageUseCase,
-    sendAudioUseCase
+    sendAudioUseCase,
+    cancelOrderUseCase,
+    updatestatusUseCase,
+    reviewUseCase
     
 
 }

@@ -13,7 +13,8 @@ const {
   editPostController,editProductController,deletePostController,statusProductController,commentReplyController,
   pinCommentController,addtocartController,removecartitemController,razorpayController,orderController,
   allorderController,allMessagesController,getConversationsController,createConverstationController,
-  getConverstationByIdController
+  getConverstationByIdController,updateOrderStatusController,cancelOrderController,reviewController,
+  dialogflowController,
 }=userController(dependencies);
 
 
@@ -51,6 +52,12 @@ const {
   router.post('/createConverstation', createConverstationController)
   router.get('/getconversations',getConversationsController);
   router.get('/getConverstationById',getConverstationByIdController);
+  router.patch('/updateOrderStatus',updateOrderStatusController);
+  router.patch('/cancelOrder',cancelOrderController);
+  router.post('/review',reviewController);
+  router.post('/dialogflow',dialogflowController);
+  
+  
   
   
 
@@ -58,13 +65,15 @@ const {
   
 const { 
   AdminLoginController,getAllUserController,handleUserBlockController,
-  verifyCreativeController,getReportsController
+  verifyCreativeController,getReportsController,getallOrdersController
 }=adminController(dependencies);
 router.post('/admin/login',AdminLoginController);
 router.get('/getAllUsers',getAllUserController);
 router.patch('/handleUserBlock/:userId',handleUserBlockController);
 router.patch('/verifyCreative/:userId',verifyCreativeController);
 router.get('/reports',getReportsController);
+router.get('/admin/allorders',getallOrdersController);
+
 
 return router;
 }
