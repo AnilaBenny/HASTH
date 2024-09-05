@@ -7,7 +7,7 @@ const messageSchema=new Schema ({
     content:{type:String,required:true},
     type: { type: String, enum: ['text', 'image', 'video', 'voice_note'], required: true },
     read:{type:Boolean , required:true ,default:false},
-    conversationId:{type:String },
+    conversationId:{type:Schema.Types.ObjectId,required:true},
     timestamp: { type: Date, default: Date.now },
 
 })

@@ -59,11 +59,23 @@ const userSchema = new Schema({
       },
     },
   ],
+  supercoin: {
+    balance:{
+      type: Number,
+      default: 0
+    },
+    updatedAt:{
+      type: Date,
+    default: Date.now,    
+    }
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
+
+
 
 const User = model('User', userSchema);
 

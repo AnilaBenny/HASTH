@@ -75,6 +75,7 @@ const Profile: React.FC = () => {
     <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-md p-8 mb-6 w-full max-w-4xl">
         <h1 className="text-2xl font-semibold mb-4 text-gray-800">{initialValues.role}-Profile</h1>
+
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -92,7 +93,9 @@ const Profile: React.FC = () => {
                       alt="Profile"
                       className="object-cover w-full h-full"
                     />
+ 
                   </div>
+
                 </div>
                 </div>
 
@@ -142,6 +145,51 @@ const Profile: React.FC = () => {
                         placeholder="Enter your mobile number"
                       />
                       <ErrorMessage name="mobile" component="p" className="text-red-500 text-xs" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-slate-500" htmlFor="skills">
+                      skills
+                      </label>
+                      <Field
+                        type="skills"
+                        name="skills"
+                        className={`h-10 border mt-1 rounded px-4 w-full ${
+                          errors.skills ? "border-red-500" : "bg-gray-50"
+                        }`}
+                        placeholder="Enter your skills"
+                        
+                      />
+                      <ErrorMessage name="skills" component="p" className="text-red-500 text-xs" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-slate-500" htmlFor="education">
+                      education
+                      </label>
+                      <Field
+                        type="education"
+                        name="education"
+                        className={`h-10 border mt-1 rounded px-4 w-full ${
+                          errors.skills ? "border-red-500" : "bg-gray-50"
+                        }`}
+                        placeholder="Enter your education"
+                        
+                      />
+                      <ErrorMessage name="education" component="p" className="text-red-500 text-xs" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-slate-500" htmlFor="specification">
+                      specification
+                      </label>
+                      <Field
+                        type="specification"
+                        name="specification"
+                        className={`h-10 border mt-1 rounded px-4 w-full ${
+                          errors.skills ? "border-red-500" : "bg-gray-50"
+                        }`}
+                        placeholder="Enter your specification"
+                        
+                      />
+                      <ErrorMessage name="specification" component="p" className="text-red-500 text-xs" />
                     </div>
 
                     <div className="md:col-span-2">
@@ -222,12 +270,14 @@ const Profile: React.FC = () => {
                       Save
                     </button>
                   </div>
+  
                 </div>
               </div>
             </Form>
           )}
         </Formik>
       </div>
+
     </div>
   );
 };

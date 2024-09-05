@@ -15,6 +15,8 @@ export default () => {
   const navigate = useNavigate();
   const cart = useSelector((state: any) => state.cart.cart);
   const user = useSelector((state: any) => state.user.user);
+ 
+  
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [useExistingAddress, setUseExistingAddress] = useState(true);
@@ -156,8 +158,8 @@ export default () => {
             <div className="mb-6">
               <div className="bg-gray-100 rounded-lg p-4">
                 <h3 className="text-lg font-semibold mb-2 text-gray-700">Shipping Address</h3>
-                <p className="text-gray-600">{user.address.street}</p>
-                <p className="text-gray-600">{user.address.city}, {user.address.state} {user.address.zipCode}</p>
+                <p className="text-gray-600">{user.address[0].street}</p>
+                <p className="text-gray-600">{user.address[0].city}, {user.address[0].state} {user.address[0].zipCode}</p>
                 
                 <label className="flex items-center mt-4 text-gray-700">
                   <input

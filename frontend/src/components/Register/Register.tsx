@@ -9,6 +9,7 @@ import { initializeUser, setUser } from '../../store/slices/userSlice';
 import { useDispatch } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import apiService from '../../Services/Apicalls';
 
 const Register = function () {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ const Register = function () {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { handleGoogleSignIn } = useApiService();
 
   const initialValues = {
     name: '',
@@ -113,9 +115,6 @@ const Register = function () {
     }
   }, [location, navigate, dispatch]);
 
-  const handleGoogleSignIn = async () => {
-    window.location.href = 'http://localhost:8080/api/auth/google';
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center background-image">

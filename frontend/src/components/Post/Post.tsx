@@ -181,7 +181,7 @@ const Post: React.FC = () => {
                 resetForm();
                 setCroppedImages([]);
                 setVideoPreview(null);
-                fetchPosts();
+                setPosts(response.data.data)
             } else {
                 setError('Post submission failed: ' + response.data.message);
             }

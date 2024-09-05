@@ -7,12 +7,9 @@ export default (dependecies: any) => {
     const createConverstationController = async (req: Request, res: Response) => {
 
         try {
-            const { senderId, recieverId } = req.body
-            const data = {
-                senderId, recieverId
-            }
 
-            const response = await createConverstationUseCase(dependecies).executeFunction(data);
+
+            const response = await createConverstationUseCase(dependecies).executeFunction(req.body);
             
             console.log(response);
             

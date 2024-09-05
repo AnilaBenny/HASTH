@@ -7,7 +7,7 @@ export interface IOrderItem {
 }
 
 export interface IOrder extends Document {
-  user: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   items: IOrderItem[];
   totalAmount: number;
   shippingAddress: {

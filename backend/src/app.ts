@@ -69,6 +69,7 @@ cors:{
 
 
 
+
 // const pubClient = createClient({ url: 'redis://localhost:6379' });
 // const subClient = pubClient.duplicate();
 
@@ -78,11 +79,17 @@ cors:{
 
 
 let users:any=[]
-const addUser = (userId: string, socketId: string) => {
-  if (!users.some((user: any) => user.userId === userId)) {
-    users.push({ userId, socketId });
+const addUser = (receiverId: string,senderId:string,socketId:string,chatId:string) => {
+  const existingUserIndex = users.findIndex((user:any) => user.chatId === chatId);
+
+  if (existingUserIndex !== -1) {
+    return
+  } else {
+      users.push({ receiverId,senderId,socketId,chatId });
   }
-}
+  console.log('.....',users,'chat');
+  
+};
 
 
 const removeUser = (socketId: string) => {
@@ -95,7 +102,16 @@ const getUser = (userId: string) => {
   
   return users.find((user: any) => user.userId === userId);
 }
-
+const getChatId=(senderId: string,receiverId:string) => {
+   const chatId=users.filter((user: any) => {
+    console.log(user);
+    
+    return user.senderId === senderId&&user.receiverId === receiverId
+  });
+   console.log(chatId,'adgyqwteuqwfyqw');
+   
+   return chatId
+}
 
 
 
@@ -103,44 +119,42 @@ io.on("connection",(socket:Socket)=>{
   console.log('User connected to socket:', socket.id);
 
   socket.on('joinChat', (data: any) => {
-    console.log(data, 'inside....join...chat');
-    const { chatId, id } = data;
+    const { chatId,receiverId,senderId } = data;
 
-    addUser(id, socket.id);
-    io.emit('userList', users);
-    console.log('Emitting user list:', users);
-    io.to(chatId).emit('message', `User ${id} has joined the chat.`);
-  });
+    const existingUser = getChatId(senderId,receiverId);
+    
+    if (existingUser) {
+        existingUser.socketId = socket.id;
+    } else {
+        addUser(receiverId,senderId,socket.id,chatId);
+    }
+    socket.join(chatId);
+    
 
-  socket.on('sendMessage',async({senderId,recieverId,content,conversationId,type,timestamp},callback)=>{
+});
+
+  socket.on('sendMessage',async({senderId,receiverId,content,conversationId,type,timestamp},callback)=>{
     const {sendMessegesUseCase}=dependencies.useCase;
     const data={
       content,
-      recieverId,
+      receiverId,
       senderId,
       type,
       conversationId,
       timestamp, 
     };
-    console.log('....user',data);
-    
-    const response=await sendMessegesUseCase(dependencies).executeFunction(data);
-    console.log(response,'.....insend message');
-    
-    if(response && response.status&&response.data){
-      const recipient = getUser(recieverId);
-      const sender = getUser(senderId);
-      console.log(recipient,sender);
-      
 
-      if (recipient && sender) {
-        io.to(recipient.socketId).to(sender.socketId).emit('getMessage', data);
-      } else if (recipient) {
-        io.to(recipient.socketId).emit('getMessage', data);
-      } else if (sender) {
-        io.to(sender.socketId).emit('getMessage', data);
+    const response=await sendMessegesUseCase(dependencies).executeFunction(data);
+  
+    if(response && response.status&&response.data){
+    const chatId=getChatId(response.data.receiverId,response.data.senderId)
+    console.log('sdhjsahgd',chatId,'ajsghjagjhadhj');
+    
+      
+      if (chatId) {
+        io.to(chatId).emit('getMessage', response.data);
       }
-      }
+    }
       if (callback) {
         callback({ success: true, data:response.data });
       }
@@ -149,35 +163,30 @@ io.on("connection",(socket:Socket)=>{
 
   });
 
-  socket.on('sendImage',async({senderId,recieverId,content,conversationId,type,timestamp},callback)=>{
+  socket.on('sendImage',async({senderId,receiverId,content,conversationId,type,timestamp},callback)=>{
     const {sendImageUseCase}=dependencies.useCase;
     const data={
-      senderId,recieverId,content,conversationId,type,timestamp
+      senderId,receiverId,content,conversationId,type,timestamp
     };
     const response=await sendImageUseCase(dependencies).executeFunction(data);
     if(response && response.status && response.data){
-      const recipient = getUser(recieverId);
-      const sender = getUser(senderId);
-      console.log(recipient,sender);
-      
-
-      if (recipient && sender) {
-        io.to(recipient.socketId).to(sender.socketId).emit('getMessage', data);
-      } else if (recipient) {
-        io.to(recipient.socketId).emit('getMessage', data);
-      } else if (sender) {
-        io.to(sender.socketId).emit('getMessage', data);
-      }
+      const chatId=getChatId(response.data.receiverId,response.data.senderId)
+        
+        if (chatId) {
+    
+          
+          io.to(chatId).emit('getMessage', response.data);
+        }
       }
       if (callback) {
         callback({ success: true, data:response.data });
       }
   });
-  socket.on('audioStream',async({senderId,recieverId,content,conversationId,type,timestamp},callback)=>{
+  socket.on('audioStream',async({senderId,receiverId,content,conversationId,type,timestamp},callback)=>{
     const { sendAudioUseCase } = dependencies.useCase;
     const data = {
       content,
-      recieverId,
+      receiverId,
       senderId,
       type,
       conversationId,
@@ -186,18 +195,9 @@ io.on("connection",(socket:Socket)=>{
 
     const response = await sendAudioUseCase(dependencies).executeFunction(data);
     if(response && response.status && response.data){
-      const recipient = getUser(recieverId);
-      const sender = getUser(senderId);
-      console.log(recipient,sender);
-      
-
-      if (recipient && sender) {
-        io.to(recipient.socketId).to(sender.socketId).emit('getMessage', data);
-      } else if (recipient) {
-        io.to(recipient.socketId).emit('getMessage', data);
-      } else if (sender) {
-        io.to(sender.socketId).emit('getMessage', data);
-      }
+      const chatId = getChatId(receiverId,senderId);      
+        io.to(chatId).emit('getMessage', data);
+    
       }
       if (callback) {
         callback({ success: true, data:response.data });
@@ -239,9 +239,10 @@ io.on("connection",(socket:Socket)=>{
   
   
 
-socket.on('disconnect', () => {
+socket.on('disconnect', (chatId) => {
     users = users.filter((user:any) => user.socketId !== socket.id);
     removeUser(socket.id);
+    socket.leave(chatId);
     io.emit('userList', users);
   });
 

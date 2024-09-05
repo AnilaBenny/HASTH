@@ -4,8 +4,8 @@ import mongoose, { Schema } from 'mongoose';
 
 const conversationSchema = new mongoose.Schema({
     members: [{
-       userId:{ type: Schema.Types.ObjectId, required: true,role:'user', ref: "User" },
-       creativeId:{ type: Schema.Types.ObjectId, required: true,role:'creative', ref: "User" },
+       senderId:{ type: Schema.Types.ObjectId, required: true, ref: "User" },
+       receiverId:{ type: Schema.Types.ObjectId, required: true, ref: "User" },
     }],
     lastUpdate: {
         type: Date,

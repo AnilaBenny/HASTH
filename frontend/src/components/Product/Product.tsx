@@ -97,7 +97,7 @@ const Product: React.FC = () => {
         try {
             const response = await axiosInstance.get<{ data: Product[] }>('/api/auth/products');
             console.log(response);
-            const filteredData=response.data.data.filter((product)=>user._id!==product?.userId&&user._id!==product?.collab)
+            const filteredData=response.data.data.filter((product)=>user._id!==product?.userId._id&&user._id!==product?.collab._id)
             setProducts(filteredData);
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -177,8 +177,6 @@ const Product: React.FC = () => {
         navigate(`/productDetail`, { state: { product } });
     };
     
-        
-
     const dispatch=useDispatch()
     const cart=useSelector((state:any)=>state.cart.cart)
 const handleAddToCart = async (productId: string) => {
@@ -223,7 +221,7 @@ const handleAddToCart = async (productId: string) => {
 const showyourproducts=async()=>{
     const response = await axiosInstance.get<{ data: Product[] }>('/api/auth/products');
     console.log(response);
-    const filteredData=response.data.data.filter((product)=>user._id===product?.userId||user._id===product?.collab)
+    const filteredData=response.data.data.filter((product)=>user._id===product?.userId._id||user._id===product?.collab._id)
     setProducts(filteredData);
     setAddtoCart(false)
 }

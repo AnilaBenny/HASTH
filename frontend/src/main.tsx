@@ -42,6 +42,7 @@ import ChatPage from './pages/ChatPage';
 import VideoCall from './pages/VideoCall';
 import OrderDetailPage from './pages/OrderDetailPage';
 import AdminOrders from './pages/AdminOrders';
+import ViewAnalyticsPage from './pages/ViewAnalyticsPage';
 
 const userRoutes = (
   <Route path='/' element={<App />}>
@@ -69,6 +70,8 @@ const userRoutes = (
       <Route path='chat' element={<ChatPage/>}/>
       <Route path='/videoCall/:roomId' element={<VideoCall/>} ></Route>
       <Route path='/orderDetail' element={<OrderDetailPage/>} ></Route>
+      <Route path='/viewAnalytics' element={<ViewAnalyticsPage/>} ></Route>
+      
     </Route>
   </Route>
 )

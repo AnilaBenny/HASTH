@@ -235,7 +235,13 @@ export default  {
       });
   
        await post.save();
-       const response =await databaseSchema.Post.find().sort({ createdAt: -1 })
+       const response =await databaseSchema.Post.find().sort({ createdAt: -1 }).populate('userId')
+       .populate({
+           path: 'comments.userId',
+       }).populate({
+         path: 'comments.replies.userId',
+         
+       });
   
       if (response) {
         return { status: true, data: response };
@@ -450,7 +456,7 @@ export default  {
   },
   getProducts:async(data:any)=>{
     try {
-      const products = await databaseSchema.Product.find()
+      const products = await databaseSchema.Product.find().populate('userId').populate('collab')
     .sort({ createdAt: -1 })
       return {status:true,data:products};
     } catch (error) {
@@ -671,12 +677,10 @@ export default  {
     try {
       const { cart, paymentMethod, shippingAddress } = data;
   
-  
       if (!cart || !cart.userId) {
         throw new Error('Invalid cart or user ID');
       }
   
-      
       const orderItems = cart.items.map((item: any) => ({
         product: item.productId,
         quantity: item.quantity,
@@ -689,7 +693,22 @@ export default  {
         throw new Error('User not found');
       }
 
+      for (const item of orderItems) {
+        const product = await databaseSchema.Product.findById(item.product);
+        if (!product) {
+          throw new Error(`Product not found for ID: ${item.product}`);
+        }
   
+        if (product.countInStock < item.quantity) {
+          throw new Error(`Not enough stock for product: ${product.name}`);
+        }
+  
+        product.countInStock -= item.quantity;
+
+        product.popularity = (product.popularity || 0) + item.quantity;
+
+        await product.save();
+      }
      
       const newOrder = new databaseSchema.Order({
         userId: user._id,
@@ -704,6 +723,7 @@ export default  {
   
       
       const savedOrder = await newOrder.save();
+
   
       await databaseSchema.Cart.findByIdAndUpdate(
         cart._id,
@@ -727,7 +747,7 @@ export default  {
   sendMesseges:async(data:any)=>{
       try {
         const { content,
-          recieverId,
+          receiverId,
           senderId,
           type,
           conversationId
@@ -737,7 +757,7 @@ export default  {
           conversationId: conversationId,
           content: content,
           senderId: senderId,
-          receiverId: recieverId,
+          receiverId: receiverId,
           type: type,
         })
         const responce = await message.save()
@@ -755,7 +775,7 @@ export default  {
   sendImage:async(data:any)=>{
     try {
       const { content,
-        recieverId,
+        receiverId,
         senderId,
         type,
         conversationId
@@ -765,7 +785,7 @@ export default  {
         conversationId: conversationId,
         content: content,
         senderId: senderId,
-        receiverId: recieverId,
+        receiverId: receiverId,
         type: type,
       })
       const responce = await message.save()
@@ -783,7 +803,7 @@ export default  {
   sendAudio:async(data:any)=>{
     try {
       const { content,
-        recieverId,
+        receiverId,
         senderId,
         type,
         conversationId
@@ -793,7 +813,7 @@ export default  {
         conversationId: conversationId,
         content: content,
         senderId: senderId,
-        receiverId: recieverId,
+        receiverId: receiverId,
         type: type,
       })
       const responce = await message.save()
@@ -808,125 +828,105 @@ export default  {
       return { status: true, message: `something went wrong failed ${error}` }
     }
   },
-  getConversation: async (data: any) => {
-      try {
-        const { id, role } = data;
-        let conversations: any;
-    
-      
-        if (role === 'user') {
-          conversations = await databaseSchema.Conversation.find({ "members.userId": id });
-          const creativeConversations: any = [];
-    
-          for (let i = 0; i < conversations.length; i++) {
-            const conversation = conversations[i];
-            const memberIds = conversation.members.map((member: any) => member.creativeId);
-      
-           
-            const receiverId = memberIds.find((memberId: string) => memberId !== id);
-      
-            const creative = await databaseSchema.User.findById(receiverId);
-      
-            const creativeConversation = {
-              creative: creative,
-              conversation: conversation,
-            };
-      
-            creativeConversations.push(creativeConversation);
+ getConversation :async (data:any) => {
+    try {
+      const { id } = data;
+      const conversations = await databaseSchema.Conversation.find({
+        "members": {
+          $elemMatch: {
+            $or: [
+              { senderId: id },
+              { receiverId: id }
+            ]
           }
-      
-          if (creativeConversations.length > 0) {
-            return { status: true, data: creativeConversations };
-          } else {
-            return { status: true, data: [] };
-          }
-        } else {
-          conversations = await databaseSchema.Conversation.find({ "members.creativeId": id });
-          const userConversations: any = [];
-      for (let i = 0; i < conversations.length; i++) {
-
-        const userId = conversations[i].members[0].userId;
-
-
-        const user: any = await databaseSchema.User.findById(userId);
-        console.log(userId,"THIS IS USER ",i);
-        
-        if(user){
-          const userConversation = {
-            user: user,
-            conversation: conversations[i]
-          };
-          userConversations.push(userConversation);
         }
-       
+      }).sort({lastUpdate:-1});
+  
+      if (!conversations.length) {
+        return { status: true, data: [] };
       }
-
-      if (userConversations.length > 0) {
-
-        return { status: true, data: userConversations }
-
-      }
-
-      else {
-        return { status: true, data: [] }
-      }
+  
+      const memberIds = conversations.flatMap(conversation =>
+        conversation.members.flatMap(member => [member.senderId, member.receiverId])
+      );
+  
+      const uniqueMemberIds = [...new Set(memberIds.filter(memberId => memberId.toString() !== id.toString()))];
+  
+      const users = await databaseSchema.User.find({ _id: { $in: uniqueMemberIds } });
+  
+      const userMap = new Map(users.map(user => [user._id.toString(), user]));
+  
+      const userConversations = conversations.map(conversation => {
+        const otherMember = conversation.members.find(member =>
+          member.senderId.toString() !== id.toString() || member.receiverId.toString() !== id.toString()
+        );
+  
+        const otherUserId = otherMember?.senderId.toString() === id.toString() ? 
+          otherMember?.receiverId : otherMember?.senderId;
+  
+        return {
+          receiver: otherUserId ? userMap.get(otherUserId.toString()) : null,
+          conversation
+        };
+      });
+  
+      return { status: true, data: userConversations };
+  
+    } catch (error) {
+      console.error("An error occurred while fetching conversations:", error);
+      return { status: false, message: "An error occurred while fetching conversations" };
+    }
+  },
+ createConversation :async (data:any) => {
+    try {
+      
+      const { senderId, receiverId } = data;
+      
+  
+      const existingConversation = await databaseSchema.Conversation.findOne({
+        members: {
+          $all: [
+            { $elemMatch: { senderId, receiverId } },
+            { $elemMatch: { senderId: receiverId, receiverId: senderId } }
+          ]
         }
-    
-     
-      } catch (error) {
-        console.error("An error occurred while fetching conversations:", error);
-        return { status: false, message: "An error occurred while fetching conversations" };
-      }
-    },
-  createConversation: async (data: any) => {
-      try {
-        const { senderId, recieverId } = data;
-   
+      });
   
-  
-   
-        const existingConversation = await databaseSchema.Conversation.findOne({
-          members: {
-            $elemMatch: {
-              creativeId: recieverId,
-              userId: senderId
-            }
-          }
+      if (existingConversation) {
+        return { status: true, data: existingConversation };
+      } else {
+        const conversation = new databaseSchema.Conversation({
+          members: [
+            { senderId, receiverId },
+            { senderId: receiverId, receiverId: senderId }
+          ]
         });
   
-        if (existingConversation) {
-          return { status: true, data: existingConversation };
-        } else {
-
-          const conversation = new databaseSchema.Conversation({
-            members: [
-              {
-                creativeId: recieverId,
-                userId: senderId
-              }
-            ]
-          });
+        const savedConversation = await conversation.save();
   
-          const response = await conversation.save();
+        const message = new databaseSchema.RealTimeChat({
+          conversationId: savedConversation._id,
+          content: 'Hi buddy, I want to connect with you',
+          senderId,
+          receiverId,
+          type: 'text',
+        });
   
-        
+        await message.save();
   
-          if (response) {
-            return { status: true, data: response };
-  
-          } else {
-            return { status: false, message: "No conversation created..!" };
-          }
-        }
-      } catch (error) {
-        return { status: false, message: `Something went wrong: ${error}` };
+        return { status: true, data: savedConversation };
       }
-    },
+    } catch (error) {
+      console.error('Error in createConversation:', error);
+      return { status: false, message: `Something went wrong: ${error}` };
+    }
+  },
   getConverstationById: async (data: any) => {
       try {
         const { id } = data
-        const response = await databaseSchema.RealTimeChat.find({ converstationId: id })
-  
+        const response = await databaseSchema.RealTimeChat.find({ conversationId: id})
+        console.log('ressijnget concersationd',response);
+        
         if (response) {
           return { status: true, data: response }
         } else {
@@ -944,12 +944,18 @@ export default  {
     if (!order) {
       return { status: false, message: 'order not found' };
     }
-    order.items.forEach((item) => {
-      const product = item.product as any; 
-      if (product) {
-        product.countInStock += item.quantity;
+    for (const item of order.items) {
+      const product = await databaseSchema.Product.findById(item.product);
+      if (!product) {
+        throw new Error(`Product not found for ID: ${item.product}`);
       }
-    });
+
+      product.countInStock += item.quantity;
+
+      product.popularity = (product.popularity || 0) - item.quantity;
+
+      await product.save();
+    }
     order.orderStatus='Cancelled'
       await order.save();
       return { status: true, data:order };
@@ -962,18 +968,48 @@ export default  {
       return { status: false, message: 'Order not found' };
     }
     if(newStatus==='Cancelled'){
-      order.items.forEach((item) => {
-        const product = item.product as any;
-        if (product) {
-          product.countInStock += item.quantity;
+      for (const item of order.items) {
+        const product = await databaseSchema.Product.findById(item.product);
+        if (!product) {
+          throw new Error(`Product not found for ID: ${item.product}`);
         }
-      }); 
+  
+        product.countInStock += item.quantity;
+
+        product.popularity = (product.popularity || 0) - item.quantity;
+
+        await product.save();
+      }
     }
+    if (newStatus === 'Delivered') {
+      if (order?.userId) {
+        try {
+          const user = await databaseSchema.User.findById(order.userId);
+        
+          if (user) {
+            if (!user.supercoin) {
+              user.supercoin = { balance: 0, updatedAt: new Date() };
+            }
+        
+            const supercoinReward = Math.floor((order.totalAmount || 0) / 10);
+            
+            user.supercoin.balance = (user.supercoin.balance || 0) + supercoinReward;
+            user.supercoin.updatedAt = new Date();
+            
+            await user.save();
+          }
+        } catch (error) {
+          console.error('Error updating user supercoin:', error);
+        }
+      }
+    }
+    
+
     order.orderStatus=newStatus
       await order.save();
       return { status: true, data:order };
     },
-    review:async(data:any)=>{
+   review:async(data:any)=>{
       try{
       const {
         orderId,
@@ -1007,10 +1043,83 @@ export default  {
   catch(err){
     logger.error(err)
   }
+  },
+  markMessagesAsRead:async (data: { messageIds: string[] }) => {
+    try {
+      const { messageIds } = data;
+     
+  
+      const conversation = await databaseSchema.Conversation.findById(messageIds);
+      
+      if (!conversation) {
+        logger.warn(`Conversation not found for message ID: ${messageIds}`);
+        return { success: false, error: 'Conversation not found' };
+      }
+  
+      const result = await databaseSchema.RealTimeChat.updateMany(
+        { conversationId: { $in: messageIds }, read: false },
+        { $set: { read: true } }
+      );
+      console.log('conversation:', result);
+  
+      return { status: true, modifiedCount: result };
+    } catch (error) {
+      logger.error('Error marking messages as read:', error);
+      return { success: false, error: 'Failed to mark messages as read' };
+    }
+  },
+  allListNumber: async (data: any) => {
+    try {
+      let users, orders, products, creatives,posts;
+  
+      if (data === 'daily') {
+        const tenDaysAgo = new Date();
+        tenDaysAgo.setDate(tenDaysAgo.getDate() - 1);
+  
+        users = await databaseSchema.User.countDocuments({ role: 'user', createdAt: { $gte: tenDaysAgo } });
+        orders = await databaseSchema.Order.countDocuments({ createdAt: { $gte: tenDaysAgo } });
+        products = await databaseSchema.Product.countDocuments({ createdAt: { $gte: tenDaysAgo } });
+        creatives = await databaseSchema.User.countDocuments({ role: 'creative', createdAt: { $gte: tenDaysAgo } });
+        posts = await databaseSchema.Post.countDocuments({createdAt: { $gte: tenDaysAgo } });
+  
+      } else if (data === 'weekly') {
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - (7));
+  
+        users = await databaseSchema.User.countDocuments({ role: 'user', createdAt: { $gte: oneWeekAgo } });
+        orders = await databaseSchema.Order.countDocuments({ createdAt: { $gte: oneWeekAgo } });
+        products = await databaseSchema.Product.countDocuments({ createdAt: { $gte: oneWeekAgo } });
+        creatives = await databaseSchema.User.countDocuments({ role: 'creative', createdAt: { $gte: oneWeekAgo } });
+        posts = await databaseSchema.Post.countDocuments({createdAt: { $gte: oneWeekAgo } });
+      } else if (data === 'monthly') {
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  
+        users = await databaseSchema.User.countDocuments({ role: 'user', createdAt: { $gte: oneMonthAgo } });
+        orders = await databaseSchema.Order.countDocuments({ createdAt: { $gte: oneMonthAgo } });
+        products = await databaseSchema.Product.countDocuments({ createdAt: { $gte: oneMonthAgo } });
+        posts = await databaseSchema.Post.countDocuments({createdAt: { $gte: oneMonthAgo } });
+        creatives = await databaseSchema.User.countDocuments({ role: 'creative', createdAt: { $gte: oneMonthAgo } });
+  
+      } else {
+        users = await databaseSchema.User.countDocuments({ role: 'user' });
+        orders = await databaseSchema.Order.countDocuments();
+        products = await databaseSchema.Product.countDocuments();
+        creatives = await databaseSchema.User.countDocuments({ role: 'creative' });
+        posts = await databaseSchema.Post.countDocuments();
+
+      }
+  
+      return { status: true, data: { users, orders, products, creatives,posts } };
+    } catch (error) {
+      logger.error('Error in allListNumber:', error);
+      return { status: false, error: 'Failed to retrieve all list numbers' };
+    }
   }
-    
+  
+  
     
 
-};
+}
 
 

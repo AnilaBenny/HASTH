@@ -4,8 +4,6 @@ import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import PostActions from '../Post/postActions';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useSocket } from '../RealTimeChat/socket';
-import { Socket } from 'socket.io-client';
 import { useSelector } from 'react-redux';
 
 interface Post {
@@ -88,8 +86,10 @@ if (!user) {
     try{
         const data = {
           senderId: currentUser._id,
-          recieverId: user?._id,
+          receiverId: user._id,
         };
+        console.log(data,',.sdbjaks');
+        
   
         const response = await axiosInstance.post(
           "/api/auth/createConverstation",

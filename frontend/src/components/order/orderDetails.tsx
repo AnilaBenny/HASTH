@@ -3,10 +3,14 @@ import { useLocation } from 'react-router-dom';
 import ReviewForm from './ReviewForm';
 import { FaShoppingCart, FaBox, FaShippingFast, FaCheckCircle, FaClock, FaBan } from 'react-icons/fa';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
+import Invoice from '../Invoice/Invoice';
+import { toast } from 'react-toastify';
 
 const OrderStages = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
 
+
 const StageIcon = ({ stage, isActive, isCompleted }) => {
+  
   const icons = {
     Pending: FaClock,
     Processing: FaShoppingCart,
@@ -46,6 +50,7 @@ const OrderDetails = () => {
     console.log(`Order status updated to: ${newStatus}`);
     const response=await axiosInstance.patch('/api/auth/updateOrderStatus',{OrderId:order?._id,newStatus})
     setOrder(response.data.data)
+    toast.success('status update successfully')
   };
 
   const handleCancellationRequest = async() => {
@@ -69,23 +74,34 @@ const OrderDetails = () => {
     const stageIndex = OrderStages.indexOf(stage);
     return stageIndex > currentStatusIndex;
   });
+ 
+  
   
   return (
     <div className="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen py-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow-2xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-3xl">
-          <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-800 flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-white">Order #{order.orderId}</h2>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium
-              ${order.orderStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800' :
-                order.orderStatus === 'Shipped' ? 'bg-blue-100 text-blue-800' :
-                order.orderStatus === 'Delivered' ? 'bg-green-100 text-green-800' :
-                order.orderStatus === 'Cancelled' ? 'bg-red-100 text-red-800' :
-                'bg-gray-100 text-gray-800'
-              }`}>
+        <div className="p-6 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-3xl font-bold text-white tracking-wide">Order #{order.orderId}</h2>
+            <div className='flex'>
+            <span
+              className={`px-4 py-2 rounded-full text-sm font-semibold shadow-md me-5
+                ${order.orderStatus === 'Processing' ? 'bg-yellow-100 text-yellow-900' :
+                order.orderStatus === 'Shipped' ? 'bg-blue-100 text-blue-900' :
+                order.orderStatus === 'Delivered' ? 'bg-green-100 text-green-900' :
+                order.orderStatus === 'Cancelled' ? 'bg-red-100 text-red-900' :
+                'bg-gray-100 text-gray-900'
+              }`}
+            >
               {order.orderStatus}
             </span>
+            {!isTrue && order.orderStatus==='Delivered'&&<Invoice invoiceData={order}/>}
+            </div>
           </div>
+
+        </div>
+
           <div className="p-6 md:p-10">
             <div className="mb-10">
               <div className="flex justify-between items-center mb-6">
@@ -146,6 +162,11 @@ const OrderDetails = () => {
                 ))}
               </ul>
             </div>
+       
+           
+            
+       
+         
             
             {isTrue && (
               <div className="mt-10">
@@ -157,8 +178,9 @@ const OrderDetails = () => {
                     onChange={(e) => setNewStatus(e.target.value)}
                     className="w-full sm:w-[200px] p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Select new status</option>
-                    {filteredOrderStages.map((stage) => (
+                    <option value="">{order.orderStatus}</option>
+                    {filteredOrderStages.filter((stage) => !(order.orderStatus === 'Delivered' && stage === 'Cancelled'))
+                    .map((stage) => (
                       <option key={stage} value={stage}>{stage}</option>
                     ))}
                   </select>

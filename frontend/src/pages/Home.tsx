@@ -6,6 +6,7 @@ import Featuredproducts from "../components/Featured/Featuredproducts";
 import Featuredinnovations from "../components/Featured/Feturedinnovations";
 import Footer from "../components/Footer/Footer";
 import FooterBanner from "../components/Footer/FooterBanner";
+import SuperCoins from "../components/superCoins/SuperCoins";
 const Home:React.FC=()=>{
 return(
 <>
@@ -51,6 +52,7 @@ return(
       <Footer/>
       
       <Chatbot/>
+      <SuperCoins/>
 </>
 )
 }

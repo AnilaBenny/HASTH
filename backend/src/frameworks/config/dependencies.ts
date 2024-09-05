@@ -6,7 +6,7 @@ import { userRegistration,otpVerification ,forgotPasswordUseCase,loginUseCase,up
          productEditUseCase,commentReplyUseCase,pinCommentUseCase,addtocartUseCase,deletecartItemUseCase,
          orderUseCase,sendMessegesUseCase,allorderUseCase,createConverstationUseCase,getConverstationsUseCase,
          getConverstationByIdUseCase,sendImageUseCase,sendAudioUseCase,cancelOrderUseCase,updatestatusUseCase,
-         reviewUseCase
+         reviewUseCase,markMessagesAsReadUseCase,allListNumberUseCase
        } from "../../application/useCase"
 import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,verifyCreativeUseCase,getallReportUseCase,
         getallOrderUseCase} from "../../application/useCase/adminUseCase"
@@ -55,7 +55,9 @@ const useCase:any={
     getallOrderUseCase:getallOrderUseCase,
     cancelOrderUseCase:cancelOrderUseCase,
     updatestatusUseCase:updatestatusUseCase,
-    reviewUseCase:reviewUseCase
+    reviewUseCase:reviewUseCase,
+    markMessagesAsReadUseCase:markMessagesAsReadUseCase,
+    allListNumberUseCase:allListNumberUseCase
 
 }
 const respository:any={

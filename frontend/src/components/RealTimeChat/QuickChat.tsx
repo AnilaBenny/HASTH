@@ -2,36 +2,27 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { format } from 'date-fns';
-import { PhotoIcon, XMarkIcon, PaperAirplaneIcon, MicrophoneIcon, TrashIcon, PauseIcon, PlayIcon,VideoCameraIcon  } from '@heroicons/react/24/outline';
+import { PhotoIcon, XMarkIcon, PaperAirplaneIcon, MicrophoneIcon, TrashIcon, PauseIcon, PlayIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import EmojiPicker from 'emoji-picker-react';
 import 'react-h5-audio-player/lib/styles.css';
 import { useSocket } from './socket';
 import { Socket } from 'socket.io-client';
-import VideoCall from './VideoCall';
 import { useNavigate } from 'react-router-dom';
 
 interface Message {
   senderId: string;
-  recieverId: string;
+  receiverId: string;
   content: string;
   type: 'text' | 'image' | 'voice_note';
   conversationId: string;
   timestamp: string;
 }
 
-interface Conversation {
-  conversation: {
-    _id: string;
-    lastMessage?: { content: string };
-  };
-  user: { _id: string; name: string; image: string };
-  creative: { _id: string; name: string; image: string };
-}
 
 const QuickChat: React.FC = () => {
-  const socket: Socket|null= useSocket();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const socket: Socket | null = useSocket();
+  const [conversations, setConversations] = useState([]);
+  const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -47,36 +38,49 @@ const QuickChat: React.FC = () => {
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [incomingCall,setIncomingCall]=useState(null);
+  const [incomingCall, setIncomingCall] = useState<{ roomId: string; caller: string } | null>(null);
   const [isCallPending, setIsCallPending] = useState(false);
-  const [IsCallInitiated,setIsCallInitiated]=useState(false);
-  
-  useEffect(() => {
-    fetchConversations();
-  }, [user.user._id, user.user.role]);
+  const [isCallInitiated, setIsCallInitiated] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (selectedConversation) {
-      fetchMessages(selectedConversation.conversation._id);
-    }
-  }, [selectedConversation]);
+    fetchConversations();
+  }, [user.user._id]);
+
+
 
   useEffect(() => {
     if (socket) {
       socket.on('getMessage', (data: Message) => {
         console.log('Received message:', data);
-        if (data.conversationId === selectedConversation?.conversation._id) {
-          setMessages((prevMessages) => [...prevMessages, data]);
-        }
-        
+        setMessages((prevMessages) => [...prevMessages, data]);
       });
-  
+
+      socket.on('incomingCall', (data: { roomId: string; caller: string }) => {
+        setIncomingCall(data);
+      });
+
+      socket.on('callAccepted', ({ roomId, userId }) => {
+        setIsCallPending(false);
+        navigate(`/videoCall/${roomId}`);
+      });
+
+      socket.on('callRejected', () => {
+        setIsCallPending(false);
+        console.log("Call was rejected");
+      });
+      console.log('Socket connected:', socket.connected);
+      socket.on('connect', () => console.log('Socket connected'));
+      socket.on('disconnect', () => console.log('Socket disconnected'));
+
       return () => {
         socket.off('getMessage');
+        socket.off('incomingCall');
+        socket.off('callAccepted');
+        socket.off('callRejected');
       };
     }
-  }, [socket, selectedConversation]);
-  
+  }, [socket,selectedConversation]);
 
   useEffect(() => {
     messageRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -84,7 +88,7 @@ const QuickChat: React.FC = () => {
 
   const fetchConversations = async () => {
     try {
-      const response = await axiosInstance.get(`/api/auth/getconversations?id=${user.user._id}&role=${user.user.role}`);
+      const response = await axiosInstance.get(`/api/auth/getconversations?id=${user.user._id}`);
       if (response.data.status) {
         setConversations(response.data.data);
       }
@@ -104,10 +108,19 @@ const QuickChat: React.FC = () => {
     }
   };
 
-  const handleConversationSelect = (conversation: Conversation) => {
+  const handleConversationSelect = (conversation: any) => {
     setSelectedConversation(conversation);
+    console.log('concid',conversation.conversation._id);
+    
+    fetchMessages(conversation.conversation._id);
     if (socket) {
-      socket.emit('joinChat', { id: user.user._id, chatId: conversation.conversation._id });
+      socket.emit('joinChat', { 
+        senderId: user.user._id, 
+        receiverId: conversation.receiver._id, 
+        chatId: conversation.conversation._id
+      });
+
+
     }
   };
 
@@ -115,25 +128,24 @@ const QuickChat: React.FC = () => {
     if (messageInput.trim() && selectedConversation && socket) {
       const newMessage: Message = {
         senderId: user.user._id,
-        recieverId: user.user.role === 'user' ? selectedConversation.creative._id : selectedConversation.user._id,
+        receiverId: selectedConversation.receiver._id ,
         content: messageInput,
         type: 'text',
         conversationId: selectedConversation.conversation._id,
         timestamp: new Date().toISOString(),
       };
-  
+      console.log(newMessage,'kkkk');
+      
+
       setMessageInput('');
-  
+
       socket.emit('sendMessage', newMessage, (response: any) => {
-        if(response.success){
+        if (response.success) {
 
         }
-        
-
       });
     }
   };
-  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -152,24 +164,23 @@ const QuickChat: React.FC = () => {
       console.error('Missing required data for sending image');
       return;
     }
-  
+
     const reader = new FileReader();
     reader.onload = () => {
       const base64Image = reader.result as string;
       const newMessage: Message = {
         senderId: user.user._id,
-        recieverId: user.user.role === 'user' ? selectedConversation.creative._id : selectedConversation.user._id,
+        receiverId: selectedConversation.receiver._id,
         content: base64Image,
         type: 'image',
         conversationId: selectedConversation.conversation._id,
         timestamp: new Date().toISOString(),
       };
-      console.log(newMessage);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
       setImagePreview(null);
-          setSelectedFile(null);
-      
+      setSelectedFile(null);
       socket.emit('sendImage', newMessage, () => {
-     
+
       });
     };
     reader.onerror = (error) => {
@@ -177,194 +188,174 @@ const QuickChat: React.FC = () => {
     };
     reader.readAsDataURL(selectedFile);
   };
+
   const toggleEmojiPicker = () => setEmojiPickerOpen(!emojiPickerOpen);
 
   const onEmojiClick = (emoji: any) => {
     setMessageInput((prev) => prev + (emoji.native || emoji.emoji || ''));
     setEmojiPickerOpen(false);
   };
-//audio
 
-const startRecording = async () => {
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setAudioStream(stream);
+  const startRecording = async () => {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        setAudioStream(stream);
 
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
 
-      const chunks: BlobPart[] = [];
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunks.push(event.data);
-        }
-      };
+        const chunks: BlobPart[] = [];
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            chunks.push(event.data);
+          }
+        };
 
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'audio/webm' });
-        setAudioData(blob);
-        setAudioURL(URL.createObjectURL(blob));
-      };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(chunks, { type: 'audio/webm' });
+          setAudioData(blob);
+          setAudioURL(URL.createObjectURL(blob));
+        };
 
-      mediaRecorder.start();
-      setIsRecording(true);
+        mediaRecorder.start();
+        setIsRecording(true);
+        startTimer();
+      } catch (error) {
+        console.error("Error accessing microphone:", error);
+      }
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      setIsPaused(false);
+      stopTimer();
+      if (audioStream) {
+        audioStream.getTracks().forEach(track => track.stop());
+      }
+    }
+  };
+
+  const pauseRecording = () => {
+    if (mediaRecorderRef.current && isRecording && !isPaused) {
+      mediaRecorderRef.current.pause();
+      setIsPaused(true);
+      stopTimer();
+    }
+  };
+
+  const resumeRecording = () => {
+    if (mediaRecorderRef.current && isRecording && isPaused) {
+      mediaRecorderRef.current.resume();
+      setIsPaused(false);
       startTimer();
-    } catch (error) {
-      console.error("Error accessing microphone:", error);
     }
-  }
-};
+  };
 
-const stopRecording = () => {
-  if (mediaRecorderRef.current && isRecording) {
-    mediaRecorderRef.current.stop();
-    setIsRecording(false);
-    setIsPaused(false);
-    stopTimer();
-    if (audioStream) {
-      audioStream.getTracks().forEach(track => track.stop());
+  const deleteRecording = () => {
+    setAudioData(null);
+    setAudioURL(null);
+    setRecordingDuration(0);
+  };
+
+  const startTimer = () => {
+    if (recordingIntervalRef.current) clearInterval(recordingIntervalRef.current);
+    recordingIntervalRef.current = setInterval(() => {
+      setRecordingDuration(prev => prev + 1);
+    }, 1000);
+  };
+
+  const stopTimer = () => {
+    if (recordingIntervalRef.current) {
+      clearInterval(recordingIntervalRef.current);
     }
-  }
-};
+  };
 
-const pauseRecording = () => {
-  if (mediaRecorderRef.current && isRecording && !isPaused) {
-    mediaRecorderRef.current.pause();
-    setIsPaused(true);
-    stopTimer();
-  }
-};
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
-const resumeRecording = () => {
-  if (mediaRecorderRef.current && isRecording && isPaused) {
-    mediaRecorderRef.current.resume();
-    setIsPaused(false);
-    startTimer();
-  }
-};
+  const sendVoiceMessage = () => {
+    if (audioData && socket && selectedConversation) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64Audio = reader.result as string;
+        const newMessage: Message = {
+          senderId: user.user._id,
+          receiverId: selectedConversation.receiver._id,
+          content: base64Audio,
+          type: 'voice_note',
+          conversationId: selectedConversation.conversation._id,
+          timestamp: new Date().toISOString(),
+        };
+        console.log();
+        
 
-const deleteRecording = () => {
-  setAudioData(null);
-  setAudioURL(null);
-  setRecordingDuration(0);
-};
+        socket.emit('audioStream', newMessage, () => {
+        });
 
-const startTimer = () => {
-  if (recordingIntervalRef.current) clearInterval(recordingIntervalRef.current);
-  recordingIntervalRef.current = setInterval(() => {
-    setRecordingDuration(prev => prev + 1);
-  }, 1000);
-};
-
-const stopTimer = () => {
-  if (recordingIntervalRef.current) {
-    clearInterval(recordingIntervalRef.current);
-  }
-};
-
-const formatDuration = (seconds: number) => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-};
-
-const sendVoiceMessage = () => {
-  if (audioData && socket && selectedConversation) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64Audio = reader.result as string;
-      const newMessage: Message = {
-        senderId: user.user._id,
-        recieverId: user.user.role === 'user' ? selectedConversation.creative._id : selectedConversation.user._id,
-        content: base64Audio,
-        type: 'voice_note',
-        conversationId: selectedConversation.conversation._id,
-        timestamp: new Date().toISOString(),
+        deleteRecording();
       };
-      
-      socket.emit('audioStream', newMessage, () => {
-       
-      });
-
-      deleteRecording();
-    };
-    reader.readAsDataURL(audioData);
-  }
-};
-const navigate=useNavigate()
-let roomId = "";
-const chars = "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP";
-const maxPos = chars.length;
-const len = 6;
-for (let i = 0; i < len; i++) {
-  roomId += chars.charAt(Math.floor(Math.random() * maxPos));
-}
-const initiateVideoCall = () => {
-  if (!selectedConversation || !socket) return;
-
-
-
-
-  setIsCallPending(true);
-  setIsCallInitiated(true);
-
-  socket.emit("videoCall", {
-    userId: user.user._id,
-    creativeId: selectedConversation.creative._id,
-    roomId: roomId,
-    userName:user.user.name,
-    creativeName:selectedConversation.creative.name
-  }, (response: { success: boolean; message?: string }) => {
-    if (response.success) {
-      console.log("Waiting for recipient to accept the call...");
-    } else {
-      console.error("Failed to initiate video call:", response.message);
-      setIsCallPending(false);
-      setIsCallInitiated(false)
+      reader.readAsDataURL(audioData);
     }
-    navigate(`/videoCall/${roomId}`);
-  });
+  };
 
-  socket.on('callAccepted', ({ roomId,userId }) => {
-   
-    setIsCallPending(false);
-    navigate(`/videoCall/${roomId}`);
-  });
+  const generateRoomId = () => {
+    const chars = "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP";
+    const maxPos = chars.length;
+    const len = 6;
+    let roomId = "";
+    for (let i = 0; i < len; i++) {
+      roomId += chars.charAt(Math.floor(Math.random() * maxPos));
+    }
+    return roomId;
+  };
 
- 
-  socket.on('callRejected', () => {
-    setIsCallPending(false);
-    console.log("Call was rejected");
+  const initiateVideoCall = () => {
+    if (!selectedConversation || !socket) return;
 
-  });
-};
-useEffect(() => {
-  if (socket) {
-    socket.on('incomingCall', (data: { roomId: string; caller: string }) => {
-      setIncomingCall(data);
+    const roomId = generateRoomId();
+
+    setIsCallPending(true);
+    setIsCallInitiated(true);
+
+    socket.emit("videoCall", {
+      userId: user.user._id,
+      creativeId: selectedConversation.receiver._id,
+      roomId: roomId,
+      userName: user.user.name,
+      creativeName: selectedConversation.receiver.name
+    }, (response: { success: boolean; message?: string }) => {
+      if (response.success) {
+        console.log("Waiting for recipient to accept the call...");
+      } else {
+        console.error("Failed to initiate video call:", response.message);
+        setIsCallPending(false);
+        setIsCallInitiated(false);
+      }
+      navigate(`/videoCall/${roomId}`);
     });
+  };
 
-    return () => {
-      socket.off('incomingCall');
-    };
-  }
+  const acceptCall = () => {
+    if (incomingCall && socket) {
+      socket.emit('acceptCall', { roomId: incomingCall.roomId, acceptedBy: user.user._id });
+      navigate(`/videoCall/${incomingCall.roomId}`);
+      setIncomingCall(null);
+    }
+  };
 
-}, [socket]);
-const acceptCall = () => {
-  if (incomingCall) {
-    navigate(`/videoCall/${incomingCall.roomId}`);
-    setIncomingCall(null);
-  }
- 
-};
-
-const rejectCall = () => {
-  if (incomingCall && socket) {
-    socket.emit('rejectCall', { roomId: incomingCall.roomId, rejectedBy: user.user.name });
-    setIncomingCall(null);
-  }
-};
+  const rejectCall = () => {
+    if (incomingCall && socket) {
+      socket.emit('rejectCall', { roomId: incomingCall.roomId, rejectedBy: user.user.name });
+      setIncomingCall(null);
+    }
+  };
 
   return (
     <div className=" rounded-2xl flex justify-evenly">
@@ -383,14 +374,14 @@ const rejectCall = () => {
         onClick={() => handleConversationSelect(conv)}
       >
         <img
-          src={`http://localhost:8080/src/uploads/${user.user.role === 'user' ? conv.creative.image : conv.user.image}`}
-          alt={user.user.role === 'user' ? conv.creative.name : conv.user.name}
+          src={`http://localhost:8080/src/uploads/${conv.receiver.image}`}
+          alt={conv.receiver.name}
           className="w-10 h-10 rounded-full object-cover border-2 border-blue-200 mr-3"
         />
         <div className="flex-1">
-          <p className="font-semibold text-gray-800">{user.user.role === 'user' ? conv.creative.name : conv.user.name}</p>
+          <p className="font-semibold text-gray-800">{conv.receiver.name}</p>
           <p className="text-sm text-gray-500 truncate">
-            {conv.conversation.lastMessage?.content || 'Start a conversation'}
+            { 'Start a conversation'}
           </p>
         </div>
       </div>
@@ -407,12 +398,12 @@ const rejectCall = () => {
             <div className="bg-white p-4 border-b shadow-sm flex justify-between rounded-t-3xl">
               <div className='flex items-center  ms-3'>
               <img
-                src={`http://localhost:8080/src/uploads/${user.user.role === 'user' ? selectedConversation.creative.image : selectedConversation.user.image}`}
-                alt={user.user.role === 'user' ? selectedConversation.creative.name : selectedConversation.user.name}
+                src={`http://localhost:8080/src/uploads/${selectedConversation.receiver.image}`}
+                alt={selectedConversation.receiver.name}
                 className="w-10 h-10 rounded-full mr-3 object-cover border-2 border-blue-200"
               />
               <h3 className="text-xl font-semibold text-gray-800">
-                {user.user.role === 'user' ? selectedConversation.creative.name : selectedConversation.user.name}
+                {selectedConversation.receiver.name}
               </h3>
               </div>
               <VideoCameraIcon className="w-6 h-6 me-3 text-gray-600 cursor-pointer hover:text-blue-500 " onClick={initiateVideoCall} />
@@ -499,6 +490,9 @@ const rejectCall = () => {
             )}
             <button onClick={stopRecording} className="ml-2 text-gray-600 hover:text-gray-800">
               <XMarkIcon className="w-5 h-5" />
+            </button>
+            <button onClick={sendVoiceMessage} className="ml-2 text-blue-500 hover:text-blue-700">
+              <PaperAirplaneIcon className="w-5 h-5 transform rotate-90" />
             </button>
           </div>
         )}

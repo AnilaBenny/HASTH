@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { toast } from 'react-toastify';
-// import ImageZoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
+import apiService from '../../Services/Apicalls';
+import { useSelector } from 'react-redux';
+import useApiService from '../../Services/Apicalls';
 
 interface Review {
   user: {
@@ -36,10 +37,9 @@ const ProductDetail: React.FC = () => {
   const location = useLocation();
   const product = (location.state as { product: Product })?.product;
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const cart=useSelector((state:any)=>state.cart.cart)
+  const user=useSelector((state:any)=>state.user.user)
 
-  const handleAddToCart = () => {
-    toast.success('Product added to cart');
-  };
 
   const calculateAverageRating = (reviews: Review[]) => {
     if (reviews.length === 0) return '0';
@@ -64,6 +64,7 @@ const ProductDetail: React.FC = () => {
   if (!product) {
     return <div className="text-center mt-8">Product not found</div>;
   }
+  const { handleAddToCart } = useApiService();
 
   return (
     <div className="bg-gray-100 min-h-screen py-12">
@@ -96,7 +97,7 @@ const ProductDetail: React.FC = () => {
                 <span className="ml-2 text-sm text-gray-500">({product.countInStock} in stock)</span>
               </div>
               <div className="mb-6">
-                <p className="text-sm font-medium text-gray-500 mb-1">Brand: <span className="text-gray-700">{product.brand}</span></p>
+
                 <p className="text-sm font-medium text-gray-500 mb-1">Popularity: <span className="text-gray-700">{product.popularity}</span></p>
                 <div className="flex items-center">
                   <span className="text-sm font-medium text-gray-500 mr-2">Rating:</span>
@@ -104,12 +105,14 @@ const ProductDetail: React.FC = () => {
                   <span className="ml-2 text-sm text-gray-500">({product.review.length} reviews)</span>
                 </div>
               </div>
-              <button
-                onClick={handleAddToCart}
-                className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow hover:bg-blue-700 transition duration-300"
-              >
-                Add to Cart
-              </button>
+              {(product.userId._id !== user._id && product.collab._id !== user._id) && (
+        <button
+          onClick={() => handleAddToCart(product._id, cart, user._id)}
+          className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow hover:bg-blue-700 transition duration-300"
+        >
+          Add to Cart
+        </button>
+      )}
               {product.collab && (
                 <div className="mt-6 p-4 bg-gray-100 rounded-lg">
                   <h2 className="text-lg font-semibold mb-2 text-gray-800">Collaboration</h2>
