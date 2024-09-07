@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../Axiosconfig/Axiosconfig";
 import SearchBar from "../Userlist/SearchBar";
-import Pagination from "../Pagination/Pagination";
 import ProductModal from "./ProductDetailAdmin";
 
 interface Product {
@@ -19,7 +18,8 @@ const ProductList: React.FC = () => {
   const [filter, setFilter] = useState<"all" | "active" | "inactive">("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [openModal,setOpenModal]=useState(false)
+  const [openModal, setOpenModal] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
   const productsPerPage = 10;
 
   useEffect(() => {
@@ -29,6 +29,7 @@ const ProductList: React.FC = () => {
         if (Array.isArray(response.data.data)) {
           setProducts(response.data.data);
           setFilteredProducts(response.data.data);
+          setTotalPages(Math.ceil(response.data.data.length / productsPerPage));
         } else {
           console.error("Invalid product data:", response.data.data);
         }
@@ -50,16 +51,13 @@ const ProductList: React.FC = () => {
     setFilteredProducts(filtered);
   };
 
-
-
-
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-
   const handleViewDetails = (product: Product) => {
     setSelectedProduct(product);
-    setOpenModal(true)
+    setOpenModal(true);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -71,7 +69,6 @@ const ProductList: React.FC = () => {
 
         <div className="flex justify-between mb-4 w-full">
           <SearchBar onSearch={handleSearch} />
- 
         </div>
 
         <div className="overflow-x-auto">
@@ -87,7 +84,7 @@ const ProductList: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {currentProducts.map((product) => (
+              {filteredProducts.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage).map((product) => (
                 <tr key={product._id} className="hover:bg-gray-50">
                   <td className="py-2 px-4 border-b">
                     <img
@@ -122,13 +119,36 @@ const ProductList: React.FC = () => {
           </table>
         </div>
 
-        <div className="mt-4">
-          <Pagination
-            itemsPerPage={productsPerPage}
-            totalItems={filteredProducts.length}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
+        <div className="mt-6 flex justify-center">
+          <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            {[...Array(totalPages)].map((_, index) => (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                  currentPage === index + 1
+                    ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                    : 'text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </nav>
         </div>
       </div>
       {openModal && (

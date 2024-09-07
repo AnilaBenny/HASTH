@@ -21,6 +21,7 @@ export interface IOrder extends Document {
   paymentStatus: string;
   orderStatus: string;
   OrderId: string;
+  reviewed: Boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,6 +51,7 @@ const OrderSchema: Schema = new Schema({
     default: 'Pending'
   },
   orderId: { type: String },
+  reviewed:{type:Boolean,default:false},
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 }, {

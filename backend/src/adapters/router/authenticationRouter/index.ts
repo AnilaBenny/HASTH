@@ -14,7 +14,8 @@ const {
   pinCommentController,addtocartController,removecartitemController,razorpayController,orderController,
   allorderController,allMessagesController,getConversationsController,createConverstationController,
   getConverstationByIdController,updateOrderStatusController,cancelOrderController,reviewController,
-  dialogflowController,markMessagesAsReadController,allListNumberController
+  dialogflowController,markMessagesAsReadController,allListNumberController,reviewEditController,paymentStatusController,
+  
 }=userController(dependencies);
 
 
@@ -58,6 +59,10 @@ const {
   router.post('/dialogflow',dialogflowController);
   router.patch('/markMessagesAsRead',markMessagesAsReadController);
   router.get('/allListNumber',allListNumberController);
+  router.post('/reviewEdit',reviewEditController);
+  router.post('/paymentStatus',paymentStatusController);
+
+ 
 
 
   

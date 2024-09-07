@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../Axiosconfig/Axiosconfig";
-import { Search } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import AdminOrderDetail from "./AdminOrderDetail";
 
 const OrderList = () => {
@@ -9,6 +9,7 @@ const OrderList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
   const ordersPerPage = 10;
 
   useEffect(() => {
@@ -18,9 +19,8 @@ const OrderList = () => {
         console.log(response);
         if (Array.isArray(response.data.data.orders)) {
           setOrders(response.data.data.orders);
-         
-          
           setFilteredOrders(response.data.data.orders);
+          setTotalPages(Math.ceil(response.data.data.totalOrders / ordersPerPage));
         } else {
           console.error("Invalid order data:", response.data.data.orders);
         }
@@ -40,15 +40,41 @@ const OrderList = () => {
         order.collab.name.toLowerCase().includes(lowerCaseQuery)
     );
     setFilteredOrders(filtered);
+    setCurrentPage(1);
   };
-
-  const indexOfLastOrder = currentPage * ordersPerPage;
-  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
 
   const handleViewDetails = (order) => {
     setSelectedOrder(order);
     setOpenModal(true);
+  };
+
+  const renderPaginationButtons = () => {
+    const buttons = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      buttons.push(
+        <button
+          key={i}
+          onClick={() => setCurrentPage(i)}
+          className={`px-3 py-1 mx-1 rounded ${
+            currentPage === i
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    return buttons;
   };
 
   return (
@@ -81,7 +107,7 @@ const OrderList = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {currentOrders.map((order) => (
+                {filteredOrders.map((order) => (
                   <tr key={order._id}>
                     <td className="px-6 py-4 whitespace-nowrap">{order.orderId}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{order.userId.name}</td>
@@ -110,20 +136,21 @@ const OrderList = () => {
             </table>
           </div>
 
-          <div className="mt-6 flex justify-center">
+          <div className="mt-6 flex justify-center items-center">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-l hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 disabled:opacity-50"
+              className="p-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 disabled:opacity-50 mr-2"
             >
-              Previous
+              <ChevronLeft className="h-5 w-5" />
             </button>
+            {renderPaginationButtons()}
             <button
-              onClick={() => setCurrentPage(prev => prev + 1)}
-              disabled={indexOfLastOrder >= filteredOrders.length}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-r hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 disabled:opacity-50"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="p-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 disabled:opacity-50 ml-2"
             >
-              Next
+              <ChevronRight className="h-5 w-5" />
             </button>
           </div>
         </div>

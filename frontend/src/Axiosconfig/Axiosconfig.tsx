@@ -69,7 +69,6 @@ axiosInstance.interceptors.response.use(
         setAuthInfo(data.accessToken, data.role);
         
         originalRequest.headers['Authorization'] = `Bearer ${data.accessToken}`;
-        originalRequest.headers['Role'] = data.role;
      
         return axiosInstance(originalRequest);
       } catch (refreshError) {
@@ -78,12 +77,14 @@ axiosInstance.interceptors.response.use(
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
-    } else if (error.response?.status === 401) {
+    } else if ( error.response?.data?.isBlocked === true) {
+      console.log(error,'rerrraxio');
+      
       clearAuthInfo();
       window.location.href = '/401';
       setTimeout(()=>{
         window.location.href = '/login';
-      },10000)
+      },5000)
       return Promise.reject(error);
     } 
     return Promise.reject(error);

@@ -87,17 +87,15 @@ const UserList: React.FC = () => {
         ...prevStatus,
         [userId]: updatedUser.isBlocked,
       }));
-      console.log("Block Status:", blockStatus);
+
 
 
       const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-      if (currentUser && currentUser._id === updatedUser._id && updatedUser.isBlocked) {
+      console.log(" currentUser:", currentUser);
+      if (currentUser && currentUser?.data?._id === updatedUser?._id && updatedUser?.isBlocked) {
         dispatch(clearUser());
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
-        setAuthInfo(null)
-        navigate('/login');
-        toast.error('You have been logged out because your account is blocked.');
       }
       setConfirmation(false)
       setSelectedUser(null)

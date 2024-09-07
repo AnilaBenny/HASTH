@@ -5,6 +5,7 @@ import { FaShoppingCart, FaBox, FaShippingFast, FaCheckCircle, FaClock, FaBan } 
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import Invoice from '../Invoice/Invoice';
 import { toast } from 'react-toastify';
+import useApiService from '../../Services/Apicalls';
 
 const OrderStages = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
 
@@ -19,6 +20,7 @@ const StageIcon = ({ stage, isActive, isCompleted }) => {
     Cancelled: FaBan,
   };
   const Icon = icons[stage];
+
   
   return (
     <div className={`flex flex-col items-center ${isActive ? 'text-blue-600' : isCompleted ? 'text-green-500' : 'text-gray-400'} transition-all duration-300 ease-in-out`}>
@@ -37,6 +39,7 @@ const OrderDetails = () => {
   const [showCancellationRequest, setShowCancellationRequest] = useState(false);
   const [showCancellationModal, setShowCancellationModal] = useState(false);
   const location = useLocation();
+  const {handleRazorPayment}=useApiService()
 
   useEffect(() => {
     if (location.state) {
@@ -75,7 +78,19 @@ const OrderDetails = () => {
     return stageIndex > currentStatusIndex;
   });
  
-  
+ const handlePayment= async() => {
+  const res:any=await handleRazorPayment(order, order?.userId);
+  console.log(res,'gsdhg');
+
+  if(res){
+    toast.success('payment done')}
+      
+  setOrder((prevOrder: any) => ({
+    ...prevOrder,
+    paymentStatus: 'Paid',
+  }));
+  }
+
   
   return (
     <div className="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen py-12">
@@ -133,6 +148,15 @@ const OrderDetails = () => {
               <div className="bg-gray-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
                 <p className="text-sm font-medium text-gray-500">Payment Details</p>
                 <p className="mt-1 text-lg font-semibold text-gray-900">{order.paymentMethod} - {order.paymentStatus}</p>
+                {!isTrue&&order.paymentStatus!=='Paid' &&  
+                  <button 
+                    onClick={handlePayment} 
+                    className="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition duration-300"
+                  >
+                    Complete your payment
+                  </button>
+                }
+
               </div>
             </div>
             <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-6 mb-8 shadow-md hover:shadow-lg transition-shadow duration-300">
@@ -173,7 +197,8 @@ const OrderDetails = () => {
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Update Order Status</h3>
                 <div className="flex items-center space-x-4">
 
-                  <select
+                  {order.paymentStatus==='Paid'?(
+                    <><select
                     value={newStatus}
                     onChange={(e) => setNewStatus(e.target.value)}
                     className="w-full sm:w-[200px] p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -184,13 +209,16 @@ const OrderDetails = () => {
                       <option key={stage} value={stage}>{stage}</option>
                     ))}
                   </select>
+                                  <button
+                                  onClick={handleStatusUpdate}
+                                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                >
+                                  Update Status
+                                </button></>):<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-yellow-800">
+                  Payment Pending
+                </span>}
 
-                  <button
-                    onClick={handleStatusUpdate}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  >
-                    Update Status
-                  </button>
+
                 </div>
               </div>
             )}
@@ -235,11 +263,12 @@ const OrderDetails = () => {
               </div>
             )}
 
-            {!isTrue && order.orderStatus === 'Delivered' && (
+            {!isTrue && order.orderStatus === 'Delivered'&&!order.reviewed && (
               <div className="mt-10">
-                <ReviewForm orderId={order._id} userId={order.userId} />
+                <ReviewForm orderId={order._id} userId={order.userId} setOrder={setOrder} />
               </div>
             )}
+
           </div>
         </div>
       </div>

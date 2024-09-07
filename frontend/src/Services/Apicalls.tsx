@@ -1,10 +1,13 @@
 import { useDispatch } from "react-redux";
 import axiosInstance from "../Axiosconfig/Axiosconfig";
 import { toast } from 'react-toastify';
-import { updateQuantity, addToCart } from "../store/slices/cartSlice";
+import { updateQuantity, addToCart, clearCart } from "../store/slices/cartSlice";
+import { useNavigate } from "react-router-dom";
+
 
 const useApiService = () => {
   const dispatch = useDispatch();
+  const navigate=useNavigate();
 
   const handleGoogleSignIn = async () => {
     window.location.href = 'http://localhost:8080/api/auth/google';
@@ -123,6 +126,113 @@ const useApiService = () => {
     }
   }
 
+  const handleReviewEdit=async(productId:string,reviewId:string,reviewStar:any,reviewdescription:string)=>{
+    try {
+      const response=await axiosInstance.post(`/api/auth/reviewEdit`,{productId,reviewId,reviewStar,reviewdescription})
+      console.log(response);
+      
+      return response.data.data;
+    } catch (error) {
+      console.error('Error handleReviewEdit:', error);
+      toast.error('An error occurred while handleReviewEdit');    
+    }
+  }
+
+  const handleFailurePayment=async(cart:any)=>{
+    try{
+      const res = await axiosInstance.post('/api/auth/order', { cart ,paymentMethod:'Razorpay',failure:true});
+      console.log(res);
+      
+      
+  
+        if (res.status===200) {
+          console.log("Order created successfully:");
+          dispatch(clearCart());
+        
+          navigate('/order-confirmation', { state: { order:res?.data.data } });
+        } else {
+          console.error("Order creation failed");
+          alert("Order creation failed. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error during payment processing:", error);
+        alert("An error occurred while processing your payment. Please try again.");
+      }
+  }
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
+  };
+  const handleRazorPayment = async (order:any,user:any) => {
+    const res = await loadRazorpayScript();
+
+    if (!res) {
+      alert("Razorpay SDK failed to load. Are you online?");
+      return;
+    }
+
+    const orderData = await axiosInstance.post('/api/auth/order/createOnlineOrder', {
+      amount: order.totalAmount,
+      currency: 'INR',
+      receipt: order.orderId,
+      paymentMethod:'Razorpay'
+    });
+
+    const { amount, id: order_id, currency } = orderData.data;
+   
+    const options = {
+      key: "rzp_test_2sQVid1X3uLewM",
+      amount: amount,
+      currency: currency,
+      name: "Hasth",
+      description: "Test Transaction",
+      order_id: order_id,
+      handler: async function (response:any) {
+        console.log(response);
+        
+        try{
+
+        const res = await axiosInstance.post('/api/auth/paymentStatus',{orderId:order._id});
+        console.log(res);
+        if(res.data.status){
+          return true
+        }
+       
+
+        } catch (error) {
+          console.error("Error during payment processing:", error);
+          alert("An error occurred while processing your payment. Please try again.");
+        }
+        
+      },
+      prefill: {
+        name: user.name,
+        email: user.email,
+        contact: user.phone,
+      },
+      notes: {
+        address: "Razorpay Corporate Office",
+      },
+      theme: {
+        color: "#3399cc",
+      },
+
+    };
+
+    const paymentObject = new window.Razorpay(options);
+
+    paymentObject.open();
+  };
+
   return {
     handleGoogleSignIn,
     fetchPosts,
@@ -131,7 +241,10 @@ const useApiService = () => {
     fetchallLists,
     fetchReports,
     fetchUsers,
-    fetchOrders
+    fetchOrders,
+    handleReviewEdit,
+    handleFailurePayment,
+    handleRazorPayment
   };
 };
 

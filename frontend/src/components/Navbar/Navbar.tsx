@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Searchbar from './Searchbar';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import './Navbar.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectIsUserAuthenticated, clearUser } from '../../store/slices/userSlice';
 import { MdShoppingCart,MdChat, MdPerson } from 'react-icons/md';
+import { toast } from 'react-toastify';
+import { clearAuthInfo } from '../../Axiosconfig/Axiosconfig';
 const Navbar = () => {
   const [navOpen, setNavOpen] = useState(false);
   const dispatch = useDispatch();
@@ -18,6 +20,7 @@ const Navbar = () => {
   const handleLogout = () => {
     dispatch(clearUser());
   };
+
 
   return (
     <nav className="sticky-navbar navbar bg-gradient-to-r from-blue-100 via-blue-300 to-blue-500 flex justify-between items-center mx-auto px-4 py-3 text-black">

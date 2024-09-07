@@ -3,7 +3,6 @@ import SearchBar from "../Userlist/SearchBar";
 import axiosInstance from "../../Axiosconfig/Axiosconfig";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
-import Pagination from "../Pagination/Pagination";
 import ReportDetailModal from "./ReportDetailModal";
 
 interface Report {
@@ -22,6 +21,7 @@ const ReportListing: React.FC = () => {
   const [filter, setFilter] = useState<"all" | "post" | "creative">("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
   const reportsPerPage = 8;
 
   const fetchReports = useCallback(async () => {
@@ -30,7 +30,8 @@ const ReportListing: React.FC = () => {
       if (Array.isArray(response.data.data.reports)) {
         const reports = response.data.data.reports;
         setReports(reports);
-        applyFilter(reports, filter); // Apply filter to newly fetched reports
+        applyFilter(reports, filter);
+        setTotalPages(Math.ceil(response.data.data.total / reportsPerPage));
       } else {
         console.error("Invalid report data:", response.data.data.reports);
       }
@@ -73,8 +74,6 @@ const ReportListing: React.FC = () => {
     try {
       await axiosInstance.delete(`/api/auth/deleteIdea/${reportId}`);
       toast.success("Post has been deleted");
-
-      // Remove deleted report from state
       setReports(prevReports => prevReports.filter(report => report._id !== reportId));
       setFilteredReports(prevFilteredReports => prevFilteredReports.filter(report => report._id !== reportId));
     } catch (error) {
@@ -92,15 +91,13 @@ const ReportListing: React.FC = () => {
     }
   }, []);
 
-
   useEffect(() => {
     applyFilter(reports, filter);
   }, [filter, reports, applyFilter]);
 
-  const indexOfLastReport = currentPage * reportsPerPage;
-  const indexOfFirstReport = indexOfLastReport - reportsPerPage;
-  const currentReports = filteredReports.slice(indexOfFirstReport, indexOfLastReport);
-
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
   return (
     <div className="pl-64 flex justify-center items-center">
       <div className="w-full max-w-4xl">
@@ -148,7 +145,7 @@ const ReportListing: React.FC = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {currentReports.map((report) => (
+            {filteredReports.map((report) => (
               <tr key={report._id} className="hover:bg-gray-100 transition-all">
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                   {report.type}
@@ -184,25 +181,50 @@ const ReportListing: React.FC = () => {
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
 
-        <Pagination
-          itemsPerPage={reportsPerPage}
-          totalItems={filteredReports.length}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        />
-      </div>
-                    
-      {selectedReport && (
-        <ReportDetailModal
-          type={selectedReport.type}
-          data={selectedReport.type==='post'?(selectedReport.reportedPostId):selectedReport.reportedUserId}
-          onClose={() => setSelectedReport(null)}
-        />
-      )}
-    </div>
-  );
+<div className="mt-6 flex justify-center">
+  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+    <button
+      onClick={() => handlePageChange(currentPage - 1)}
+      disabled={currentPage === 1}
+      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+    >
+      Previous
+    </button>
+    {[...Array(totalPages)].map((_, index) => (
+      <button
+        key={index}
+        onClick={() => handlePageChange(index + 1)}
+        className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
+          currentPage === index + 1
+            ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+            : 'text-gray-500 hover:bg-gray-50'
+        }`}
+      >
+        {index + 1}
+      </button>
+    ))}
+    <button
+      onClick={() => handlePageChange(currentPage + 1)}
+      disabled={currentPage === totalPages}
+      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+    >
+      Next
+    </button>
+  </nav>
+</div>
+</div>
+            
+{selectedReport && (
+<ReportDetailModal
+  type={selectedReport.type}
+  data={selectedReport.type === 'post' ? (selectedReport.reportedPostId) : selectedReport.reportedUserId}
+  onClose={() => setSelectedReport(null)}
+/>
+)}
+</div>
+);
 };
 
 export default ReportListing;

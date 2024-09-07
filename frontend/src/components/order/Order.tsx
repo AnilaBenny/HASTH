@@ -57,7 +57,7 @@ const OrderPage = () => {
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber:any) => setCurrentPage(pageNumber);
 
   const ViewDetails = (order:any) => {
     if(customer){
@@ -103,7 +103,12 @@ const OrderPage = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {currentOrders.map((order) => (
               <tr key={order._id} className="hover:bg-gray-50 transition duration-150">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.orderId}</td>
+               {order.paymentStatus==='Paid'? <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.orderId}</td>:<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-yellow-800">
+                  Payment Pending
+                </span>
+              </td>
+              }
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{order.totalAmount}</td>
                 <td className="px-6 py-4 whitespace-nowrap">

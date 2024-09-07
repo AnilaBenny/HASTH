@@ -37,6 +37,8 @@ import reviewController from './reviewController';
 import dialogflowController from './dialogflowController';
 import markMessagesAsReadController from './markMessagesAsReadController';
 import allListNumberController from './allListNumberController';
+import reviewEditController from './reviewEditController';
+import paymentStatusController from './paymentStatusController';
 export default (dependencies:any)=>{
 return{
     registrationController:registrationController(dependencies),
@@ -77,7 +79,9 @@ return{
     reviewController:reviewController(dependencies),
     dialogflowController:dialogflowController(dependencies),
     markMessagesAsReadController:markMessagesAsReadController(dependencies),
-    allListNumberController:allListNumberController(dependencies)
+    allListNumberController:allListNumberController(dependencies),
+    reviewEditController:reviewEditController(dependencies),
+    paymentStatusController:paymentStatusController(dependencies)
 
 }
 }

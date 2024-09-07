@@ -57,6 +57,9 @@ const Product: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [addtocart,setAddtoCart]=useState(true)
     const navigate=useNavigate()
+    const [currentPage, setCurrentPage] = useState(1);
+    const [productsPerPage] = useState(8); 
+    const [totalProducts, setTotalProducts] = useState(0);
     const initialValues={
         collab: '',
         name: '',
@@ -81,6 +84,16 @@ const Product: React.FC = () => {
         fetchProducts();
         fetchCreators();
     }, []);
+    useEffect(() => {
+        fetchProducts();
+    }, [currentPage, productsPerPage]);
+    const totalPages = Math.ceil(totalProducts / productsPerPage);
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+    }
+
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     const fetchCreators = async () => {
         try {
@@ -95,10 +108,12 @@ const Product: React.FC = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await axiosInstance.get<{ data: Product[] }>('/api/auth/products');
-            console.log(response);
-            const filteredData=response.data.data.filter((product)=>user._id!==product?.userId._id&&user._id!==product?.collab._id)
+            const response = await axiosInstance.get<{ data: Product[] }>(`/api/auth/products?page=${currentPage}&limit=${productsPerPage}`);
+            const filteredData = response.data.data.filter(
+                (product) => user._id !== product?.userId._id && user._id !== product?.collab._id
+            );
             setProducts(filteredData);
+            setTotalProducts(filteredData.length);
         } catch (error) {
             console.error('Error fetching products:', error);
         
@@ -305,6 +320,37 @@ return (
                     ))}
                 </div>
             </div>
+            <div className="mt-8 flex justify-center">
+                        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                            <button
+                                onClick={() => paginate(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                            >
+                                Previous
+                            </button>
+                            {pageNumbers.map(number => (
+                                <button
+                                    key={number}
+                                    onClick={() => paginate(number)}
+                                    className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                                        currentPage === number
+                                            ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                                            : 'text-gray-500 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    {number}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => paginate(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                                className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                            >
+                                Next
+                            </button>
+                        </nav>
+                    </div>
         </div>
 
         {isModalOpen && (
@@ -436,6 +482,9 @@ return (
                 </div>
             </div>
         )}
+
+                
+            
     </div>
 );
 };

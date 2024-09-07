@@ -39,7 +39,11 @@ const productSchema = new Schema({
       {
           user: {
               type: mongoose.Schema.Types.ObjectId,
-              ref: 'user'
+              ref: 'User'
+          },
+          orderId:{
+              type: mongoose.Schema.Types.ObjectId,
+              ref: 'Order'
           },
           rating: {
               type: Number,

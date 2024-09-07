@@ -3,22 +3,29 @@ import  { useState } from 'react';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { toast } from 'react-toastify';
 
-const ReviewForm = ({ orderId ,userId}:any) => {
+const ReviewForm = ({ orderId ,userId,setOrder}:any) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.post(`/api/auth/review`, {
+      const response=await axiosInstance.post(`/api/auth/review`, {
         orderId,
         rating,
         comment,
         userId
       });
-      toast.success('your valuable review is added')
+
+      
+      if(response.data.status)
+     { toast.success('your valuable review is added')
       setComment('');
       setRating(0)
+      setOrder(response.data.data)
+      }
+      
       
     } catch (error) {
       console.error('Error submitting review:', error);

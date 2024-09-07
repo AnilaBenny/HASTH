@@ -22,6 +22,8 @@ const PostList: React.FC = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   const postsPerPage = 5;
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,6 +36,7 @@ const PostList: React.FC = () => {
           console.log(response.data.data);
           
           setPosts(response.data.data);
+          setTotalPages(Math.ceil(response.data.data.length / postsPerPage));
         } else {
           console.error("Invalid post data:", response.data.data);
         }
@@ -59,6 +62,9 @@ const PostList: React.FC = () => {
   const closeModal = () => {
     setSelectedPost(null);
     setIsModalOpen(false);
+  };
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -121,18 +127,41 @@ const PostList: React.FC = () => {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
         )}
-        <div className="mt-6">
-          <Pagination
-            itemsPerPage={postsPerPage}
-            totalItems={posts.length}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
+        <div className="mt-6 flex justify-center">
+          <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            >
+              Previous
+            </button>
+            {[...Array(totalPages)].map((_, index) => (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                  currentPage === index + 1
+                    ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                    : 'text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            >
+              Next
+            </button>
+          </nav>
         </div>
       </div>
-
+      
       {isModalOpen && selectedPost && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" onClick={closeModal}>
           <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white"

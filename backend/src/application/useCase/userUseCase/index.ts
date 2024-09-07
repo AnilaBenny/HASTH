@@ -36,6 +36,8 @@ import cancelOrderUseCase from "./cancelOrderUseCase";
 import reviewUseCase from "./reviewUseCase";
 import markMessagesAsReadUseCase from "./markMessagesAsReadUseCase";
 import allListNumberUseCase from './allListNumberUseCase';
+import reviewEditUseCase from "./reviewEditUseCase";
+import paymentStatusUseCase from "./paymentStatusUseCase";
 export{
     userRegistration,
     loginUseCase,
@@ -74,7 +76,8 @@ export{
     updatestatusUseCase,
     reviewUseCase,
     markMessagesAsReadUseCase,
-    allListNumberUseCase
-    
+    allListNumberUseCase,
+    reviewEditUseCase,
+    paymentStatusUseCase
 
 }

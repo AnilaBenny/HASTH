@@ -13,6 +13,7 @@ const OrderConfirmation: React.FC = () => {
     total: order.totalAmount,
     shippingAddress: `${order.shippingAddress.street,order.shippingAddress.city,order.shippingAddress.state,order.shippingAddress.zipCode}`,
     estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(), 
+    paymentStatus:order.paymentStatus
   };
 
   return (
@@ -22,6 +23,7 @@ const OrderConfirmation: React.FC = () => {
           <h1 className="text-3xl font-bold text-white text-center">Order Confirmed!</h1>
         </div>
         <div className="p-6">
+        {orderDetails.paymentStatus==='Paid'?(<>  
           <div className="flex items-center justify-center mb-6">
             <svg className="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -30,6 +32,16 @@ const OrderConfirmation: React.FC = () => {
           <p className="text-xl text-center mb-6">
             Thank you for your purchase! Your order has been received and is being processed.
           </p>
+          </>):( 
+            <>
+            <div style={{ backgroundColor: '#FEE2E2', border: '1px solid #FCA5A5', borderRadius: '0.375rem', padding: '1rem', marginBottom: '1.5rem' }}>
+        <h2 style={{ color: '#DC2626', fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Payment Failed</h2>
+        <p style={{ color: '#DC2626' }}>
+          We're sorry, but there was an issue processing your payment. Your order has not been confirmed.
+        </p>
+      </div>
+
+      </>)}
           <div className="border-t border-gray-200 pt-4">
             <h2 className="text-2xl font-semibold mb-4">Order Details</h2>
             <div className="grid grid-cols-2 gap-4">

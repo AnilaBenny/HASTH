@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { clearCart } from '../../store/slices/cartSlice';
@@ -6,21 +6,39 @@ import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import HandlePayPal from './HandlePayPal';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import useApiService from '../../Services/Apicalls';
+import { CreditCard, Banknote, Truck } from 'lucide-react';
+import { updateTotalPrice } from '../../store/slices/cartSlice';
 
 const stripePromise = loadStripe('pk_test_51PrKKwJKak3nsLbf6XEzehMZVJUSBQ4E9QWdUPTNFxGj1vveGo0NHx95qmJFcy5kyQ8Za7wOt6wLO9o4UjK2dex100vPyO4esO');
 
 export default () => {
-  
+  const PayPalLogo = ({ className }:any) => (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.1 6.27c.3 1.97-.6 3.34-2.04 4.5-1.3 1.04-2.97 1.47-4.61 1.47h-.38c-.31 0-.59.22-.66.53l-.54 3.41-.16.97c-.06.37-.39.64-.76.64H8.27c-.26 0-.45-.25-.41-.51l1.42-9.03c.06-.37.39-.64.76-.64h4.8c1.24 0 2.31.27 3.1.82.92.64 1.44 1.56 1.6 2.84zM22.54 3.07C23.59 4.67 24 6.7 23.61 9.02c-.62 3.67-3.23 5.43-7.03 5.43h-.57c-.41 0-.78.3-.85.7l-.67 4.23-.19 1.21c-.06.37-.39.64-.76.64H9.94c-.26 0-.45-.25-.41-.51L11.42 5c.12-.75.76-1.3 1.52-1.3h6.91c1.03 0 1.92.23 2.69.71z" />
+    </svg>
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state: any) => state.cart.cart);
   const user = useSelector((state: any) => state.user.user);
- 
-  
+  const service=useApiService();
+  const [supercoinsUsed, setSupercoinsUsed] = useState(false);
+  const paymentMethods = [
+    { name: 'Stripe', icon: CreditCard },
+    { name: 'PayPal', icon: PayPalLogo },
+    { name: 'Razorpay', icon: Banknote },
+    { name: 'COD', icon: Truck },
+  ];
+  const [originalTotalPrice, setOriginalTotalPrice] = useState(cart.totalPrice);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [useExistingAddress, setUseExistingAddress] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('');
+
+
+
+
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -100,9 +118,14 @@ export default () => {
       theme: {
         color: "#3399cc",
       },
+
     };
 
     const paymentObject = new window.Razorpay(options);
+    paymentObject.on('payment.failed', async function (response: any) {
+      console.error("Payment failed:", response);
+      await service.handleFailurePayment(cart);
+    });
     paymentObject.open();
   };
   const handleCod=async()=>{
@@ -147,7 +170,19 @@ export default () => {
       </div>
     );
   }
-
+  const handleSupercoinUsage = () => {
+    if (!supercoinsUsed && user?.supercoin?.balance > 0) {
+      const newTotal = Math.max(0, originalTotalPrice - user.supercoin.balance);
+      dispatch(updateTotalPrice(newTotal));
+      setSupercoinsUsed(true);
+      localStorage.setItem('supercoinsUsed', 'true');
+    }
+  };
+  const resetSupercoinUsage = () => {
+    setSupercoinsUsed(false);
+    dispatch(updateTotalPrice(originalTotalPrice));
+    localStorage.removeItem('supercoinsUsed');
+  };
   return (
     <div className="container mx-auto p-8 bg-gray-50">
       <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">Checkout</h1>
@@ -183,6 +218,11 @@ export default () => {
                 <span className="font-semibold">₹{(item.price * item.quantity)}</span>
               </div>
             ))}
+            {supercoinsUsed&&<div className="flex justify-between items-center mb-2 text-gray-700">
+              <span>super coin used</span>
+              <span className="font-semibold">{user.supercoin.balance} SC</span>
+              </div>
+            }
             <div className="border-t border-gray-300 my-4"></div>
             <div className="flex justify-between items-center font-semibold text-lg text-gray-800">
               <span>Total:</span>
@@ -195,20 +235,59 @@ export default () => {
       <div className="mt-12 bg-white shadow-lg rounded-lg p-6">
         <h2 className="text-2xl font-semibold mb-6 text-gray-700">Payment Method</h2>
         <div className="mb-6">
+        <p className="text-lg font-semibold">
+          You have {user?.supercoin?.balance} supercoins.
+        </p>
+        {!supercoinsUsed && user?.supercoin?.balance > 0 && (
+          <button
+            onClick={handleSupercoinUsage}
+            className="text-blue-600 hover:text-blue-800 font-medium underline focus:outline-none"
+          >
+            Would you like to use them?
+          </button>
+        )}
+        {supercoinsUsed && (
+          <>
+          <p className="text-green-600 font-medium mt-1">
+            Supercoins applied to your order!
+          </p>         <button
+                onClick={resetSupercoinUsage}
+                className="text-red-600 hover:text-red-800 font-medium underline focus:outline-none ml-2"
+              >
+                Remove supercoin discount
+              </button>
+              </>
+        )}
+      
+
           <label className="block text-gray-700 mb-2">Select Payment Method</label>
           <div className="flex flex-wrap gap-4">
-            {['Stripe', 'PayPal', 'Razorpay', 'COD'].map((method) => (
-              <label key={method} className="inline-flex items-center">
-                <input
-                  type="radio"
-                  value={method}
-                  checked={paymentMethod === method}
-                  onChange={() => setPaymentMethod(method)}
-                  className="form-radio h-5 w-5 text-blue-600"
-                />
-                <span className="ml-2 text-gray-700">{method}</span>
-              </label>
-            ))}
+          {paymentMethods.map((method) => (
+          <label
+            key={method.name}
+            className={`flex items-center p-3 rounded-lg border-2 transition-all duration-200 cursor-pointer ${
+              paymentMethod === method.name
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-gray-200 hover:border-blue-300'
+            }`}
+          >
+            <input
+              type="radio"
+              value={method.name}
+              checked={paymentMethod === method.name}
+              onChange={() => setPaymentMethod(method.name)}
+              className="sr-only"
+            />
+            <method.icon className={`w-6 h-6 mr-2 ${
+              paymentMethod === method.name ? 'text-blue-500' : 'text-gray-500'
+            }`} />
+            <span className={`font-medium ${
+              paymentMethod === method.name ? 'text-blue-700' : 'text-gray-700'
+            }`}>
+              {method.name}
+            </span>
+          </label>
+        ))}
             {
               paymentMethod==='PayPal'&&(
                 <HandlePayPal cart={cart}/>

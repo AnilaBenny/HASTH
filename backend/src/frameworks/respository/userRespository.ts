@@ -456,8 +456,22 @@ export default  {
   },
   getProducts:async(data:any)=>{
     try {
-      const products = await databaseSchema.Product.find().populate('userId').populate('collab')
-    .sort({ createdAt: -1 })
+      let products = await databaseSchema.Product.find()
+      .populate('userId')
+      .populate('collab') 
+      .sort({ createdAt: -1 });
+      products = await Promise.all(products.map(async (product) => {
+        if (product?.review && product?.review.length > 0) {
+          await product.populate({
+            path: 'review.user', 
+            select: 'name'    
+          });
+        }
+        return product;
+      }));
+      console.log(products);
+      
+    
       return {status:true,data:products};
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -675,7 +689,7 @@ export default  {
     },
   order:async(data:any)=>{
     try {
-      const { cart, paymentMethod, shippingAddress } = data;
+      const { cart, paymentMethod, failure } = data;
   
       if (!cart || !cart.userId) {
         throw new Error('Invalid cart or user ID');
@@ -709,8 +723,20 @@ export default  {
 
         await product.save();
       }
-     
-      const newOrder = new databaseSchema.Order({
+      let newOrder;
+     if(failure){
+       newOrder = new databaseSchema.Order({
+        userId: user._id,
+        orderId:'ORD-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        items: orderItems,
+        totalAmount: cart.totalPrice,
+        shippingAddress: user.address[0],
+        paymentMethod: paymentMethod,
+        paymentStatus: 'Failed',
+        orderStatus: 'Processing',
+      });  
+     }else{
+       newOrder = new databaseSchema.Order({
         userId: user._id,
         orderId:'ORD-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
         items: orderItems,
@@ -720,6 +746,8 @@ export default  {
         paymentStatus: 'Paid',
         orderStatus: 'Processing',
       });
+     }
+
   
       
       const savedOrder = await newOrder.save();
@@ -1020,7 +1048,7 @@ export default  {
       if (!order) {
         return { status: false, message: 'Order not found' };
       }
- 
+      order.reviewed=true;
       order.items.forEach(async (item) => {
         const productId = item.product as any;
         const product = await databaseSchema.Product.findById(productId._id);
@@ -1028,6 +1056,7 @@ export default  {
         if (product) {
           product.review.push({
             user: userId,
+            orderId:orderId,
             rating: rating,
             reviewdescription: comment,
           });
@@ -1115,7 +1144,63 @@ export default  {
       logger.error('Error in allListNumber:', error);
       return { status: false, error: 'Failed to retrieve all list numbers' };
     }
-  }
+  },
+  reviewEdit: async (data: any) => {
+    try {
+      const { productId, reviewId, reviewStar, reviewdescription } = data;
+  
+      const product = await databaseSchema.Product.findById(productId)
+      .populate('userId')
+      .populate('collab');
+        if (product?.review && product?.review.length > 0) {
+          await product.populate({
+            path: 'review.user', 
+            select: 'name'    
+          });
+        }
+       
+  
+      if (product) {
+        const review = product.review.find((r: any) => r._id.toString() === reviewId);
+
+        if (review) {
+          review.rating = reviewStar;
+          review.reviewdescription = reviewdescription;
+          await product.save();
+  
+          return { status: true, data: product };
+        } else {
+          return { status: false, message: 'Review not found' };
+        }
+      } else {
+        return { status: false, message: 'Product not found' };
+      }
+    } catch (err) {
+      logger.error(err);
+      return { status: false, message: 'An error occurred' };
+    }
+  },
+ paymentStatus:async (data: any) => {
+    try {
+      const { orderId } = data;
+
+      const order = await databaseSchema.Order.findById(orderId);
+  
+      if (!order) {
+        throw new Error('Order not found');
+      }
+  
+      order.paymentStatus = 'Paid';
+
+      await order.save();
+  
+      return { status: true, data: order };
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      return { status: false, error: error };
+    }
+  },
+  
   
   
     
