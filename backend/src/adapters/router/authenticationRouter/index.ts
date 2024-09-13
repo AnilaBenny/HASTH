@@ -26,7 +26,7 @@ const {
   router.post('/checkOtp',checkOtpController);
   router.put('/resetPassword',updatePasswordController);
   router.post('/resendOtp',resendOtpController);
-  router.put('/updateProfile',middleware,updateProfileController);
+  router.put('/updateProfile',updateProfileController);
   router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
   router.get('/google/callback',passport.authenticate('google'),googleRegisterController);
   router.post('/refresh-token',refreshTokenController);

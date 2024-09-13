@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../generateToken';
-import { databaseSchema } from '../../frameworks/database';
 import logger from '../../logger';
 
 export const middleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -13,24 +12,26 @@ export const middleware = async (req: Request, res: Response, next: NextFunction
   }
 
   try {
-    const decoded =await verifyToken(token);
-    console.log(decoded,'decoded');
+    const decoded = await verifyToken(token) as { userId: string, role: string };
+    console.log(decoded, 'decoded');
     
-    (req as any).user = (decoded as { userId: string });
+
+    (req as any).user = {
+      userId: decoded.userId,
+      role: decoded.role
+    };
     console.log((req as any).user);
     
-
   
-    const user = await databaseSchema.User.findById((req as any).user.userId);
-    if (!user) {
-      logger.error('User not found')
-      return res.status(401).json({ status: false, message: 'User not found' });
-    }
+    if (decoded.role === 'admin') {
+ 
+      console.log('Admin access granted');
+    } else if (decoded.role === 'user') {
+    
+      console.log('User access granted');
+    } else {
 
-    if (user.isBlocked) {
-      logger.error('User is blocked')
-
-      return res.status(401).json({ status: false, message: 'User is blocked' });
+      return res.status(403).json({ status: false, message: 'Forbidden: Insufficient rights' });
     }
 
     next();

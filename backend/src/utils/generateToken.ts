@@ -1,12 +1,12 @@
 import { Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-const generateToken = ({ userId }: { userId: string })=> {
-  
-  const accessToken= jwt.sign({ userId }, "anila@123", {
+const generateToken = ({ userId,role }: { userId: string,role?:string })=> {
+  const roleToUse = role || 'user';
+  const accessToken= jwt.sign({ userId,role:roleToUse }, "anila@123", {
     expiresIn: '30m',
   });
-  const refreshToken = jwt.sign({ userId }, "anila@123", {
+  const refreshToken = jwt.sign({ userId,role:roleToUse }, "anila@123", {
     expiresIn: '30d',
   });
   
