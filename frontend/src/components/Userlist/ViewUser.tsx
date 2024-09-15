@@ -36,7 +36,7 @@ const ViewUser: React.FC<ViewUserProps> = ({ user, onClose }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <InfoItem icon={<Mail />} label="Email" value={user.email} />
-          <InfoItem icon={<Phone />} label="Mobile" value={user.mobile || 'N/A'} />
+          <InfoItem icon={<Phone />} label="Mobile" value={String(user.mobile) || 'N/A'} />
           <InfoItem icon={<Briefcase />} label="Skills" value={user.skills || 'N/A'} />
           <InfoItem icon={<Book />} label="Education" value={user.education || 'N/A'} />
           <InfoItem icon={<GraduationCap />} label="Specification" value={user.specification || 'N/A'} />
@@ -58,7 +58,8 @@ const ViewUser: React.FC<ViewUserProps> = ({ user, onClose }) => {
 
         <div className="mt-6 flex flex-wrap gap-3">
           <StatusBadge 
-            isActive={user.isVerified} 
+         
+            isActive={user.isVerified ?? false} 
             activeText="Verified" 
             inactiveText="Not Verified" 
             activeColor="bg-green-500" 
@@ -91,7 +92,7 @@ const StatusBadge: React.FC<{
   inactiveText: string;
   activeColor: string;
   inactiveColor: string;
-}> = ({ isActive, activeText, inactiveText, activeColor, inactiveColor }) => (
+}> = ({ isActive, activeText, inactiveText, activeColor, inactiveColor }:any) => (
   <span className={`px-3 py-1 rounded-full text-white text-sm font-medium flex items-center ${isActive ? activeColor : inactiveColor}`}>
     {isActive ? <CheckCircle size={16} className="mr-1" /> : <XCircle size={16} className="mr-1" />}
     {isActive ? activeText : inactiveText}

@@ -15,6 +15,7 @@ const MAX_IMAGES = 3;
 
 const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, type }) => {
     const [editedData, setEditedData] = useState(data);
+    //@ts-ignore
     const [newImages, setNewImages] = useState<File[]>([]);
     const [croppedImages, setCroppedImages] = useState<string[]>([]);
     const [newVideo, setNewVideo] = useState<File | null>(null);
@@ -25,12 +26,12 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
 
     useEffect(() => {
         if (type === 'post') {
-            const post = editedData as Post;
-            setCroppedImages(post.images?.map(img => `http://localhost:8080/src/uploads/${img}`) || []);
+            const post = editedData ;
+            setCroppedImages(post.images?.map((img:any) => `http://localhost:8080/src/uploads/${img}`) || []);
             setVideoPreview(post.video ? `http://localhost:8080/src/uploads/${post.video}` : null);
         }else{
-            const post = editedData as Product;
-            setCroppedImages(post.images?.map(img => `http://localhost:8080/src/uploads/${img}`) || []);
+            const post = editedData ;
+            setCroppedImages(post.images?.map((img:any) => `http://localhost:8080/src/uploads/${img}`) || []);
             
         }
     }, [editedData, type]);
@@ -76,7 +77,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                 return;
             }
 
-            if (file.size > 100 * 1024 * 1024) { // 100MB limit
+            if (file.size > 100 * 1024 * 1024) { 
                 setError('Video size should not exceed 100MB.');
                 return;
             }
@@ -136,7 +137,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
         if (newVideo) {
             formData.append('video', newVideo);
         } else if (videoPreview && type === 'post') {
-            formData.append('existingVideo', (editedData as Post).video || '');
+            formData.append('existingVideo', (editedData).video || '');
         }
 
         
@@ -195,7 +196,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                     <>
                         <textarea
                             name="caption"
-                            value={(editedData as Post).caption}
+                            value={(editedData ).caption}
                             onChange={handleChange}
                             className="w-full p-2 border rounded mb-4"
                             rows={4}
@@ -203,7 +204,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                         />
                         <input
                             name="tags"
-                            value={(editedData as Post).tags}
+                            value={(editedData ).tags}
                             onChange={handleChange}
                             className="w-full p-2 border rounded mb-4"
                             placeholder="Tags (comma-separated)"
@@ -213,7 +214,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                     <>
                         <input
                             name="name"
-                            value={(editedData as Product).name}
+                            value={(editedData ).name}
                             onChange={handleChange}
                             className="w-full p-2 border rounded mb-4"
                             placeholder="Product Name"
@@ -221,22 +222,24 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                         <input
                             name="price"
                             type="number"
-                            value={(editedData as Product).price}
+                            value={(editedData ).price}
                             onChange={handleChange}
                             className="w-full p-2 border rounded mb-4"
                             placeholder="Price"
                         />
-                        <input
+                        <textarea
                             name="description"
-                            value={(editedData as Product).description}
+                            value={(editedData ).description}
                             onChange={handleChange}
                             className="w-full p-2 border rounded mb-4"
                             rows={3}
                             placeholder="Description"
                         />
+  
+
                         <input
                             name="brand"
-                            value={(editedData as Product).brand}
+                            value={(editedData).brand}
                             onChange={handleChange}
                             className="w-full p-2 border rounded mb-4"
                             placeholder="Brand"
@@ -244,7 +247,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                         <input
                             name="countInStock"
                             type="number"
-                            value={(editedData as Product).countInStock}
+                            value={(editedData).countInStock}
                             onChange={handleChange}
                             className="w-full p-2 border rounded mb-4"
                             placeholder="Stock Quantity"

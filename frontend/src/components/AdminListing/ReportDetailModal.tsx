@@ -21,28 +21,7 @@ interface PostDetail {
   updatedAt: string;
 }
 
-interface Review {
-  user: string;
-  rating: number;
-  reviewdescription: string;
-}
 
-interface ProductDetail {
-  _id: string;
-  name: string;
-  description: string;
-  collab: string;
-  images: string[];
-  brand: string;
-  countInStock: number;
-  review: Review[];
-  isFeatured: boolean;
-  price: number;
-  popularity: number;
-  list: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
 
 interface UserDetail {
   _id: string;
@@ -68,11 +47,11 @@ interface UserDetail {
 
 interface ReportDetailModalProps {
   type: 'post' | 'creative';
-  data: PostDetail | ProductDetail | UserDetail;
+  data: string;
   onClose: () => void;
 }
 
-const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ type, data, onClose }) => {
+const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ type, data, onClose }:any) => {
   console.log(data,'...');
   
   return (

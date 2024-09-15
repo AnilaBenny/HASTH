@@ -77,7 +77,9 @@ axiosInstance.interceptors.response.use(
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
-    } else if ( error.response?.data?.isBlocked === true) {
+    }
+    //@ts-ignore 
+    else if ( error.response?.data?.isBlocked === true) {
       console.log(error,'rerrraxio');
       
       clearAuthInfo();

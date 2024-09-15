@@ -1,6 +1,5 @@
-import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { updateQuantity, removeFromCart } from '../../store/slices/cartSlice';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { toast } from 'react-toastify';

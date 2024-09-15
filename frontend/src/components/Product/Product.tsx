@@ -110,7 +110,7 @@ const Product: React.FC = () => {
         try {
             const response = await axiosInstance.get<{ data: Product[] }>(`/api/auth/products?page=${currentPage}&limit=${productsPerPage}`);
             const filteredData = response.data.data.filter(
-                (product) => user._id !== product?.userId._id && user._id !== product?.collab._id
+                (product:any) => user._id !== product?.userId._id && user._id !== product?.collab._id
             );
             setProducts(filteredData);
             setTotalProducts(filteredData.length);
@@ -236,7 +236,7 @@ const handleAddToCart = async (productId: string) => {
 const showyourproducts=async()=>{
     const response = await axiosInstance.get<{ data: Product[] }>('/api/auth/products');
     console.log(response);
-    const filteredData=response.data.data.filter((product)=>user._id===product?.userId._id||user._id===product?.collab._id)
+    const filteredData=response.data.data.filter((product:any)=>user._id===product?.userId._id||user._id===product?.collab._id)
     setProducts(filteredData);
     setAddtoCart(false)
 }
@@ -374,7 +374,7 @@ return (
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="">Select a creator</option>
-                                        {creators.map((creator) => (
+                                        {creators.map((creator:any) => (
                                             <option key={creator._doc._id} value={creator._doc._id}>{creator._doc.name}</option>
                                         ))}
                                     </Field>

@@ -1,15 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { FaUserCircle, FaShoppingCart, FaBox, FaUserEdit, FaNewspaper } from 'react-icons/fa';
 import useApiService from '../../Services/Apicalls';
 
-
+interface User{
+  _id:string
+}
+interface Report{
+  _id:string
+}
 
 export default () => {
   const [timeFrame, setTimeFrame] = useState('daily');
-  const [data, setData] = useState(null);
-  const [newUsers, setNewUsers] = useState(null);
-  const [reports, setReports] = useState(null);
+  const [data, setData] = useState<any>({
+    users: 0,
+    orders: 0,
+    products: 0,
+    creatives: 0,
+    posts: 0
+  });
+  const [newUsers, setNewUsers] = useState<User[]|null>(null);
+  const [reports, setReports] = useState<Report[]|null>(null);
   const barChartRef = useRef(null);
   const pieChartRef = useRef(null);
   const service = useApiService();
@@ -72,15 +83,23 @@ export default () => {
 
     const keys = Object.keys(data);
     x.domain(keys);
-    y.domain([0, d3.max(Object.values(data))]);
+    //@ts-ignore
+    y.domain([0, d3.max(Object.values(data)) || 0]);
+
 
     svg.selectAll(".bar")
       .data(keys)
       .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", d => x(d))
+      .attr("x", d => {
+        const xValue = x(d);
+        return xValue !== undefined ? xValue : 0; 
+      })
       .attr("width", x.bandwidth())
-      .attr("y", d => y(data[d]))
+      .attr("y", d => {
+        const value= data[d];
+        return y(value);
+      })      
       .attr("height", d => height - y(data[d]))
       .attr("fill", "#4CAF50");
 
@@ -118,8 +137,9 @@ export default () => {
       .range(d3.schemeSet2);
 
     const pie = d3.pie()
+    //@ts-ignore
       .value(d => d[1]);
-
+//@ts-ignore
     const dataReady = pie(Object.entries(data));
 
     const arcGenerator = d3.arc()
@@ -130,7 +150,9 @@ export default () => {
       .data(dataReady)
       .enter()
       .append('path')
+      //@ts-ignore
       .attr('d', arcGenerator)
+      //@ts-ignore
       .attr('fill', d => color(d.data[0]))
       .attr("stroke", "white")
       .style("stroke-width", "2px");
@@ -139,7 +161,8 @@ export default () => {
       .data(dataReady)
       .enter()
       .append('text')
-      .text(d => d.data[0])
+      .text((d:any) => d.data[0])
+      //@ts-ignore
       .attr("transform", d => `translate(${arcGenerator.centroid(d)})`)
       .style("text-anchor", "middle")
       .style("font-size", 10);
@@ -228,7 +251,7 @@ export default () => {
             <h2 className="text-xl font-bold mb-4 text-gray-800">New Users</h2>
             <ul className="space-y-4">
             {newUsers && newUsers.length > 0 ? (
-                newUsers.map((user, index) => (
+                newUsers.map((user:any, index:any) => (
                     <li key={index} className="flex items-center">
                     <img src={`http://localhost:8080/src/uploads/${user?.image}` || 'defaultImagePath'} alt="User" className="mr-4 text-gray-400 w-8" />
                     <div>
@@ -248,7 +271,7 @@ export default () => {
             <h2 className="text-xl font-bold mb-4 text-gray-800">Reported Users</h2>
             <ul className="space-y-4">
             {reports && reports.length > 0 ? (
-                reports.map((user, index) => (
+                reports.map((user:any, index:any) => (
                     <li key={index} className="flex items-center">
                                         <img src={`http://localhost:8080/src/uploads/${user?.reportedUserId?.image}` || 'defaultImagePath'} alt="User" className="mr-4 text-gray-400 w-8" />
                     <div>

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../Axiosconfig/Axiosconfig";
-import Pagination from "../Pagination/Pagination";
-import { useNavigate } from "react-router-dom";
+
 
 interface Post {
   _id: string;
@@ -11,6 +10,7 @@ interface Post {
   userId: {
     _id: string;
     name: string;
+    image:string;
   };
   createdAt: string;
   liked: any[];
@@ -19,7 +19,7 @@ interface Post {
 }
 
 const PostList: React.FC = () => {
-  const navigate = useNavigate();
+
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);

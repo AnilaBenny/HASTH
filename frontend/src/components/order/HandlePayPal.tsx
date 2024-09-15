@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 
-const HandlePayPal = ({ cart }) => {
+const HandlePayPal = ({ cart }:any) => {
   const [message, setMessage] = useState("");
 
   const initialOptions = {
@@ -11,11 +11,13 @@ const HandlePayPal = ({ cart }) => {
     "disable-funding": "",
     currency: "USD",
     components: "buttons",
-    "data-page-type": "product-details",
-    "data-sdk-integration-source": "developer-studio",
+    "data-page-type": "checkout",
+    "data-sdk-integration-source": "button",
   };
 
+
   return (
+    //@ts-ignore
     <PayPalScriptProvider options={initialOptions}>
       <PayPalButtons
         style={{
@@ -45,6 +47,7 @@ const HandlePayPal = ({ cart }) => {
             throw error;
           }
         }}
+        //@ts-ignore
         onApprove={async (data, actions) => {
           try {
             const response = await axiosInstance.post(`/api/auth/order`, { cart, paymentMethod: 'PayPal' });

@@ -16,10 +16,16 @@ interface Post {
     video?: string;
     tags?: string;
     userId: {
+        _id:string;
         name: string;
+        image:string;
     };
     liked?: string[];
     comments?: string[];
+}
+interface User{
+    _id:string;
+
 }
 
 
@@ -28,7 +34,7 @@ const MAX_IMAGES = 3;
 
 const Post: React.FC = () => {
     const storedUser = useSelector((state: any) => state.user.user);
-    const [user, setUser] = useState(null);
+    const [user, setUser]= useState<User|null>(null);
 
     useEffect(() => {
         console.log(storedUser);
@@ -440,7 +446,7 @@ const Post: React.FC = () => {
 
                                 </div>
                                 <PostActions 
-                                    userId={user?._id} 
+                                    userId={user?._id||''} 
                                     post={post} 
                                     initialLikesCount={post.liked?.length || 0} 
                                     initialCommentsCount={post.comments?.length || 0} 

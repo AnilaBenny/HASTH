@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { clearCart } from '../../store/slices/cartSlice';
@@ -11,7 +11,11 @@ import { CreditCard, Banknote, Truck } from 'lucide-react';
 import { updateTotalPrice } from '../../store/slices/cartSlice';
 
 const stripePromise = loadStripe('pk_test_51PrKKwJKak3nsLbf6XEzehMZVJUSBQ4E9QWdUPTNFxGj1vveGo0NHx95qmJFcy5kyQ8Za7wOt6wLO9o4UjK2dex100vPyO4esO');
-
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 export default () => {
   const PayPalLogo = ({ className }:any) => (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -30,6 +34,7 @@ export default () => {
     { name: 'Razorpay', icon: Banknote },
     { name: 'COD', icon: Truck },
   ];
+  //@ts-ignore
   const [originalTotalPrice, setOriginalTotalPrice] = useState(cart.totalPrice);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -335,7 +340,7 @@ export default () => {
   );
 };
 
-const PaymentForm = ({ cart, user, dispatch, navigate }: any) => {
+const PaymentForm = ({ cart, dispatch, navigate }: any) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -373,7 +378,7 @@ const PaymentForm = ({ cart, user, dispatch, navigate }: any) => {
 console.log(response,'....stripjb');
 let paymentIntent=response.data.paymentIntent;
 if (paymentIntent.status === 'requires_confirmation' || paymentIntent.status === 'requires_action') {
-      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
+      const { error: confirmError } = await stripe.confirmCardPayment(
         response.data.clientSecret,
         {
           payment_method: paymentMethod.id,

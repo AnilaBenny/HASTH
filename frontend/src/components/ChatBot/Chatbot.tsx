@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  { useState, useEffect, useRef } from 'react';
 import { Send } from 'lucide-react';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import ReactDOM from 'react-dom';
@@ -24,10 +24,10 @@ export default function MainComponent() {
   );
 }
 
-function Modal({ isOpen, onClose }) {
-  const [messages, setMessages] = useState([]);
+function Modal({ isOpen, onClose }:any) {
+  const [messages, setMessages] = useState<any|[]>([]);
   const [inputValue, setInputValue] = useState('');
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -39,7 +39,7 @@ function Modal({ isOpen, onClose }) {
 
   const handleSendMessage = async () => {
     if (inputValue.trim() !== '') {
-      const newMessages = [...messages, { text: inputValue, sender: 'user' }];
+      const newMessages:any[]  = [...messages, { text: inputValue, sender: 'user' }];
       setMessages(newMessages);
       setInputValue('');
 
@@ -54,10 +54,10 @@ function Modal({ isOpen, onClose }) {
         });
 
         const botMessage = response.data.fulfillmentText;
-        setMessages((prev) => [...prev, { text: botMessage, sender: 'bot' }]);
+        setMessages((prev:any) => [...prev, { text: botMessage, sender: 'bot' }]);
       } catch (error) {
         console.error('Error:', error);
-        setMessages((prev) => [
+        setMessages((prev:any) => [
           ...prev,
           { text: "Sorry, I'm having trouble connecting right now.", sender: 'bot' },
         ]);
@@ -88,7 +88,7 @@ function Modal({ isOpen, onClose }) {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((message, index) => (
+          {messages.map((message:any, index:any) => (
             <div
               key={index}
               className={`flex ${

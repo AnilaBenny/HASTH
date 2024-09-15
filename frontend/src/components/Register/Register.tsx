@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { AiOutlineMail, AiOutlineLock, AiOutlineEyeInvisible, AiOutlineUser, AiOutlinePhone } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
@@ -9,8 +9,7 @@ import { initializeUser, setUser } from '../../store/slices/userSlice';
 import { useDispatch } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import apiService from '../../Services/Apicalls';
-
+import useApiService from '../../Services/Apicalls';
 const Register = function () {
   const dispatch = useDispatch();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -53,7 +52,7 @@ const Register = function () {
       .max(15, 'Password must be between 6 and 15 characters')
       .required('Password is required'),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .oneOf([Yup.ref('password'), undefined], 'Passwords must match')
       .required('Confirm password is required'),
     mobile: Yup.string()
       .matches(/^[6-9]\d{9}$/, 'Invalid mobile number format. Must start with a digit from 6 to 9 and be 10 digits long')
@@ -70,7 +69,7 @@ const Register = function () {
     role: Yup.string().required('Role is required'),
   });
 
-  const handleSubmit = async (values, { setSubmitting }) => {
+  const handleSubmit = async (values:any, { setSubmitting }:any) => {
     try {
       setIsLoading(true);
       const response = await axiosInstance.post('/api/auth/register', values);
@@ -96,14 +95,17 @@ const Register = function () {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const status = queryParams.get('status');
-    const userString:string | null = queryParams.get('user');
-    const token:string | null= queryParams.get('token');
+    const userString:any | null = queryParams.get('user');
+    const token:any | null= queryParams.get('token');
 
     if (status === 'true') {
       try {
         const user = JSON.parse(userString); 
         dispatch(setUser(user)); 
-        dispatch(initializeUser(token));
+       
+          dispatch(initializeUser(token));
+        
+       
         
         navigate('/home');
       } catch (error) {

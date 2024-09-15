@@ -13,7 +13,7 @@ interface ModalProps {
   } | null;
 }
 
-const ProductModal: React.FC<ModalProps> = ({ isOpen, onClose, product }) => {
+const ProductModal: React.FC<ModalProps> = ({ isOpen, onClose, product }:any) => {
   if (!isOpen || !product) return null;
 
   return ReactDOM.createPortal(

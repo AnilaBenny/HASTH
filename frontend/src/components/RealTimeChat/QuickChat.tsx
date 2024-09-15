@@ -17,12 +17,22 @@ interface Message {
   conversationId: string;
   timestamp: string;
 }
+type Conversation = {
+  receiver: {
+    _id: string;
+    name: string;
+    image: string;
+  };
+  conversation: {
+    _id: string;
+  };
+};
 
 
 const QuickChat: React.FC = () => {
   const socket: Socket | null = useSocket();
   const [conversations, setConversations] = useState([]);
-  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -37,9 +47,11 @@ const QuickChat: React.FC = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
-  const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const recordingIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [incomingCall, setIncomingCall] = useState<{ roomId: string; caller: string } | null>(null);
+  //@ts-ignore
   const [isCallPending, setIsCallPending] = useState(false);
+    //@ts-ignore
   const [isCallInitiated, setIsCallInitiated] = useState(false);
   const navigate = useNavigate();
 
@@ -60,7 +72,7 @@ const QuickChat: React.FC = () => {
         setIncomingCall(data);
       });
 
-      socket.on('callAccepted', ({ roomId, userId }) => {
+      socket.on('callAccepted', ({ roomId }) => {
         setIsCallPending(false);
         navigate(`/videoCall/${roomId}`);
       });
@@ -365,7 +377,7 @@ const QuickChat: React.FC = () => {
     Welcome to chat room
   </h2>
   <div className="overflow-y-auto p-2 ">
-    {conversations.map((conv) => (
+    {conversations.map((conv:any) => (
       <div
         key={conv.conversation._id}
         className={`flex items-center p-3 my-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors duration-150 shadow-sm ${

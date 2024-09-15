@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { FaEllipsisV, FaEdit, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
@@ -22,6 +22,18 @@ interface Post {
   comments?: any[];
 }
 
+
+interface User {
+  _id: string;
+  image: string;
+  name: string;
+  specification: string;
+  email: string;
+  skills: string[];
+  education: string;
+}
+
+
 interface Product {
   _id: string;
   images: string[];
@@ -38,7 +50,7 @@ export default() => {
     fetchPosts();
     fetchProducts();
   }, []);
-  const user = useSelector((state: any) => state.user.user);
+  const user:User|null = useSelector((state: any) => state.user.user);
   const [posts, setPosts] = useState<Post[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [activeTab, setActiveTab] = useState<'posts' | 'products'>('posts');
@@ -53,8 +65,7 @@ export default() => {
   const fetchPosts = async () => {
     try {
       const response = await axiosInstance.get('/api/auth/posts');
-      const user=localStorage.getItem('user');
-      const userPosts = response.data.data.filter((post:any) => post.userId ===user._id);
+      const userPosts = response.data.data.filter((post:any) => post.userId ===user?._id);
       setPosts(userPosts);
     } catch (error) {
       console.log('Error fetching posts:', error);
@@ -64,8 +75,7 @@ export default() => {
   const fetchProducts = async () => {
     try {
       const response = await axiosInstance.get('/api/auth/products');
-      const user=localStorage.getItem('user');
-      const userProducts = response.data.data.filter((product:any) => product.userId ===user._id);
+      const userProducts = response.data.data.filter((product:any) => product.userId ===user?._id);
       setProducts(userProducts);
     } catch (error) {
       console.log('Error fetching products:', error);
@@ -95,7 +105,7 @@ const handleShowOptions = (postId: string) => {
     try {
       
       if (type === 'post') {
-        const response=await axiosInstance.delete(`/api/auth/deleteIdea/${id}`);
+        await axiosInstance.delete(`/api/auth/deleteIdea/${id}`);
         setPosts(posts.filter(post => post._id !== id));
       } else {
         const response=await axiosInstance.patch(`/api/auth/deleteProduct/${id}`);
@@ -109,13 +119,22 @@ const handleShowOptions = (postId: string) => {
     setShowOptions(null);
   };
 
-  const handleSaveEdit = async (updatedItem: FormData,type:any) => {
+  const handleSaveEdit = async (updatedItem: any,type:any) => {
     try {
       if (type === 'post') {
-        setPosts(posts.map(post => post._id === updatedItem._id ? updatedItem : post));
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post._id === updatedItem._id ? updatedItem : post
+          )
+        );
       } else {
-        setProducts(products.map(product => product._id === updatedItem._id ? updatedItem : product));
+        setProducts((prevProducts) =>
+          prevProducts.map((product) =>
+            product._id === updatedItem._id ? updatedItem : product
+          )
+        );
       }
+      
       setEditModalOpen(false);
     } catch (error) {
       console.log('Error updating item:', error);
@@ -129,10 +148,10 @@ const handleShowOptions = (postId: string) => {
         <img src='/images/profile.avif' alt="Cover" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black opacity-30"></div>
         <div className="absolute bottom-4 left-4 flex items-end">
-          <img src={`http://localhost:8080/src/uploads/${user.image}`} alt="Profile" className="w-24 h-24 rounded-full border-4 border-white" />
+          <img src={`http://localhost:8080/src/uploads/${user?.image}`} alt="Profile" className="w-24 h-24 rounded-full border-4 border-white" />
           <div className="ml-4 text-white">
-            <h1 className="text-3xl font-bold">{user.name}</h1>
-            <p className="text-sm">{user.specification}</p>
+            <h1 className="text-3xl font-bold">{user?.name}</h1>
+            <p className="text-sm">{user?.specification}</p>
           </div>
         </div>
         <button
@@ -144,9 +163,9 @@ const handleShowOptions = (postId: string) => {
       </div>
 
       <div className="p-6">
-        <p className="text-gray-600">{user.email}</p>
-        <p className="text-gray-600 mt-2">Skills: {user.skills}</p>
-        <p className="text-gray-600">Education: {user.education}</p>
+        <p className="text-gray-600">{user?.email}</p>
+        <p className="text-gray-600 mt-2">Skills: {user?.skills}</p>
+        <p className="text-gray-600">Education: {user?.education}</p>
         
         <div className="flex justify-around mt-6 text-center">
         <div>
@@ -251,10 +270,11 @@ const handleShowOptions = (postId: string) => {
         )}
       </div>
       <PostActions 
-        userId={user._id} 
+        userId={user?._id||''} 
         post={post} 
         initialLikesCount={post.liked?.length || 0} 
         initialCommentsCount={post.comments?.length || 0} 
+        isAuthor
       />
    
   </div>

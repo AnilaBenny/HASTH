@@ -199,9 +199,7 @@ const Profile: React.FC = () => {
                       <Field
                         type="text"
                         name="street"
-                        className={`h-10 border mt-1 rounded px-4 w-full ${
-                          errors.address ? "border-red-500" : "bg-gray-50"
-                        }`}
+                        className={`h-10 border mt-1 rounded px-4 w-full bg-gray-50`}
                         placeholder="Enter your street"
                       />
                       <ErrorMessage name="street" component="p" className="text-red-500 text-xs" />

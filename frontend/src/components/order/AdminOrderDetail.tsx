@@ -1,7 +1,6 @@
-import React from "react";
 import ReactDOM from "react-dom";
 
-const AdminOrderDetail = ({ isOpen, onClose, order }) => {
+const AdminOrderDetail = ({ isOpen, onClose, order }:any) => {
   if (!isOpen || !order) return null;
 
   return ReactDOM.createPortal(
@@ -56,7 +55,7 @@ const AdminOrderDetail = ({ isOpen, onClose, order }) => {
         <div className="mt-8">
           <h3 className="text-lg font-semibold mb-4 text-gray-700">Order Items</h3>
           <div className="bg-gray-50 rounded-lg p-4">
-            {order.items.map((item, index) => (
+            {order.items.map((item:any, index:any) => (
               <div key={index} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
                 <span>{item.product.name} x {item.quantity}</span>
                 <span className="font-medium">₹{(item.price * item.quantity)}</span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
@@ -8,7 +8,7 @@ const OrderPage = () => {
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [ordersPerPage] = useState(10);
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector((state:any) => state.user.user);
   const [customer, setCustomer] = useState(false);
 
   const navigate = useNavigate();
@@ -101,7 +101,7 @@ const OrderPage = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {currentOrders.map((order) => (
+            {currentOrders.map((order:any) => (
               <tr key={order._id} className="hover:bg-gray-50 transition duration-150">
                {order.paymentStatus==='Paid'? <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.orderId}</td>:<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-yellow-800">

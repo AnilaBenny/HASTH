@@ -1,16 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ReviewForm from './ReviewForm';
-import { FaShoppingCart, FaBox, FaShippingFast, FaCheckCircle, FaClock, FaBan } from 'react-icons/fa';
+import { FaShoppingCart, FaShippingFast, FaCheckCircle, FaClock, FaBan } from 'react-icons/fa';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import Invoice from '../Invoice/Invoice';
 import { toast } from 'react-toastify';
 import useApiService from '../../Services/Apicalls';
 
 const OrderStages = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+interface Order {
+  _id: string;
+  orderId: string;
+  userId: {
+    name: string;
+  };
+  collab?: {
+    name: string;
+  };
+  totalAmount: number;
+  orderStatus: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  createdAt: Date;
+  reviewed?: boolean;
+  items: {
+    productId: string;
+    name: string;
+  }[];
+}
 
 
-const StageIcon = ({ stage, isActive, isCompleted }) => {
+const StageIcon = ({ stage, isActive, isCompleted }:any) => {
   
   const icons = {
     Pending: FaClock,
@@ -19,7 +39,8 @@ const StageIcon = ({ stage, isActive, isCompleted }) => {
     Delivered: FaCheckCircle,
     Cancelled: FaBan,
   };
-  const Icon = icons[stage];
+  // @ts-ignore
+  const Icon= icons[stage];
 
   
   return (
@@ -33,7 +54,7 @@ const StageIcon = ({ stage, isActive, isCompleted }) => {
 };
 
 const OrderDetails = () => {
-  const [order, setOrder] = useState(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [isTrue, setIsTrue] = useState(false);
   const [newStatus, setNewStatus] = useState('');
   const [showCancellationRequest, setShowCancellationRequest] = useState(false);
@@ -58,7 +79,7 @@ const OrderDetails = () => {
 
   const handleCancellationRequest = async() => {
 
-    console.log(`Cancellation requested for order ${order.orderId}`);
+
     const response=await axiosInstance.patch('/api/auth/cancelOrder',{OrderId:order?._id})
     setOrder(response.data.data)
     setShowCancellationRequest(true);
@@ -170,7 +191,7 @@ const OrderDetails = () => {
             <div className="mt-8">
               <h3 className="text-xl font-bold text-gray-900 mb-4">Ordered Items</h3>
               <ul className="divide-y divide-gray-200">
-                {order.items.map((product) => (
+                {order.items.map((product:any) => (
                   <li key={product.product._id} className="py-6 flex items-center hover:bg-gray-50 transition-colors duration-200 rounded-lg">
                     <img 
                       src={`http://localhost:8080/src/uploads/${product.product.images[0]}` || 'https://via.placeholder.com/100'}

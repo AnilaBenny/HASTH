@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useSelector } from 'react-redux';
 
 export default () => {
     const user = useSelector((state: any) => state.user.user);
-
+//@ts-ignore
     const [supercoin, setSupercoin] = useState(user?.supercoin);
-    console.log(supercoin);
     
   const [isModalOpen, setIsModalOpen] = useState(false);
 

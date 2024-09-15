@@ -3,13 +3,9 @@ import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
-interface VideoCallProps {
-  socket: any;
-  creativeId: string;
-  creativeName: string;
-}
 
-const VideoCall: React.FC<VideoCallProps> = ({ socket, creativeId, creativeName }) => {
+
+const VideoCall: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();

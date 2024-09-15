@@ -8,7 +8,7 @@ const ReviewForm = ({ orderId ,userId,setOrder}:any) => {
   const [comment, setComment] = useState('');
 
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
     try {
       const response=await axiosInstance.post(`/api/auth/review`, {
@@ -56,7 +56,7 @@ const ReviewForm = ({ orderId ,userId,setOrder}:any) => {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-          rows="4"
+          rows={4}
         ></textarea>
       </div>
       <button

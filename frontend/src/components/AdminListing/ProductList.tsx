@@ -15,9 +15,9 @@ interface Product {
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [filter, setFilter] = useState<"all" | "active" | "inactive">("all");
+  // const [filter, setFilter] = useState<"all" | "active" | "inactive">("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
   const productsPerPage = 10;
@@ -39,7 +39,7 @@ const ProductList: React.FC = () => {
     };
 
     fetchProducts();
-  }, [currentPage, filter]);
+  }, [currentPage]);
 
   const handleSearch = (query: string) => {
     const lowerCaseQuery = query.toLowerCase();
@@ -51,7 +51,7 @@ const ProductList: React.FC = () => {
     setFilteredProducts(filtered);
   };
 
-  const handleViewDetails = (product: Product) => {
+  const handleViewDetails = (product: any) => {
     setSelectedProduct(product);
     setOpenModal(true);
   };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FaEllipsisV,FaComments } from 'react-icons/fa';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import PostActions from '../Post/postActions';
@@ -76,7 +76,7 @@ if (!user) {
   };
 
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedReason, setSelectedReason] = useState('');
+  // const [selectedReason, setSelectedReason] = useState('');
 
   const handleReportClick = () => {
     setShowDropdown(!showDropdown);
@@ -108,7 +108,7 @@ if (!user) {
   
 
   const handleSelectReason = async (reason: string) => {
-    setSelectedReason(reason);
+    // setSelectedReason(reason);
     setShowDropdown(false);
 
     try {
@@ -228,7 +228,7 @@ if (!user) {
               posts.map(post => (
                 <div key={post._id} className="bg-white p-6 rounded-lg shadow-lg mb-6 relative">
                   <div className="absolute top-4 right-4">
-                    <button onClick={() => handleShowOptions(post._id)} className="text-gray-500 hover:text-gray-700">
+                    <button  className="text-gray-500 hover:text-gray-700">
                       <FaEllipsisV />
                     </button>
                   </div>
@@ -281,6 +281,7 @@ if (!user) {
                     post={post}
                     initialLikesCount={post.liked?.length || 0}
                     initialCommentsCount={post.comments?.length || 0}
+                    isAuthor
                   />
                 </div>
               ))

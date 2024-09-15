@@ -7,7 +7,7 @@ interface InvoiceDocumentProps {
   }
 
 
-const InvoiceDocument = ({ invoiceData,user}) => (
+const InvoiceDocument = ({ invoiceData,user}:any) => (
     
   <Document>
     <Page size="A4" style={styles.page}>
@@ -108,7 +108,7 @@ const Invoice: React.FC<InvoiceDocumentProps>  = ({ invoiceData }) => {
       fileName="invoice.pdf"
       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
     >
-      {({ blob, url, loading, error }) =>
+      {({ loading }) =>
         loading ? 'Loading document...' : 'Download Invoice'
       }
     </PDFDownloadLink>

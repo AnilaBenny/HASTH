@@ -90,9 +90,11 @@ export default function UserList() {
           user._id === updatedUser._id ? updatedUser : user
         )
       );
-      setBlockStatus((prevStatus) => ({
+      
+      setBlockStatus((prevStatus:any) => ({
         ...prevStatus,
-        [userId]: updatedUser.isBlocked,
+        //@ts-ignore
+        [userId ]: updatedUser.isBlocked,
       }));
 
       const currentUser = JSON.parse(localStorage.getItem("user") || "{}");

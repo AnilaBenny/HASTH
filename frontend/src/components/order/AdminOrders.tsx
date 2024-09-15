@@ -1,10 +1,20 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../../Axiosconfig/Axiosconfig";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import AdminOrderDetail from "./AdminOrderDetail";
 
+
+interface Order {
+  _id: string;
+  orderId: string;
+  userId: { name: string };
+  collab: { name: string };
+  totalAmount: number;
+  orderStatus: string;
+  paymentMethod: string;
+}
 const OrderList = () => {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders]= useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -32,18 +42,20 @@ const OrderList = () => {
     fetchOrders();
   }, [currentPage]);
 
-  const handleSearch = (query) => {
+  const handleSearch = (query:any) => {
     const lowerCaseQuery = query.toLowerCase();
     const filtered = orders.filter(
       (order) =>
+        // @ts-ignore
         order.userId.name.toLowerCase().includes(lowerCaseQuery) ||
+        // @ts-ignore
         order.collab.name.toLowerCase().includes(lowerCaseQuery)
     );
     setFilteredOrders(filtered);
     setCurrentPage(1);
   };
 
-  const handleViewDetails = (order) => {
+  const handleViewDetails = (order:any) => {
     setSelectedOrder(order);
     setOpenModal(true);
   };
@@ -107,7 +119,7 @@ const OrderList = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredOrders.map((order) => (
+                {filteredOrders.map((order:Order) => (
                   <tr key={order._id}>
                     <td className="px-6 py-4 whitespace-nowrap">{order.orderId}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{order.userId.name}</td>

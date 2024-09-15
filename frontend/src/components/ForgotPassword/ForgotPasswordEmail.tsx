@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { toast } from 'react-toastify';
 import { AiOutlineMail } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
 import ResetPassword from './ResetPassword';
 
 const ForgotPasswordEmail: React.FC = () => {
@@ -16,7 +15,7 @@ const ForgotPasswordEmail: React.FC = () => {
   });
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const navigate = useNavigate();
+
 
   useEffect(() => {
     if (timer > 0) {

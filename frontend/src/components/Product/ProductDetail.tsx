@@ -15,26 +15,7 @@ interface Review {
   reviewdescription: string;
 }
 
-interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  collab?: {
-    _id: string;
-    name: string;
-  };
-  images: string[];
-  brand: string;
-  countInStock: number;
-  review: Review[];
-  isFeatured: boolean;
-  price: number;
-  popularity: number;
-  list: boolean;
-  userId: {
-    _id: string;
-  };
-}
+
 
 const ProductDetail: React.FC = () => {
   const location = useLocation();
@@ -96,7 +77,7 @@ const ProductDetail: React.FC = () => {
           <div className="md:flex">
             <div className="md:w-1/2 p-8">
               <div className="grid grid-cols-2 gap-4">
-                {product.images.map((image, index) => (
+                {product.images.map((image:any, index:any) => (
                   <img
                     key={index}
                     src={`http://localhost:8080/src/uploads/${image}`}
@@ -156,7 +137,7 @@ const ProductDetail: React.FC = () => {
             </div>
           </div>
           {product.review && product.review.length > 0 ? (
-          product.review.map((review, index) => (
+          product.review.map((review:any, index:any) => (
             <div key={index} className="mb-8 pb-8 border-b border-gray-200 last:border-b-0">
               <div className="flex justify-between items-center mb-3">
                 <p className="font-semibold text-gray-800 text-lg">{review.user?.name || 'Anonymous'}</p>
