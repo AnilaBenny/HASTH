@@ -4,7 +4,6 @@ import { toast } from 'react-toastify';
 import { updateQuantity, addToCart, clearCart } from "../store/slices/cartSlice";
 import { useNavigate } from "react-router-dom";
 
-
 const useApiService = () => {
   const dispatch = useDispatch();
   const navigate=useNavigate();
