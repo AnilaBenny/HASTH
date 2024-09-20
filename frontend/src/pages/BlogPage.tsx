@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../Axiosconfig/Axiosconfig';
-import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronLeft } from 'lucide-react';
 
 interface BlogPost {
   _id: string;
