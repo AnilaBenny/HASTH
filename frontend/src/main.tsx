@@ -43,6 +43,8 @@ import VideoCall from './pages/VideoCall';
 import OrderDetailPage from './pages/OrderDetailPage';
 import AdminOrders from './pages/AdminOrders';
 import ViewAnalyticsPage from './pages/ViewAnalyticsPage';
+import AdminBlogs from './pages/AdminBlogs.tsx';
+import BlogPage from './pages/BlogPage.tsx';
 
 const userRoutes = (
   <Route path='/' element={<App />}>
@@ -71,6 +73,7 @@ const userRoutes = (
       <Route path='/videoCall/:roomId' element={<VideoCall/>} ></Route>
       <Route path='/orderDetail' element={<OrderDetailPage/>} ></Route>
       <Route path='/viewAnalytics' element={<ViewAnalyticsPage/>} ></Route>
+      <Route path='/blogs' element={<BlogPage/>} ></Route>
       
     </Route>
   </Route>
@@ -86,6 +89,7 @@ const adminRoutes=(
       <Route path='posts' element={<Adminposts/>}/>
       <Route path='products' element={<Adminproducts/>}/>
       <Route path='orderList' element={<AdminOrders/>}/>
+      <Route path='blogs' element={<AdminBlogs/>}/>
     </Route>
   </Route>
 )

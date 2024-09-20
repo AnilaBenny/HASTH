@@ -10,7 +10,7 @@ import { userRegistration,otpVerification ,forgotPasswordUseCase,loginUseCase,up
 
        } from "../../application/useCase"
 import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,verifyCreativeUseCase,getallReportUseCase,
-        getallOrderUseCase} from "../../application/useCase/adminUseCase"
+        getallOrderUseCase,CreateBlogUseCase,getallBlogUseCase,deleteBlogUseCase} from "../../application/useCase/adminUseCase"
 
 
 const useCase:any={
@@ -60,7 +60,10 @@ const useCase:any={
     markMessagesAsReadUseCase:markMessagesAsReadUseCase,
     allListNumberUseCase:allListNumberUseCase,
     reviewEditUseCase:reviewEditUseCase,
-    paymentStatusUseCase:paymentStatusUseCase
+    paymentStatusUseCase:paymentStatusUseCase,
+    CreateBlogUseCase:CreateBlogUseCase,
+    getallBlogUseCase:getallBlogUseCase,
+    deleteBlogUseCase:deleteBlogUseCase,
 
 }
 const respository:any={

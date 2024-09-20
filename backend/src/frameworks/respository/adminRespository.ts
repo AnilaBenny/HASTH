@@ -176,4 +176,75 @@ export default {
       console.log("Error in adminRepository.getAllOrders", error);
       return { status: false, message: 'Error occurred during get orders' };
   }},
+  createBlog:async(data:any)=>{
+    try {
+      const {
+        title,content,image
+      }=data;
+      const blog=new databaseSchema.Blog({
+        title,
+        content,
+        image
+      })
+      await blog.save();
+      const blogs = await databaseSchema.Blog.find().sort({ createdAt: -1 });
+
+
+      return blogs;
+      
+    } catch (error) {
+      console.error("Error creating blog:", error); 
+      throw new Error("Failed to create blog"); 
+    }
+  },
+  getAllBlogs:async(data:any)=>{
+    try {
+
+      const page = data.page || 1;
+      const limit = data.limit || 8;
+      const skip = (page - 1) * limit;
+
+      const Blogs = await databaseSchema.Blog.find().sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit);
+          
+
+  
+      const totalBlogs = await databaseSchema.Blog.countDocuments();
+ 
+
+      if (Blogs && Blogs.length > 0) {
+        
+        
+          return {
+              status: true,
+              data: {
+                Blogs,
+                  total: totalBlogs,
+                  currentPage: page,
+                  totalPages: Math.ceil(totalBlogs / limit)
+              }
+          };
+          
+      } else {
+          return { status: false, message: 'Blogs not found' };
+      }
+  } catch (error) {
+      console.log("Error in adminRepository.allBlogs", error);
+      return { status: false, message: 'Error occurred during get Blogs' };
+  }},
+  deleteBlog: async (data: any) => {
+    try {
+      const blog = await databaseSchema.Blog.findByIdAndDelete(data);
+      if (blog) {
+        const blogs=await databaseSchema.Blog.find();
+        return { status: true, message: 'Blog deleted successfully', data: blogs };
+      } else {
+        return { status: false, message: 'Blog not found' };
+      }
+    } catch (error) {
+      return { status: false, message: 'Error deleting blog'};
+    }
+  }
+  
 };

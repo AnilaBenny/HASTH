@@ -68,7 +68,9 @@ const {
   
 const { 
   AdminLoginController,getAllUserController,handleUserBlockController,
-  verifyCreativeController,getReportsController,getallOrdersController
+  verifyCreativeController,getReportsController,getallOrdersController,
+  createBlogController,allBlogController,deleteBlogController,
+
 }=adminController(dependencies);
 router.post('/admin/login',AdminLoginController);
 router.get('/getAllUsers',getAllUserController);
@@ -76,6 +78,9 @@ router.patch('/handleUserBlock/:userId',handleUserBlockController);
 router.patch('/verifyCreative/:userId',verifyCreativeController);
 router.get('/reports',getReportsController);
 router.get('/admin/allorders',getallOrdersController);
+router.post('/admin/createblog',upload.single('image'),createBlogController);
+router.get('/allBlogs',allBlogController);
+router.delete('/deleteblog/:id',deleteBlogController);
 
 
 return router;
