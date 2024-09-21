@@ -15,7 +15,6 @@ import logger from './logger';
 import { Server, Socket } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
-import { log } from 'console';
 import { Conversation } from './frameworks/database/schema/conversationSchema';
 const socketIORedis = require('socket.io-redis');
 dotenv.config();
