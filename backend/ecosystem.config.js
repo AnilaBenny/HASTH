@@ -1,15 +1,16 @@
+// Rename ecosystem.config.js to ecosystem.config.cjs
 module.exports = {
     apps: [
       {
-        name: "server",
-        script: "ts-node",
-        args: "src/server.ts",
-        watch: true,
-        interpreter: "node",
-        env: {
-          NODE_ENV: "production"
-        }
-      }
-    ]
+        name: 'server',
+        script: './server.ts',
+        instances: 1,
+        autorestart: true,
+        watch: false,
+        max_memory_restart: '1G',
+        interpreter: 'ts-node',
+        interpreter_args: '-r ts-node/register',
+      },
+    ],
   };
   
