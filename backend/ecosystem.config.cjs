@@ -1,4 +1,4 @@
-// Rename ecosystem.config.js to ecosystem.config.cjs
+
 module.exports = {
     apps: [
       {
