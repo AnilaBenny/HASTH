@@ -1,8 +1,10 @@
 module.exports = {
   apps: [
     {
-      name: 'server',
-      script: 'src/server.ts',
+      name: "server",
+      script: "./dist/server.js",
+      instances: "max",
+      exec_mode: "cluster",
       instances: 1,
       autorestart: true,
       watch: false,
