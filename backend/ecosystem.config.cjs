@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "server",
-      script: "./src/server.ts",
+      script: "./src/app.ts",
       instances: 1,
       exec_mode: "cluster",
       autorestart: true,
