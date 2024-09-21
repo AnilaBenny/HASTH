@@ -49,6 +49,8 @@ const passport_1 = __importDefault(require("passport"));
 const passport_2 = __importDefault(require("../src/config/passport"));
 // import { middleware } from './utils/middleware/middleware';
 const logger_1 = __importDefault(require("./logger"));
+// import { createClient } from 'redis';
+// import { createAdapter } from '@socket.io/redis-adapter';
 const socketIORedis = require('socket.io-redis');
 dotenv_1.default.config();
 const app = (0, express_1.default)();
