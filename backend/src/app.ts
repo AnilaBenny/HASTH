@@ -13,9 +13,9 @@ import PassportConfig  from "../src/config/passport";
 // import { middleware } from './utils/middleware/middleware';
 import logger from './logger';
 import { Server, Socket } from 'socket.io';
-import { createClient } from 'redis';
-import { createAdapter } from '@socket.io/redis-adapter';
-import { Conversation } from './frameworks/database/schema/conversationSchema';
+// import { createClient } from 'redis';
+// import { createAdapter } from '@socket.io/redis-adapter';
+
 const socketIORedis = require('socket.io-redis');
 dotenv.config();
 
