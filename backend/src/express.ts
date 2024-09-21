@@ -15,7 +15,7 @@ const expressConfig = (app: Express) => {
 
   app.use(
     cors({
-      origin: ["http://localhost:5173","https://hasth.vercel.app/"],
+      origin: ["http://localhost:5173","https://hasth-dbkq0suy8-anilas-projects-efeda6c3.vercel.app"],
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
     })
