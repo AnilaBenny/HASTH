@@ -2,14 +2,14 @@ module.exports = {
   apps: [
     {
       name: "server",
-      script: "./dist/server.js",
-      instances: "max",
-      exec_mode: "cluster",
+      script: "./src/server.ts",
       instances: 1,
+      exec_mode: "cluster",
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
-      interpreter: 'ts-node',
+      interpreter: 'node',
+      interpreter_args: '-r ts-node/register',
     },
   ],
 };
