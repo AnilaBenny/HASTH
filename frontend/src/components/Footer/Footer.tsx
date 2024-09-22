@@ -1,5 +1,10 @@
+import { useNavigate } from "react-router-dom";
 
+const navigate=useNavigate()
 function Footer() {
+  const handleClick=()=>{
+    navigate('/admin')
+  }
     return (
       <footer className="bg-blue-100 text-center text-gray-600 dark:bg-cyan-950 dark:text-white">
         <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
@@ -48,8 +53,12 @@ function Footer() {
               <h5 className="text-lg font-semibold mb-4">Contact Us</h5>
               <p className="text-sm mb-2">cherthala,alappuzha,kerala</p>
               <p className="text-sm mb-2">City, State 12345</p>
-              <p className="text-sm mb-2">Email: hasth@gmail..com</p>
+              <p className="text-sm mb-2">Email: hasth@gmail.com</p>
               <p className="text-sm mb-2">Phone: +91 8956342357</p>
+              <p className="text-sm mb-2 cursor-pointer" onClick={handleClick}>
+      admin
+    </p>
+              
             </div>
           </div>
         </div>
