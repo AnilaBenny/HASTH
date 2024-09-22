@@ -9,7 +9,7 @@ const expressConfig = (app: Express) => {
  
   app.use(
     cors({
-      origin: ['https://www.hasthindia.shop','http://localhost:5173'],
+      origin: ['https://www.hasthindia.shop','http://localhost:5173','https://hasth.onrender.com/'],
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
     })
