@@ -14,12 +14,10 @@ const expressConfig = (app: Express) => {
       credentials: true,
     })
   );
-
-  app.options('*', cors());
   
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-  app.use(cookieParser(process.env.COOKIEPARSERSECRET || 'default_secret', { sameSite: 'None', secure: true }));
+  app.use(cookieParser(process.env.COOKIEPARSERSECRET || 'default_secret'));
   app.use(express.static("public"));
   app.use('/src/uploads', express.static('src/uploads'));
 
