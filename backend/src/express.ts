@@ -15,10 +15,11 @@ const expressConfig = (app: Express) => {
 
   app.use(
     cors({
-      origin: ["http://localhost:5173","https://hasth-dbkq0suy8-anilas-projects-efeda6c3.vercel.app","https://www.hasthindia.shop", "https://hasthindia.shop","https://hasth.mooo.com"],
+      origin: '*',
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     })
   );
+  
 };
 
 export default expressConfig;
