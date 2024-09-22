@@ -46,7 +46,7 @@ const Login: React.FC = () => {
   }, [location, navigate, dispatch]);
 
   const handleGoogleSignIn = async () => {
-    window.location.href = 'http://localhost:8080/api/auth/google';
+    window.location.href = 'https://hasth.mooo.com/api/auth/google';
   };
 
   const togglePasswordVisibility = () => setIsPasswordVisible(!isPasswordVisible);

@@ -72,7 +72,7 @@ const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ type, data, onClo
                 <strong>Images:</strong>
                 <div className="grid grid-cols-2 gap-2 w-48">
                   {(data as PostDetail).images.map((image, index) => (
-                    <img key={index} src={`http://localhost:8080/src/uploads/${image}`} alt={`Post image ${index + 1}`} className="w-full h-auto" />
+                    <img key={index} src={`https://hasth.mooo.com/src/uploads/${image}`} alt={`Post image ${index + 1}`} className="w-full h-auto" />
                   ))}
                 </div>
               </div>
@@ -81,7 +81,7 @@ const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ type, data, onClo
               <div>
                 <strong>Video:</strong>
                 <video controls className="w-full">
-                  <source src={`http://localhost:8080/src/uploads/${(data as PostDetail).video}`} type="video/mp4" />
+                  <source src={`https://hasth.mooo.com/src/uploads/${(data as PostDetail).video}`} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>

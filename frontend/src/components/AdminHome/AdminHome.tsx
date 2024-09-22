@@ -273,7 +273,7 @@ export default () => {
             {reports && reports.length > 0 ? (
                 reports.map((user:any, index:any) => (
                     <li key={index} className="flex items-center">
-                                        <img src={`http://localhost:8080/src/uploads/${user?.reportedUserId?.image}` || 'defaultImagePath'} alt="User" className="mr-4 text-gray-400 w-8" />
+                                        <img src={`https://hasth.mooo.com/src/uploads/${user?.reportedUserId?.image}` || 'defaultImagePath'} alt="User" className="mr-4 text-gray-400 w-8" />
                     <div>
                         <p className="font-medium text-gray-800">
                         {user?.reportedUserId?.name || 'Unknown User'}

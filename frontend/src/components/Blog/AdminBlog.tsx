@@ -298,7 +298,7 @@ export default  () => {
 
 
       <Modal isOpen={isDetailsModalOpen} onClose={() => setIsDetailsModalOpen(false)} title={currentBlog?.title || ''}>
-        <img src={`http://localhost:8080/src/uploads/${currentBlog?.image}`} alt={currentBlog?.title} className="w-full h-48 object-cover rounded-md mb-4" />
+        <img src={`https://hasth.mooo.com/src/uploads/${currentBlog?.image}`} alt={currentBlog?.title} className="w-full h-48 object-cover rounded-md mb-4" />
         <p className="text-sm text-gray-500 mb-2">Published on: {currentBlog ? new Date(currentBlog.createdAt).toLocaleString() : ''}</p>
         <p>{currentBlog?.content}</p>
       </Modal>

@@ -80,7 +80,7 @@ const ProductDetail: React.FC = () => {
                 {product.images.map((image:any, index:any) => (
                   <img
                     key={index}
-                    src={`http://localhost:8080/src/uploads/${image}`}
+                    src={`https://hasth.mooo.com/src/uploads/${image}`}
                     alt={`${product.name} - ${index + 1}`}
                     className={`w-full h-48 object-cover cursor-pointer rounded-lg transition duration-300 ${
                       index === currentImageIndex ? 'ring-4 ring-blue-500' : 'hover:ring-2 hover:ring-blue-300'

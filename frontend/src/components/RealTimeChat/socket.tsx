@@ -3,7 +3,7 @@ import { io, Socket } from "socket.io-client";
 export const useSocket = (): Socket<any>| null => {
     const [socket, setSocket] = useState<Socket<any> | null>(null);
     useEffect(() => {
-        const newSocket = io("http://localhost:8080/", {
+        const newSocket = io("https://hasth.mooo.com", {
             reconnection: true,
             secure: true,
             transports: ['polling', 'websocket'],

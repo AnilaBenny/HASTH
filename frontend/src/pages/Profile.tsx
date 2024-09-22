@@ -89,7 +89,7 @@ const Profile: React.FC = () => {
                   <div className="relative mt-4">
                   <div className="w-64 h-64 rounded-full overflow-hidden shadow-lg">
                     <img
-                      src={`http://localhost:8080/src/uploads/${initialValues.image}`}
+                      src={`https://hasth.mooo.com/src/uploads/${initialValues.image}`}
                       alt="Profile"
                       className="object-cover w-full h-full"
                     />

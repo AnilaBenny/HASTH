@@ -386,7 +386,7 @@ const QuickChat: React.FC = () => {
         onClick={() => handleConversationSelect(conv)}
       >
         <img
-          src={`http://localhost:8080/src/uploads/${conv.receiver.image}`}
+          src={`https://hasth.mooo.com/src/uploads/${conv.receiver.image}`}
           alt={conv.receiver.name}
           className="w-10 h-10 rounded-full object-cover border-2 border-blue-200 mr-3"
         />
@@ -410,7 +410,7 @@ const QuickChat: React.FC = () => {
             <div className="bg-white p-4 border-b shadow-sm flex justify-between rounded-t-3xl">
               <div className='flex items-center  ms-3'>
               <img
-                src={`http://localhost:8080/src/uploads/${selectedConversation.receiver.image}`}
+                src={`https://hasth.mooo.com/src/uploads/${selectedConversation.receiver.image}`}
                 alt={selectedConversation.receiver.name}
                 className="w-10 h-10 rounded-full mr-3 object-cover border-2 border-blue-200"
               />

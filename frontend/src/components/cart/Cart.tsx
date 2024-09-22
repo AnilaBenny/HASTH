@@ -60,7 +60,7 @@ export default () => {
           {cart.items.map((item: any) => (
             <div key={item._id} className="flex items-center border-b border-gray-200 py-6 last:border-b-0">
               <img 
-                src={`http://localhost:8080/src/uploads/${item.productId?.images[0]}`} 
+                src={`https://hasth.mooo.com/src/uploads/${item.productId?.images[0]}`} 
                 alt={item.name} 
                 className="w-24 h-24 object-cover rounded-md shadow-sm mr-6" 
               />

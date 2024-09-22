@@ -62,7 +62,7 @@ app.use(passport.session());
 // webRTc
 const io:Server=require('socket.io')(server,{
 cors:{
-  origin:['http://localhost:5173']
+  origin:['http://localhost:5173','https://www.hasthindia.shop']
 }
 });
 

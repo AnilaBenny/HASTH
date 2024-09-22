@@ -23,7 +23,7 @@ const ViewUser: React.FC<ViewUserProps> = ({ user, onClose }) => {
         <div className="flex items-center mb-6">
           {user.image && (
             <img 
-              src={`http://localhost:8080/src/uploads/${user.image}`} 
+              src={`https://hasth.mooo.com/src/uploads/${user.image}`} 
               alt={`${user.name}'s profile`} 
               className="w-20 h-20 rounded-full object-cover mr-4 border-2 border-blue-500"
             />

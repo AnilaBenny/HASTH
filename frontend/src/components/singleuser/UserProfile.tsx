@@ -148,7 +148,7 @@ const handleShowOptions = (postId: string) => {
         <img src='/images/profile.avif' alt="Cover" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black opacity-30"></div>
         <div className="absolute bottom-4 left-4 flex items-end">
-          <img src={`http://localhost:8080/src/uploads/${user?.image}`} alt="Profile" className="w-24 h-24 rounded-full border-4 border-white" />
+          <img src={`https://hasth.mooo.com/src/uploads/${user?.image}`} alt="Profile" className="w-24 h-24 rounded-full border-4 border-white" />
           <div className="ml-4 text-white">
             <h1 className="text-3xl font-bold">{user?.name}</h1>
             <p className="text-sm">{user?.specification}</p>
@@ -250,7 +250,7 @@ const handleShowOptions = (postId: string) => {
         {post.video && (
           <div className="col-span-1">
             <video 
-              src={`http://localhost:8080/src/uploads/${post.video}`} 
+              src={`https://hasth.mooo.com/src/uploads/${post.video}`} 
               controls 
               className="w-full h-72 object-cover rounded-lg mb-4"
             />
@@ -261,7 +261,7 @@ const handleShowOptions = (postId: string) => {
             {post.images.map((img, index) => (
               <img
                 key={index}
-                src={`http://localhost:8080/src/uploads/${img}`}
+                src={`https://hasth.mooo.com/src/uploads/${img}`}
                 alt={`Post Image ${index + 1}`}
                 className="w-full h-72 object-cover rounded-lg"
               />
@@ -309,7 +309,7 @@ const handleShowOptions = (postId: string) => {
 
                   {product.images && product.images.length > 0 && (
                     <img
-                      src={`http://localhost:8080/src/uploads/${product.images[0]}`}
+                      src={`https://hasth.mooo.com/src/uploads/${product.images[0]}`}
                       alt={product.name}
                       className="w-full h-48 object-cover rounded-md mb-4"
                     />

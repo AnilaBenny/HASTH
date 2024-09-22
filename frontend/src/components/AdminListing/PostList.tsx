@@ -90,7 +90,7 @@ const PostList: React.FC = () => {
                 <tr key={post._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center cursor-pointer">
-                      <img src={`http://localhost:8080/src/uploads/${post.userId.image}`} alt="User Avatar" className="w-10 h-10 rounded-full mr-3" />
+                      <img src={`https://hasth.mooo.com/src/uploads/${post.userId.image}`} alt="User Avatar" className="w-10 h-10 rounded-full mr-3" />
                       <div className="text-sm font-medium text-gray-900">{post.userId.name}</div>
                     </div>
                   </td>
@@ -182,7 +182,7 @@ const PostList: React.FC = () => {
                 <div className="mt-4">
                   {selectedPost.video && (
                     <video
-                      src={`http://localhost:8080/src/uploads/${selectedPost.video}`}
+                      src={`https://hasth.mooo.com/src/uploads/${selectedPost.video}`}
                       controls
                       className="w-full h-64 object-cover rounded-lg mb-4"
                     />
@@ -192,7 +192,7 @@ const PostList: React.FC = () => {
                       {selectedPost.images.map((img, index) => (
                         <img
                           key={index}
-                          src={`http://localhost:8080/src/uploads/${img}`}
+                          src={`https://hasth.mooo.com/src/uploads/${img}`}
                           alt={`Post Image ${index + 1}`}
                           className="w-full h-64 object-cover rounded-lg"
                         />

@@ -40,7 +40,7 @@ const ProductModal: React.FC<ModalProps> = ({ isOpen, onClose, product }:any) =>
         </button>
         <div className="flex flex-col items-center">
           <img
-            src={`http://localhost:8080/src/uploads/${product.images[0]}`}
+            src={`https://hasth.mooo.com/src/uploads/${product.images[0]}`}
             alt={product.name}
             className="w-full h-48 object-cover mb-4"
           />

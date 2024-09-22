@@ -52,7 +52,7 @@ const BlogPage: React.FC = () => {
         </button>
         <h1 className="text-4xl font-bold mb-6 text-gray-800">{selectedPost.title}</h1>
         <img
-          src={`http://localhost:8080/src/uploads/${selectedPost.image}`}
+          src={`https://hasth.mooo.com/src/uploads/${selectedPost.image}`}
           alt={selectedPost.title}
           className="w-full h-96 object-cover rounded-xl mb-6 shadow-lg"
         />
@@ -84,7 +84,7 @@ const BlogPage: React.FC = () => {
         {currentPosts.map((post) => (
           <div key={post._id} className="bg-white shadow-xl rounded-xl overflow-hidden transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl">
             <img
-              src={`http://localhost:8080/src/uploads/${post.image}`}
+              src={`https://hasth.mooo.com/src/uploads/${post.image}`}
               alt={post.title}
               className="w-full h-64 object-cover"
             />

@@ -27,11 +27,11 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
     useEffect(() => {
         if (type === 'post') {
             const post = editedData ;
-            setCroppedImages(post.images?.map((img:any) => `http://localhost:8080/src/uploads/${img}`) || []);
-            setVideoPreview(post.video ? `http://localhost:8080/src/uploads/${post.video}` : null);
+            setCroppedImages(post.images?.map((img:any) => `https://hasth.mooo.com/src/uploads/${img}`) || []);
+            setVideoPreview(post.video ? `https://hasth.mooo.com/src/uploads/${post.video}` : null);
         }else{
             const post = editedData ;
-            setCroppedImages(post.images?.map((img:any) => `http://localhost:8080/src/uploads/${img}`) || []);
+            setCroppedImages(post.images?.map((img:any) => `https://hasth.mooo.com/src/uploads/${img}`) || []);
             
         }
     }, [editedData, type]);

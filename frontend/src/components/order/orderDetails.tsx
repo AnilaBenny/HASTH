@@ -194,7 +194,7 @@ const OrderDetails = () => {
                 {order.items.map((product:any) => (
                   <li key={product.product._id} className="py-6 flex items-center hover:bg-gray-50 transition-colors duration-200 rounded-lg">
                     <img 
-                      src={`http://localhost:8080/src/uploads/${product.product.images[0]}` || 'https://via.placeholder.com/100'}
+                      src={`https://hasth.mooo.com/src/uploads/${product.product.images[0]}` || 'https://via.placeholder.com/100'}
                       alt={product.product.name}
                       className="h-24 w-24 rounded-md object-cover mr-6 shadow-md"
                     />

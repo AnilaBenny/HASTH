@@ -88,7 +88,7 @@ const ProductList: React.FC = () => {
                 <tr key={product._id} className="hover:bg-gray-50">
                   <td className="py-2 px-4 border-b">
                     <img
-                      src={`http://localhost:8080/src/uploads/${product.images[0]}`}
+                      src={`https://hasth.mooo.com/src/uploads/${product.images[0]}`}
                       alt={product.name}
                       className="w-16 h-16 object-cover rounded"
                     />

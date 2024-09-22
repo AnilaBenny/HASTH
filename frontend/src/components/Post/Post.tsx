@@ -397,7 +397,7 @@ const Post: React.FC = () => {
                             <div key={post._id} className="bg-white p-6 rounded-lg shadow-lg mb-6" >
                                 <div className="flex items-center mb-6 cursor-pointer" onClick={() => (post.userId!==storedUser._id)?handleSingleUser(post.userId):handleSelfPage()}>
                                     <img
-                                        src={`http://localhost:8080/src/uploads/${post.userId?.image}`}
+                                        src={`https://hasth.mooo.com/src/uploads/${post.userId?.image}`}
                                         alt="User Avatar"
                                         className="w-12 h-12 rounded-full object-cover mr-4 border-2 border-blue-500"
                                     />
@@ -420,7 +420,7 @@ const Post: React.FC = () => {
                                     {post.video && (
                                         <div className="col-span-1">
                                             <video
-                                                src={`http://localhost:8080/src/uploads/${post.video}`}
+                                                src={`https://hasth.mooo.com/src/uploads/${post.video}`}
                                                 controls
                                                 className="w-full h-72 object-cover rounded-lg mb-4"
                                             />
@@ -435,7 +435,7 @@ const Post: React.FC = () => {
     {post.images.map((img, index) => (
       <div key={index} className="w-full h-72 overflow-hidden rounded-lg">
         <img
-          src={`http://localhost:8080/src/uploads/${img}`}
+          src={`https://hasth.mooo.com/src/uploads/${img}`}
           alt={`Post Image ${index + 1}`}
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
         />

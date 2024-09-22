@@ -278,7 +278,7 @@ return (
                             <div className="cursor-pointer" onClick={() => handleProductClick(product)}>
                                 {product.images.length > 0 && (
                                     <img
-                                        src={`http://localhost:8080/src/uploads/${product.images[0]}`}
+                                        src={`https://hasth.mooo.com/src/uploads/${product.images[0]}`}
                                         alt={product.name}
                                         className="w-full h-56 object-cover"
                                     />
