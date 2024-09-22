@@ -8,14 +8,15 @@ const expressConfig = (app: Express) => {
   const server = http.createServer(app);
   app.use(
     cors({
-      origin: '*',
+      origin: 'https://www.hasthindia.shop',
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
     })
   );
+  
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-  app.use(cookieParser(process.env.COOKIEPARSERSECRET || 'default_secret'));
+  app.use(cookieParser(process.env.COOKIEPARSERSECRET || 'default_secret', { sameSite: 'None', secure: true }));
   app.use(express.static("public"));
   app.use('/src/uploads', express.static('src/uploads'));
 
