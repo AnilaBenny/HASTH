@@ -31,8 +31,15 @@ interface Creator {
     map(arg0: (creator: any) => import("react/jsx-runtime").JSX.Element): React.ReactNode;
     id: number;
     name: string;
-    imageUrl: string;
+    image: string;
   }
+  interface Product {
+    map(arg0: (creator: any) => import("react/jsx-runtime").JSX.Element): React.ReactNode;
+    id: number;
+    name: string;
+    image: string;
+  }
+
 
 
 const MAX_IMAGES = 3;
@@ -41,7 +48,7 @@ const Post: React.FC = () => {
     const storedUser = useSelector((state: any) => state.user.user);
     const [user, setUser]= useState<User|null>(null);
     const [ creators,setCreators]=useState<Creator|null>(null);
-    const [ProductList,setProductList]=useState()
+    const [ProductList,setProductList]=useState<Product|null>(null)
 
     useEffect(() => {
         console.log(storedUser);
@@ -515,23 +522,22 @@ const Post: React.FC = () => {
             <div className="w-64 sticky top-0 right-0 bg-white shadow-lg rounded-lg p-4 m-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
                 <h2 className="text-xl font-bold mb-4 text-gray-800">Products</h2>
                 <ul className="space-y-2">
-                    {ProductList.map((product:any)=>{
-                            <li key={product._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm transition-shadow duration-200 hover:shadow-md">
+                    {ProductList&&ProductList.map((product:any)=>{
+                            return <li key={product._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm transition-shadow duration-200 hover:shadow-md">
                             <img
-                            src={product.imageUrl}
-                            alt={product.name}
-                            className="w-24 h-24 object-cover rounded-lg"
-                            />
+                                src={product.imageUrl}
+                                alt={product.name}
+                                className="w-24 h-24 object-cover rounded-lg" />
                             <div className="flex-1">
-                            <p className="text-lg font-semibold text-gray-800">{product.name}</p>
-                            <button
-                                onClick={() =>}
-                                className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                            >
-                                Buy Now
-                            </button>
+                                <p className="text-lg font-semibold text-gray-800">{product.name}</p>
+                                <button
+                                    
+                                    className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                                >
+                                    Buy Now
+                                </button>
                             </div>
-                        </li>
+                        </li>;
                     })}
                     
 
