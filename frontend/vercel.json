@@ -17,6 +17,10 @@
     {
       "source": "/(.*)",
       "destination": "/dist/$1"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "/dist/admin/$1"
     }
   ],
   "headers": [
@@ -37,5 +41,6 @@
         }
       ]
     }
-  ]
+  ],
+  "cleanUrls": true
 }
