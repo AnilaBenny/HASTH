@@ -318,7 +318,7 @@ const Post: React.FC = () => {
                 {creators && creators.map((creator:any) => (
         <li key={creator._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm transition-shadow duration-200 hover:shadow-md">
           <img
-            src={`https://hasth.mooo.com/${creator.image}`}
+            src={`https://hasth.mooo.com/src/uploads/${creator.image}`}
             alt={creator.name}
             className="w-10 h-10 object-cover rounded-lg"
           />
@@ -525,7 +525,7 @@ const Post: React.FC = () => {
                     {ProductList&&ProductList.map((product:any)=>{
                             return <li key={product._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm transition-shadow duration-200 hover:shadow-md">
                             <img
-                                src={`https://hasth.mooo.com/${product.image}`}
+                                src={`https://hasth.mooo.com/src/uploads/${product.images[0]}`}
                                 alt={product.name}
                                 className="w-24 h-24 object-cover rounded-lg" />
                             <div className="flex-1">
