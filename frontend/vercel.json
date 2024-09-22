@@ -16,11 +16,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/dist/$1"
-    },
-    {
-      "source": "/admin/(.*)",
-      "destination": "/dist/$1"
+      "destination": "/index.html"
     }
   ],
   "headers": [
