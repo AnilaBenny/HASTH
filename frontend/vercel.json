@@ -20,7 +20,7 @@
     },
     {
       "source": "/admin/(.*)",
-      "destination": "/dist/admin/$1"
+      "destination": "/dist/$1"
     }
   ],
   "headers": [
