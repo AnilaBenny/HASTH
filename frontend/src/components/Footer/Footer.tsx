@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 
-const navigate=useNavigate()
+
 function Footer() {
+  const navigate=useNavigate()
   const handleClick=()=>{
     navigate('/admin')
   }
