@@ -6,19 +6,20 @@ const cookieParser=require("cookie-parser");
 
 const expressConfig = (app: Express) => {
   const server = http.createServer(app);
-
+  app.use(
+    cors({
+      origin: '*',
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+      credentials: true,
+    })
+  );
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser(process.env.COOKIEPARSERSECRET || 'default_secret'));
   app.use(express.static("public"));
   app.use('/src/uploads', express.static('src/uploads'));
 
-  app.use(
-    cors({
-      origin: '*',
-      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    })
-  );
+
   
 };
 
