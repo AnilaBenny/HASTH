@@ -15,7 +15,7 @@ const expressConfig = (app: Express) => {
 
   app.use(
     cors({
-      origin: ["http://localhost:5173","https://www.hasthindia.shop"],
+      origin: ["http://localhost:5173","https://www.hasthindia.shop","https://hasthindia.shop"],
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
     })
