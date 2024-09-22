@@ -27,7 +27,12 @@ interface User{
     _id:string;
 
 }
-
+interface Creator {
+    map(arg0: (creator: any) => import("react/jsx-runtime").JSX.Element): React.ReactNode;
+    id: number;
+    name: string;
+    imageUrl: string;
+  }
 
 
 const MAX_IMAGES = 3;
@@ -35,6 +40,8 @@ const MAX_IMAGES = 3;
 const Post: React.FC = () => {
     const storedUser = useSelector((state: any) => state.user.user);
     const [user, setUser]= useState<User|null>(null);
+    const [ creators,setCreators]=useState<Creator|null>(null);
+    const [ProductList,setProductList]=useState()
 
     useEffect(() => {
         console.log(storedUser);
@@ -42,8 +49,36 @@ const Post: React.FC = () => {
             setUser(storedUser);
         }
     }, [storedUser]); 
+    useEffect(() => {
+        fetchProducts();
+        fetchCreators();
+    }, []);
 
-   
+    const fetchCreators = async () => {
+        try {
+            const response = await axiosInstance.get('/api/auth/creators');
+            console.log(response,'.....cra');
+            
+            setCreators(response.data.data);
+        } catch (error) {
+            console.error('Error fetching creators:', error);
+        }
+    };
+
+    const fetchProducts = async () => {
+        try {
+            const response = await axiosInstance.get<{ data:any }>(`/api/auth/products`);
+            const filteredData = response.data.data.filter(
+                (product:any) => user?._id !== product?.userId._id && user?._id !== product?.collab._id
+            );
+            setProductList(filteredData);
+
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        
+        }
+    };
+
     
 
     const [posts, setPosts] = useState<Post[]>([]);
@@ -273,9 +308,24 @@ const Post: React.FC = () => {
             <div className="w-64 sticky top-0 left-0 bg-white shadow-lg rounded-lg p-4 m-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
                 <h2 className="text-xl font-bold mb-4 text-gray-800">Creative Lists</h2>
                 <ul className="space-y-2">
-                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Creative List 1</li>
-                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Creative List 2</li>
-                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Creative List 3</li>
+                {creators && creators.map((creator:any) => (
+        <li key={creator._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm transition-shadow duration-200 hover:shadow-md">
+          <img
+            src={creator.image}
+            alt={creator.name}
+            className="w-24 h-24 object-cover rounded-lg"
+          />
+          <div className="flex-1">
+            <p className="text-lg font-semibold text-gray-800">{creator.name}</p>
+            <button
+              onClick={() => console.log(`Clicked on ${creator.name}`)}
+              className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            >
+              View Profile
+            </button>
+          </div>
+        </li>
+      ))}
                 </ul>
             </div>
             <div className="flex-1 p-20 space-y-8">
@@ -463,11 +513,28 @@ const Post: React.FC = () => {
                 </div>
             )}
             <div className="w-64 sticky top-0 right-0 bg-white shadow-lg rounded-lg p-4 m-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
-                <h2 className="text-xl font-bold mb-4 text-gray-800">Notifications</h2>
+                <h2 className="text-xl font-bold mb-4 text-gray-800">Products</h2>
                 <ul className="space-y-2">
-                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Notification 1</li>
-                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Notification 2</li>
-                    <li className="text-sm text-gray-700 hover:text-blue-600 cursor-pointer transition-colors duration-200">Notification 3</li>
+                    {ProductList.map((product:any)=>{
+                            <li key={product._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm transition-shadow duration-200 hover:shadow-md">
+                            <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            className="w-24 h-24 object-cover rounded-lg"
+                            />
+                            <div className="flex-1">
+                            <p className="text-lg font-semibold text-gray-800">{product.name}</p>
+                            <button
+                                onClick={() =>}
+                                className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                            >
+                                Buy Now
+                            </button>
+                            </div>
+                        </li>
+                    })}
+                    
+
                 </ul>
             </div>
         </div>
