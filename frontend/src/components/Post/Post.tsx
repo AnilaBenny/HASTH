@@ -65,8 +65,10 @@ const Post: React.FC = () => {
         try {
             const response = await axiosInstance.get('/api/auth/creators');
             console.log(response,'.....cra');
-            
-            setCreators(response.data.data[0]._doc);
+            if(Array.isArray(response.data.data[0]._doc)){
+                setCreators(response.data.data[0]._doc);
+            }
+           
         } catch (error) {
             console.error('Error fetching creators:', error);
         }
