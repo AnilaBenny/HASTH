@@ -1,0 +1,28 @@
+name: Deploy Backend to Amazon EC2
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install SSH Key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+    - name: Deploy to EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@<YOUR_EC2_PUBLIC_IP> << 'EOF'
+          cd /path/to/your/backend  # Navigate to your project directory
+          git pull origin main  # Pull the latest changes
+          npm install  # Install dependencies
+          pm2 restart all  # Restart your Node.js server (adjust based on your process manager)
+        EOF
