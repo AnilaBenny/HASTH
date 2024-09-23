@@ -129,7 +129,7 @@ const QuickChat: React.FC = () => {
     if (socket) {
       socket.emit('joinChat', { 
         senderId: user.user._id, 
-        receiverId: conversation.receiver._id, 
+        receiverId: conversation.receiver?._id, 
         chatId: conversation.conversation._id
       });
 
@@ -141,7 +141,7 @@ const QuickChat: React.FC = () => {
     if (messageInput.trim() && selectedConversation&&selectedConversation.receiver && socket) {
       const newMessage: Message = {
         senderId: user.user._id,
-        receiverId: selectedConversation.receiver._id ,
+        receiverId: selectedConversation.receiver?._id ,
         content: messageInput,
         type: 'text',
         conversationId: selectedConversation.conversation._id,
@@ -184,7 +184,7 @@ const QuickChat: React.FC = () => {
       const base64Image = reader.result as string;
       const newMessage: Message = {
         senderId: user.user._id,
-        receiverId: selectedConversation.receiver?selectedConversation.receiver._id:'',
+        receiverId: selectedConversation.receiver?selectedConversation.receiver?._id:'',
         content: base64Image,
         type: 'image',
         conversationId: selectedConversation.conversation._id,
@@ -301,7 +301,7 @@ const QuickChat: React.FC = () => {
         const base64Audio = reader.result as string;
         const newMessage: Message = {
           senderId: user.user._id,
-          receiverId: selectedConversation.receiver._id,
+          receiverId: selectedConversation.receiver?._id,
           content: base64Audio,
           type: 'voice_note',
           conversationId: selectedConversation.conversation._id,
@@ -340,10 +340,10 @@ const QuickChat: React.FC = () => {
 
     socket.emit("videoCall", {
       userId: user.user._id,
-      creativeId: selectedConversation.receiver._id,
+      creativeId: selectedConversation.receiver?._id,
       roomId: roomId,
       userName: user.user.name,
-      creativeName: selectedConversation.receiver.name
+      creativeName: selectedConversation.receiver?.name
     }, (response: { success: boolean; message?: string }) => {
       if (response.success) {
         console.log("Waiting for recipient to accept the call...");
@@ -389,11 +389,11 @@ const QuickChat: React.FC = () => {
       >
         <img
           src={`https://hasth.mooo.com/src/uploads/${conv.receiver?.image}`}
-          alt={conv.receiver.name}
+          alt={conv.receiver?.name}
           className="w-10 h-10 rounded-full object-cover border-2 border-blue-200 mr-3"
         />
         <div className="flex-1">
-          <p className="font-semibold text-gray-800">{conv.receiver.name}</p>
+          <p className="font-semibold text-gray-800">{conv.receiver?.name}</p>
           <p className="text-sm text-gray-500 truncate">
             { 'Start a conversation'}
           </p>
@@ -413,11 +413,11 @@ const QuickChat: React.FC = () => {
               <div className='flex items-center  ms-3'>
               <img
                 src={`https://hasth.mooo.com/src/uploads/${selectedConversation.receiver?.image}`}
-                alt={selectedConversation.receiver.name}
+                alt={selectedConversation.receiver?.name}
                 className="w-10 h-10 rounded-full mr-3 object-cover border-2 border-blue-200"
               />
               <h3 className="text-xl font-semibold text-gray-800">
-                {selectedConversation.receiver.name}
+                {selectedConversation.receiver?.name}
               </h3>
               </div>
               <VideoCameraIcon className="w-6 h-6 me-3 text-gray-600 cursor-pointer hover:text-blue-500 " onClick={initiateVideoCall} />
