@@ -65,8 +65,8 @@ const Post: React.FC = () => {
         try {
             const response = await axiosInstance.get('/api/auth/creators');
             console.log(response,'.....cra');
-            if(Array.isArray(response.data.data[0]._doc)){
-                setCreators(response.data.data[0]._doc);
+            if(Array.isArray(response.data.data)){
+                setCreators(response.data.data);
             }
            
         } catch (error) {
@@ -318,16 +318,16 @@ const Post: React.FC = () => {
                 <h2 className="text-xl font-bold mb-4 text-gray-800">Creative Lists</h2>
                 <ul className="space-y-2">
                 {creators && creators.map((creator:any) => (
-        <li key={creator._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm transition-shadow duration-200 hover:shadow-md">
+        <li key={creator._doc._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm transition-shadow duration-200 hover:shadow-md">
           <img
-            src={`https://hasth.mooo.com/src/uploads/${creator.image}`}
-            alt={creator.name}
+            src={`https://hasth.mooo.com/src/uploads/${creator._doc.image}`}
+            alt={creator._doc.name}
             className="w-10 h-10 object-cover rounded-lg"
           />
           <div className="flex-1">
-            <p className="text-lg font-semibold text-gray-800">{creator.name}</p>
+            <p className="text-lg font-semibold text-gray-800">{creator._doc.name}</p>
             <button
-              onClick={() => console.log(`Clicked on ${creator.name}`)}
+              onClick={() => console.log(`Clicked on ${creator._doc.name}`)}
               className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
             >
               View Profile
