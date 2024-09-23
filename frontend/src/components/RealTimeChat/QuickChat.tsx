@@ -121,6 +121,7 @@ const QuickChat: React.FC = () => {
   };
 
   const handleConversationSelect = (conversation: any) => {
+    if (conversation && conversation.receiver) {
     setSelectedConversation(conversation);
     console.log('concid',conversation.conversation._id);
     
@@ -133,11 +134,11 @@ const QuickChat: React.FC = () => {
       });
 
 
-    }
+    }}
   };
 
   const sendMessage = () => {
-    if (messageInput.trim() && selectedConversation && socket) {
+    if (messageInput.trim() && selectedConversation&&selectedConversation.receiver && socket) {
       const newMessage: Message = {
         senderId: user.user._id,
         receiverId: selectedConversation.receiver._id ,
@@ -178,11 +179,12 @@ const QuickChat: React.FC = () => {
     }
 
     const reader = new FileReader();
+    
     reader.onload = () => {
       const base64Image = reader.result as string;
       const newMessage: Message = {
         senderId: user.user._id,
-        receiverId: selectedConversation.receiver._id,
+        receiverId: selectedConversation.receiver?selectedConversation.receiver._id:'',
         content: base64Image,
         type: 'image',
         conversationId: selectedConversation.conversation._id,
