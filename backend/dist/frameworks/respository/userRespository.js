@@ -989,4 +989,16 @@ exports.default = {
             return { status: false, error: error };
         }
     }),
+    search: (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const products = yield database_1.databaseSchema.Product.find({
+                name: { $regex: data, $options: "i" }
+            });
+            return products;
+        }
+        catch (error) {
+            console.error("Error fetching products:", error);
+            throw error;
+        }
+    }),
 };

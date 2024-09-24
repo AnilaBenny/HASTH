@@ -44,6 +44,7 @@ const markMessagesAsReadController_1 = __importDefault(require("./markMessagesAs
 const allListNumberController_1 = __importDefault(require("./allListNumberController"));
 const reviewEditController_1 = __importDefault(require("./reviewEditController"));
 const paymentStatusController_1 = __importDefault(require("./paymentStatusController"));
+const searchController_1 = __importDefault(require("./searchController"));
 exports.default = (dependencies) => {
     return {
         registrationController: (0, registrationController_1.default)(dependencies),
@@ -86,6 +87,7 @@ exports.default = (dependencies) => {
         markMessagesAsReadController: (0, markMessagesAsReadController_1.default)(dependencies),
         allListNumberController: (0, allListNumberController_1.default)(dependencies),
         reviewEditController: (0, reviewEditController_1.default)(dependencies),
-        paymentStatusController: (0, paymentStatusController_1.default)(dependencies)
+        paymentStatusController: (0, paymentStatusController_1.default)(dependencies),
+        searchController: (0, searchController_1.default)(dependencies)
     };
 };

@@ -53,6 +53,7 @@ const useCase = {
     CreateBlogUseCase: adminUseCase_1.CreateBlogUseCase,
     getallBlogUseCase: adminUseCase_1.getallBlogUseCase,
     deleteBlogUseCase: adminUseCase_1.deleteBlogUseCase,
+    searchUseCase: useCase_1.searchUseCase
 };
 const respository = {
     userRespository: respository_1.userRespository,
