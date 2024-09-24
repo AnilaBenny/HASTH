@@ -84,5 +84,5 @@ const reviewEditUseCase_1 = __importDefault(require("./reviewEditUseCase"));
 exports.reviewEditUseCase = reviewEditUseCase_1.default;
 const paymentStatusUseCase_1 = __importDefault(require("./paymentStatusUseCase"));
 exports.paymentStatusUseCase = paymentStatusUseCase_1.default;
-const searchUseCase_1 = __importDefault(require("./searchUseCase"));
+const searchUseCase_1 = require('./searchUseCase');
 exports.searchUseCase = searchUseCase_1.default;
