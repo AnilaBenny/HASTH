@@ -4,8 +4,8 @@ import { userRegistration,otpVerification,loginUseCase,forgotPasswordUseCase,upd
     getCreatorUseCase,postEditUseCase,deletePostUseCase,statusProductUseCase,productEditUseCase,
     commentReplyUseCase,pinCommentUseCase,addtocartUseCase,deletecartItemUseCase,orderUseCase,
     sendMessegesUseCase,allorderUseCase,createConverstationUseCase,getConverstationsUseCase,getConverstationByIdUseCase,
-    sendImageUseCase,sendAudioUseCase,cancelOrderUseCase,updatestatusUseCase,reviewUseCase,markMessagesAsReadUseCase,
-    allListNumberUseCase,reviewEditUseCase,paymentStatusUseCase
+    sendImageUseCase,sendAudioUseCase,cancelOrderUseCase,updatestatusUseCase,reviewUseCase,
+    markMessagesAsReadUseCase,allListNumberUseCase,reviewEditUseCase,paymentStatusUseCase,searchUseCase
 
 } from "./userUseCase"
 export{
@@ -48,7 +48,8 @@ export{
     markMessagesAsReadUseCase,
     allListNumberUseCase,
     reviewEditUseCase,
-    paymentStatusUseCase
+    paymentStatusUseCase,
+    searchUseCase
 }
 import { AdminloginUseCase,getallUseCase,handleUserBlockUseCase,getallReportUseCase,getallOrderUseCase,
     CreateBlogUseCase,getallBlogUseCase,deleteBlogUseCase

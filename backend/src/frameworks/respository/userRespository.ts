@@ -1200,6 +1200,19 @@ export default  {
       return { status: false, error: error };
     }
   },
+  search:async(data:any)=>{
+try {
+
+      const products = await databaseSchema.Product.find({
+        name: { $regex: data, $options: "i" } 
+      });
+
+      return products;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      throw error; 
+    }
+  },
   
   
   

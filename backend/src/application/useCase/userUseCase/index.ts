@@ -38,6 +38,7 @@ import markMessagesAsReadUseCase from "./markMessagesAsReadUseCase";
 import allListNumberUseCase from './allListNumberUseCase';
 import reviewEditUseCase from "./reviewEditUseCase";
 import paymentStatusUseCase from "./paymentStatusUseCase";
+import searchUseCase from "./searchUseCase";
 export{
     userRegistration,
     loginUseCase,
@@ -78,6 +79,7 @@ export{
     markMessagesAsReadUseCase,
     allListNumberUseCase,
     reviewEditUseCase,
-    paymentStatusUseCase
+    paymentStatusUseCase,
+    searchUseCase
 
 }

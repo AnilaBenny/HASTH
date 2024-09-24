@@ -304,37 +304,32 @@ const Post: React.FC = () => {
     };
 
     const handleSingleUser = (user: any) => {
-        
-        
         navigate('/userPage', { state: user });
     };
     const handleSelfPage=()=>{
         navigate('/userProfile')
     }
 
+
     return (
         <div className="flex min-h-screen bg-gray-100">
-            <div className="w-64 sticky top-0 left-0 bg-white shadow-lg rounded-lg p-4 m-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
-                <h2 className="text-xl font-bold mb-4 text-gray-800">Creative Lists</h2>
+            <div className="hidden lg:block w-64 sticky top-0 left-0 bg-white shadow-lg rounded-lg p-4 m-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+                <h2 className="text-xl font-bold mb-4 text-gray-800">Top Creatives</h2>
                 <ul className="space-y-2">
-                {creators && creators.map((creator:any) => (
-        <li key={creator._doc._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm transition-shadow duration-200 hover:shadow-md">
-          <img
-            src={`https://hasth.mooo.com/src/uploads/${creator._doc.image}`}
-            alt={creator._doc.name}
-            className="w-10 h-10 object-cover rounded-lg"
-          />
-          <div className="flex-1">
-            <p className="text-lg font-semibold text-gray-800">{creator._doc.name}</p>
-            <button
-              onClick={() => console.log(`Clicked on ${creator._doc.name}`)}
-              className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-            >
-              View Profile
-            </button>
-          </div>
-        </li>
-      ))}
+                    {creators && creators.map((creator:any) => (
+                        <li key={creator._doc._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg shadow-sm transition-shadow duration-200 hover:shadow-md">
+                            <img
+                                src={`https://hasth.mooo.com/src/uploads/${creator._doc.image}`}
+                                alt={creator._doc.name}
+                                className="w-10 h-10 object-cover rounded-lg"
+                            />
+                            <div className="flex-1">
+                                <p onClick={() => (creator._doc._id===storedUser._id)?handleSelfPage():handleSingleUser(creator._doc)} className="text-lg font-semibold text-gray-800 cursor-pointer">
+                                    {creator._doc.name}
+                                </p>
+                            </div>
+                        </li>
+                    ))}
                 </ul>
             </div>
             <div className="flex-1 p-20 space-y-8">
@@ -454,7 +449,7 @@ const Post: React.FC = () => {
                     ) : (
                         posts.map(post => (
                             <div key={post._id} className="bg-white p-6 rounded-lg shadow-lg mb-6" >
-                                <div className="flex items-center mb-6 cursor-pointer" onClick={() => (post.userId!==storedUser._id)?handleSingleUser(post.userId):handleSelfPage()}>
+                                <div className="flex items-center mb-6 cursor-pointer" onClick={() => (post.userId._id===storedUser._id)?handleSelfPage():handleSingleUser(post.userId)}>
                                     <img
                                         src={`https://hasth.mooo.com/src/uploads/${post.userId?.image}`}
                                         alt="User Avatar"
@@ -521,7 +516,7 @@ const Post: React.FC = () => {
                     
                 </div>
             )}
-            <div className="w-64 sticky top-0 right-0 bg-white shadow-lg rounded-lg p-4 m-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+<div className="hidden lg:block w-64 sticky top-0 left-0 bg-white shadow-lg rounded-lg p-4 m-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
                 <h2 className="text-xl font-bold mb-4 text-gray-800">Products</h2>
                 <ul className="space-y-2">
                     {ProductList&&ProductList.map((product:any)=>{
@@ -529,15 +524,10 @@ const Post: React.FC = () => {
                             <img
                                 src={`https://hasth.mooo.com/src/uploads/${product.images[0]}`}
                                 alt={product.name}
-                                className="w-24 h-24 object-cover rounded-lg" />
+                                className="w-10 h-10 object-cover rounded-lg" />
                             <div className="flex-1">
-                                <p className="text-lg font-semibold text-gray-800">{product.name}</p>
-                                <button
-                                    
-                                    className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                                >
-                                    Buy Now
-                                </button>
+                                <p className="text-lg font-semibold text-gray-800 cursor-pointer">{product.name}</p>
+
                             </div>
                         </li>;
                     })}

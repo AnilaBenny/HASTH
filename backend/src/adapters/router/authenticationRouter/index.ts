@@ -15,6 +15,7 @@ const {
   allorderController,allMessagesController,getConversationsController,createConverstationController,
   getConverstationByIdController,updateOrderStatusController,cancelOrderController,reviewController,
   dialogflowController,markMessagesAsReadController,allListNumberController,reviewEditController,paymentStatusController,
+  searchController
   
 }=userController(dependencies);
 
@@ -61,6 +62,7 @@ const {
   router.get('/allListNumber',allListNumberController);
   router.post('/reviewEdit',reviewEditController);
   router.post('/paymentStatus',paymentStatusController);
+  router.get('/search',searchController);
 
  
 
