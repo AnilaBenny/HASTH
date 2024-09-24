@@ -1,19 +1,32 @@
 import './Featured.css';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import axiosInstance from '../../Axiosconfig/Axiosconfig';
+import { useSelector } from 'react-redux';
+const user=useSelector((state:any)=>state.user.user)
 const FeaturedInnovations = () => {
-  const products = [
-    { id: 1, name: 'Post 1', image: '/images/products/product1.webp', description: "Description for Post 1" },
-    { id: 2, name: 'Post 2', image: '/images/products/product2.webp', description: 'Description for Post 2' },
-    { id: 3, name: 'Post 3', image: '/images/products/product3.webp', description: 'Description for Post 3' },
-    { id: 4, name: 'Post 4', image: '/images/products/product4.webp', description: 'Description for Post 4' },
-    { id: 5, name: 'Post 5', image: '/images/products/product5.webp', description: 'Description for Post 5' },
-    { id: 6, name: 'Post 6', image: '/images/products/product1.webp', description: 'Description for Post 6' },
-    { id: 7, name: 'Post 7', image: '/images/products/product2.webp', description: 'Description for Post 7' },
-    { id: 8, name: 'Post 8', image: '/images/products/product3.webp', description: 'Description for Post 8' },
-    { id: 9, name: 'Post 9', image: '/images/products/product4.webp', description: 'Description for Post 9' },
-    { id: 10, name:'Post 10', image: '/images/products/product5.webp', description: 'Description for Post 10' },
-  ];
+  const [products,setProducts]=useState<any[]>([]);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axiosInstance.get(`/api/auth/posts`);
+        
+        if (user) {
+          const filteredData = response.data.data.filter(
+            (product: any) => user._id !== product?.userId?._id && user._id !== product?.collab?._id
+          );
+          setProducts(filteredData);
+        } else {
+          setProducts(response.data.data);
+        }
+  
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+  
+    fetchProducts(); 
+  }, [user]);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const scrollLeft = () => {

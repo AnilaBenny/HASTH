@@ -1,26 +1,39 @@
 
 import './Featured.css';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import axiosInstance from '../../Axiosconfig/Axiosconfig';
+import { useSelector } from 'react-redux';
 
 interface FeaturedproductsProps {
   title: string;
 }
-
+const user=useSelector((state:any)=>state.user.user)
 const Featuredproducts:React.FC<FeaturedproductsProps> = ({title}) => {
   
-  const products = [
-    { id: 1, name: 'Product 1', image: '/images/products/product1.webp', price: '$100' },
-    { id: 2, name: 'Product 2', image: '/images/products/product2.webp', price: '$150' },
-    { id: 3, name: 'Product 3', image: '/images/products/product3.webp', price: '$200' },
-    { id: 4, name: 'Product 4', image: '/images/products/product4.webp', price: '$250' },
-    { id: 5, name: 'Product 5', image: '/images/products/product5.webp', price: '$300' },
-    { id: 6, name: 'Product 1', image: '/images/products/product1.webp', price: '$100' },
-    { id: 7, name: 'Product 2', image: '/images/products/product2.webp', price: '$150' },
-    { id: 8, name: 'Product 3', image: '/images/products/product3.webp', price: '$200' },
-    { id: 9, name: 'Product 4', image: '/images/products/product4.webp', price: '$250' },
-    { id: 10, name: 'Product 5', image: '/images/products/product5.webp', price: '$300' },
-  ];
+const [products,setProducts]=useState<any[]>([]);
+useEffect(() => {
+  const fetchProducts = async () => {
+    try {
+      const response = await axiosInstance.get(`/api/auth/products`);
+      
+      if (user) {
+        const filteredData = response.data.data.filter(
+          (product: any) => user._id !== product?.userId?._id && user._id !== product?.collab?._id
+        );
+        setProducts(filteredData);
+      } else {
+        setProducts(response.data.data);
+      }
+
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  fetchProducts(); 
+}, []); 
+
 
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +58,7 @@ const Featuredproducts:React.FC<FeaturedproductsProps> = ({title}) => {
         <div className="products-scroll" ref={carouselRef}>
           {products.map((product, index) => (
             <div key={index} className="product-card">
-              <img src={product.image} alt={product.name} className="product-image" />
+              <img src={product.image[0]} alt={product.name} className="product-image" />
               <div className="product-info">
                 <h3 className="product-name">{product.name}</h3>
                 <p className="product-description">{product.price}</p>
