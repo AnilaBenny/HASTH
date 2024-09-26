@@ -215,7 +215,7 @@ export default  () => {
 
       socket.emit('sendMessage', newMessage, (response: any) => {
         if (response.success) {
-          // Handle successful message send
+          
         }
       });
     }
@@ -251,12 +251,13 @@ export default  () => {
         conversationId: selectedConversation.conversation._id,
         timestamp: new Date().toISOString(),
       };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      
+
+      socket.emit('sendImage', newMessage, () => {
+        
+      });
       setImagePreview(null);
       setSelectedFile(null);
-      socket.emit('sendImage', newMessage, () => {
-        // Handle callback
-      });
     };
     reader.onerror = (error) => {
       console.error('Error reading file:', error);
