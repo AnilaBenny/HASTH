@@ -107,7 +107,7 @@ const ProductDetail: React.FC = () => {
                   </div>
                 </div>
               </div>
-              {(product.userId._id !== user._id && product.collab?._id !== user._id) && (
+              {(product.userId._id !== user._id  && product.collab?._id !== user._id) && (
                 <button
                   onClick={() => handleAddToCart(product._id, cart, user._id)}
                   className="w-full bg-blue-600 text-white font-semibold py-4 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 text-lg"

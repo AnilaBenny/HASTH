@@ -643,6 +643,9 @@ exports.default = {
                 type: type,
             });
             const responce = yield message.save();
+            yield database_1.databaseSchema.Conversation.findByIdAndUpdate(conversationId, {
+                lastUpdate: new Date(),
+            }, { new: true });
             if (responce) {
                 return { status: true, data: data };
             }
@@ -666,6 +669,9 @@ exports.default = {
                 type: type,
             });
             const responce = yield message.save();
+            yield database_1.databaseSchema.Conversation.findByIdAndUpdate(conversationId, {
+                lastUpdate: new Date(),
+            }, { new: true });
             if (responce) {
                 return { status: true, data: data };
             }
@@ -689,6 +695,9 @@ exports.default = {
                 type: type,
             });
             const responce = yield message.save();
+            yield database_1.databaseSchema.Conversation.findByIdAndUpdate(conversationId, {
+                lastUpdate: new Date(),
+            }, { new: true });
             if (responce) {
                 return { status: true, data: data };
             }
@@ -991,13 +1000,22 @@ exports.default = {
     }),
     search: (data) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const products = yield database_1.databaseSchema.Product.find({
+            let products = yield database_1.databaseSchema.Product.find({
                 name: { $regex: data, $options: "i" }
-            });
+            }).populate('userId').populate('collab');
+            products = yield Promise.all(products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
+                if ((product === null || product === void 0 ? void 0 : product.review) && (product === null || product === void 0 ? void 0 : product.review.length) > 0) {
+                    yield product.populate({
+                        path: 'review.user',
+                        select: 'name'
+                    });
+                }
+                return product;
+            })));
             return products;
         }
         catch (error) {
-            console.error("Error fetching products:", error);
+            console.error("Error in search:", error);
             throw error;
         }
     }),

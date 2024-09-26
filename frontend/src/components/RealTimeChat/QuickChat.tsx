@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { format } from 'date-fns';
-import { PhotoIcon, XMarkIcon, PaperAirplaneIcon, MicrophoneIcon, TrashIcon, PauseIcon, PlayIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, XMarkIcon,MagnifyingGlassIcon, PaperAirplaneIcon, MicrophoneIcon, TrashIcon, PauseIcon, PlayIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import EmojiPicker from 'emoji-picker-react';
 import 'react-h5-audio-player/lib/styles.css';
 import { useSocket } from './socket';
@@ -54,6 +54,97 @@ const QuickChat: React.FC = () => {
     //@ts-ignore
   const [isCallInitiated, setIsCallInitiated] = useState(false);
   const navigate = useNavigate();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const [lastMessages, setLastMessages] = useState<Record<string, any>>({});
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setSearchQuery('');
+        setIsSearchOpen(false);
+        fetchConversations();  
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+    if (isSearchOpen) {
+      setSearchQuery('');
+    }
+  };
+
+  const handleSearch = (e:any) => {
+    const query = e.target.value.toLowerCase();  
+    setSearchQuery(query);
+  
+    const filtered = conversations.filter((conversation:any) =>
+      conversation.receiver.name.toLowerCase().includes(query) 
+    );
+    setConversations(filtered);
+  };
+
+  const getLastMessage = async (conversationId: any) => {
+    try {
+      console.log(conversationId,'id');
+      
+      const response = await axiosInstance.get(`/api/auth/getConverstationById?id=${conversationId}`);
+      console.log(response,'ressss');
+      
+      if (response.data.data.length > 0) {
+        const lastMessage = response.data.data[response.data.data.length - 1];
+        return {
+          content: lastMessage.content,
+          timestamp: lastMessage.timestamp,
+        };
+      }
+    } catch (error) {
+      console.error("Error fetching last message", error);
+    }
+    return { content: 'Start a conversation', timestamp: null };
+  };
+
+  useEffect(() => {
+    const fetchLastMessages = async () => {
+      const lastMessagesData: Record<string, any> = {};
+      const promises = conversations.map(async (conv: any) => {
+        
+        
+        const lastMessage = await getLastMessage(conv.conversation._id);
+        
+        lastMessagesData[conv.conversation._id] = lastMessage;
+        
+      });
+
+      await Promise.all(promises);
+
+  
+      setLastMessages(lastMessagesData); 
+    
+      conversations.sort((a: any, b: any) => {
+        const timestampA = a.conversation?.timestamp || 0;  
+        const timestampB = b.conversation?.timestamp || 0;
+        
+        return new Date(timestampB).getTime() - new Date(timestampA).getTime(); 
+      });
+      
+    
+setConversations(conversations)
+      
+    };
+    console.log(lastMessages,'lastmessage sent');
+    
+    if (conversations.length > 0) {
+      fetchLastMessages(); 
+    }
+
+
+
+  }, [conversations,messages]);
 
   useEffect(() => {
     fetchConversations();
@@ -372,36 +463,68 @@ const QuickChat: React.FC = () => {
   };
 
   return (
-    <div className=" rounded-2xl flex justify-evenly">
-      {/* Conversation List */}
-      <div className="w-1/3 h-1/3 bg-white border-r shadow-lg">
-  <h2 className="text-2xl font-bold p-6 bg-gradient-to-r from-blue-300 to-blue-600 text-white rounded-t-2xl">
-    Welcome to chat room
-  </h2>
-  <div className="overflow-y-auto p-2 ">
-    {conversations.map((conv:any) => (
-      <div
-        key={conv.conversation._id}
-        className={`flex items-center p-3 my-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors duration-150 shadow-sm ${
-          selectedConversation?.conversation._id === conv.conversation._id ? 'bg-blue-50 border border-blue-200' : 'border border-transparent'
-        }`}
-        onClick={() => handleConversationSelect(conv)}
-      >
-        <img
-          src={`https://hasth.mooo.com/src/uploads/${conv.receiver?.image}`}
-          alt={conv.receiver?.name}
-          className="w-10 h-10 rounded-full object-cover border-2 border-blue-200 mr-3"
-        />
-        <div className="flex-1">
-          <p className="font-semibold text-gray-800">{conv.receiver?.name}</p>
-          <p className="text-sm text-gray-500 truncate">
-            { 'Start a conversation'}
-          </p>
-        </div>
+    <div className="rounded-2xl flex justify-evenly">
+    <div className="w-1/3 h-1/3 bg-white border-r shadow-lg">
+      <div  className="flex justify-between items-center p-6 bg-gradient-to-r from-blue-300 to-blue-600 text-white rounded-t-2xl">
+        <h2 className="text-2xl font-bold">Welcome to chat room</h2>
+        <button onClick={toggleSearch} className="focus:outline-none">
+          <MagnifyingGlassIcon className="w-6 h-6" />
+        </button>
       </div>
-    ))}
-  </div>
-</div>
+      {isSearchOpen && (
+        <div  ref={searchContainerRef} className="p-2 bg-gray-100">
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearch}
+              placeholder="Search conversations..."
+              className="w-full p-2 pr-8 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      <div className="overflow-y-auto p-2">
+        {conversations.map((conv:any) => {
+          const lastMessage = lastMessages[conv.conversation._id] || { content: 'Start a conversation', timestamp: null };
+          return (
+            <div
+              key={conv.conversation._id}
+              className={`flex items-center p-3 my-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors duration-150 shadow-sm ${
+                selectedConversation?.conversation._id === conv.conversation._id ? 'bg-blue-50 border border-blue-200' : 'border border-transparent'
+              }`}
+              onClick={() => handleConversationSelect(conv)}
+            >
+              <img
+                src={`https://hasth.mooo.com/src/uploads/${conv.receiver?.image}`}
+                alt={conv.receiver?.name}
+                className="w-10 h-10 rounded-full object-cover border-2 border-blue-200 mr-3"
+              />
+              <div className="flex-1 overflow-hidden">
+                <p className="font-semibold text-gray-800">{conv.receiver?.name}</p>
+                <p className="text-sm text-gray-500 truncate">
+                  {lastMessage.content}
+                </p>
+              </div>
+              {lastMessage.timestamp && (
+                <p className="text-xs text-gray-400 ml-2">
+                  {format(new Date(lastMessage.timestamp), 'p')}
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
 
 
       

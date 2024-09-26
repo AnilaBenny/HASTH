@@ -789,6 +789,13 @@ export default  {
           type: type,
         })
         const responce = await message.save()
+         await databaseSchema.Conversation.findByIdAndUpdate(
+          conversationId,
+          {
+            lastUpdate: new Date(), 
+          },
+          { new: true }  
+        );
         if (responce) {
           return { status: true, data: data }
         } else {
@@ -817,6 +824,13 @@ export default  {
         type: type,
       })
       const responce = await message.save()
+      await databaseSchema.Conversation.findByIdAndUpdate(
+        conversationId,
+        {
+          lastUpdate: new Date(), 
+        },
+        { new: true }  
+      );
       if (responce) {
         return { status: true, data: data }
       } else {
@@ -845,6 +859,13 @@ export default  {
         type: type,
       })
       const responce = await message.save()
+      await databaseSchema.Conversation.findByIdAndUpdate(
+        conversationId,
+        {
+          lastUpdate: new Date(), 
+        },
+        { new: true }  
+      );
       if (responce) {
         return { status: true, data: data }
       } else {
@@ -1202,14 +1223,21 @@ export default  {
   },
   search:async(data:any)=>{
 try {
-
-      const products = await databaseSchema.Product.find({
+      let products = await databaseSchema.Product.find({
         name: { $regex: data, $options: "i" } 
-      });
-
+      }).populate('userId').populate('collab');
+      products = await Promise.all(products.map(async (product) => {
+        if (product?.review && product?.review.length > 0) {
+          await product.populate({
+            path: 'review.user', 
+            select: 'name'    
+          });
+        }
+        return product;
+      }));
       return products;
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error in search:", error);
       throw error; 
     }
   },
