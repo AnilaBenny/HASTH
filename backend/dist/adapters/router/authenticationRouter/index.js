@@ -9,7 +9,7 @@ const passport_1 = __importDefault(require("passport"));
 const utils_1 = require("../../../utils");
 exports.default = (dependencies) => {
     const router = (0, express_1.default)();
-    const { registrationController, otpController, loginController, forgotPasswordController, checkOtpController, updatePasswordController, resendOtpController, updateProfileController, googleRegisterController, refreshTokenController, addInnovationController, getPostController, likedController, commentController, reportController, addProductController, getCreatorsController, getProductsController, editPostController, editProductController, deletePostController, statusProductController, commentReplyController, pinCommentController, addtocartController, removecartitemController, razorpayController, orderController, allorderController, allMessagesController, getConversationsController, createConverstationController, getConverstationByIdController, updateOrderStatusController, cancelOrderController, reviewController, dialogflowController, markMessagesAsReadController, allListNumberController, reviewEditController, paymentStatusController, searchController } = (0, controller_1.userController)(dependencies);
+    const { registrationController, otpController, loginController, forgotPasswordController, checkOtpController, updatePasswordController, resendOtpController, updateProfileController, googleRegisterController, refreshTokenController, addInnovationController, getPostController, likedController, commentController, reportController, addProductController, getCreatorsController, getProductsController, editPostController, editProductController, deletePostController, statusProductController, commentReplyController, pinCommentController, addtocartController, removecartitemController, razorpayController, orderController, allorderController, allMessagesController, getConversationsController, createConverstationController, getConverstationByIdController, updateOrderStatusController, cancelOrderController, reviewController, dialogflowController, markMessagesAsReadController, allListNumberController, reviewEditController, paymentStatusController, searchController, sendOtpController } = (0, controller_1.userController)(dependencies);
     router.post('/login', loginController);
     router.post('/register', registrationController);
     router.post('/verifyOtp', otpController);
@@ -53,6 +53,7 @@ exports.default = (dependencies) => {
     router.post('/reviewEdit', reviewEditController);
     router.post('/paymentStatus', paymentStatusController);
     router.get('/search', searchController);
+    router.post('/sendOtp', sendOtpController);
     const { AdminLoginController, getAllUserController, handleUserBlockController, verifyCreativeController, getReportsController, getallOrdersController, createBlogController, allBlogController, deleteBlogController, } = (0, controller_1.adminController)(dependencies);
     router.post('/admin/login', AdminLoginController);
     router.get('/getAllUsers', getAllUserController);

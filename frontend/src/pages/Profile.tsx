@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
@@ -6,11 +6,13 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../Axiosconfig/Axiosconfig";
 import { useSelector,useDispatch } from 'react-redux';
 import { setUser } from "../store/slices/userSlice";
+import OtpModal from "./OtpModal.tsx";
 
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch=useDispatch()
+  const dispatch=useDispatch();
+  const [isModalOpen, setModalOpen] = useState(false);
   const { user } = useSelector((state: any) => state.user);
   useEffect(()=>{
     console.log(user,'....');
@@ -70,6 +72,12 @@ const Profile: React.FC = () => {
       toast.error("An error occurred while updating the profile");
     }
   };
+  const changePassword=async()=>{
+    const response=await axiosInstance.post('/api/auth/sendOtp',{email:user.email});
+    if(response.status){
+      setModalOpen(true);
+    }
+  }
 
   return (
     <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
@@ -96,6 +104,12 @@ const Profile: React.FC = () => {
  
                   </div>
 
+                </div>
+                <div className="mt-7">
+                  <button 
+                  className="bg-blue-500 text-white py-2 px-4 rounded-md shadow-sm focus:outline-none disabled:bg-gray-300"
+                  type="button"
+                  onClick={changePassword}>change password</button>
                 </div>
                 </div>
 
@@ -274,6 +288,7 @@ const Profile: React.FC = () => {
             </Form>
           )}
         </Formik>
+        {isModalOpen && <OtpModal closeModal={() => setModalOpen(false)} />}
       </div>
 
     </div>

@@ -125,7 +125,7 @@ export default  () => {
     if (conversations.length > 0) {
       fetchLastMessages();
     }
-  }, [conversations, messages]);
+  }, [messages]);
 
   useEffect(() => {
     fetchConversations();
@@ -222,6 +222,8 @@ export default  () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('hi');
+    
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       const reader = new FileReader();
@@ -232,15 +234,21 @@ export default  () => {
       reader.readAsDataURL(file);
     }
   };
-
+  useEffect(() => {
+    console.log('Selected File:', selectedFile);
+    console.log('Image Preview:', imagePreview);
+  }, [selectedFile, imagePreview]);
   const sendImage = () => {
+    try{
+      console.log(selectedFile);
+      
     if (!selectedFile || !socket || !selectedConversation) {
       console.error('Missing required data for sending image');
       return;
     }
-
+  
     const reader = new FileReader();
-    
+  
     reader.onload = () => {
       const base64Image = reader.result as string;
       const newMessage: Message = {
@@ -251,18 +259,30 @@ export default  () => {
         conversationId: selectedConversation.conversation._id,
         timestamp: new Date().toISOString(),
       };
-      
-
-      socket.emit('sendImage', newMessage, () => {
-        
+  
+      socket.emit('sendImage', newMessage, (response: any) => {
+        if (response.success) {
+          setImagePreview(null);
+          setSelectedFile(null);
+          console.log('Image sent successfully',imagePreview,selectedFile);
+        } else {
+          console.error('Failed to send image:', response.error);
+        }
       });
-      setImagePreview(null);
-      setSelectedFile(null);
+
+
     };
+  
     reader.onerror = (error) => {
       console.error('Error reading file:', error);
     };
+  
     reader.readAsDataURL(selectedFile);
+  
+}catch(error){
+  console.log(error,'in send Message'); 
+
+}
   };
 
   const toggleEmojiPicker = () => setEmojiPickerOpen(!emojiPickerOpen);

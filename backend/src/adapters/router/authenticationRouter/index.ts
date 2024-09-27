@@ -15,7 +15,7 @@ const {
   allorderController,allMessagesController,getConversationsController,createConverstationController,
   getConverstationByIdController,updateOrderStatusController,cancelOrderController,reviewController,
   dialogflowController,markMessagesAsReadController,allListNumberController,reviewEditController,paymentStatusController,
-  searchController
+  searchController,sendOtpController
   
 }=userController(dependencies);
 
@@ -63,10 +63,7 @@ const {
   router.post('/reviewEdit',reviewEditController);
   router.post('/paymentStatus',paymentStatusController);
   router.get('/search',searchController);
-
- 
-
-
+  router.post('/sendOtp',sendOtpController);
   
 const { 
   AdminLoginController,getAllUserController,handleUserBlockController,

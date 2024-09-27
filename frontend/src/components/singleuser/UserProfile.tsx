@@ -65,7 +65,7 @@ export default() => {
   const fetchPosts = async () => {
     try {
       const response = await axiosInstance.get('/api/auth/posts');
-      const userPosts = response.data.data.filter((post:any) => post.userId ===user?._id);
+      const userPosts = response.data.data.filter((post:any) => post.userId._id ===user?._id);
       setPosts(userPosts);
     } catch (error) {
       console.log('Error fetching posts:', error);
@@ -75,7 +75,7 @@ export default() => {
   const fetchProducts = async () => {
     try {
       const response = await axiosInstance.get('/api/auth/products');
-      const userProducts = response.data.data.filter((product:any) => product.userId ===user?._id);
+      const userProducts = response.data.data.filter((product:any) => product.userId._id ===user?._id);
       setProducts(userProducts);
     } catch (error) {
       console.log('Error fetching products:', error);

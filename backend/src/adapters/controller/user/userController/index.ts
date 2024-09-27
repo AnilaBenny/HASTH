@@ -40,6 +40,7 @@ import allListNumberController from './allListNumberController';
 import reviewEditController from './reviewEditController';
 import paymentStatusController from './paymentStatusController';
 import searchController from './searchController';
+import sendOtpController from './sendOtpController';
 export default (dependencies:any)=>{
 return{
     registrationController:registrationController(dependencies),
@@ -83,7 +84,8 @@ return{
     allListNumberController:allListNumberController(dependencies),
     reviewEditController:reviewEditController(dependencies),
     paymentStatusController:paymentStatusController(dependencies),
-    searchController:searchController(dependencies)
+    searchController:searchController(dependencies),
+    sendOtpController:sendOtpController(dependencies)
 
 }
 }

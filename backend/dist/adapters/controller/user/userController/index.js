@@ -45,6 +45,7 @@ const allListNumberController_1 = __importDefault(require("./allListNumberContro
 const reviewEditController_1 = __importDefault(require("./reviewEditController"));
 const paymentStatusController_1 = __importDefault(require("./paymentStatusController"));
 const searchController_1 = __importDefault(require("./searchController"));
+const sendOtpController_1 = __importDefault(require("./sendOtpController"));
 exports.default = (dependencies) => {
     return {
         registrationController: (0, registrationController_1.default)(dependencies),
@@ -88,6 +89,7 @@ exports.default = (dependencies) => {
         allListNumberController: (0, allListNumberController_1.default)(dependencies),
         reviewEditController: (0, reviewEditController_1.default)(dependencies),
         paymentStatusController: (0, paymentStatusController_1.default)(dependencies),
-        searchController: (0, searchController_1.default)(dependencies)
+        searchController: (0, searchController_1.default)(dependencies),
+        sendOtpController: (0, sendOtpController_1.default)(dependencies)
     };
 };
