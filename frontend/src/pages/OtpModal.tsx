@@ -50,7 +50,7 @@ const OtpModal: React.FC<OtpModalProps> = ({ closeModal, email }) => {
     const enteredOtp = otp.join("");
     console.log("Entered OTP:", enteredOtp);
     try {
-      const response = await axiosInstance.post('/api/auth/verifyOtp', { otp: enteredOtp });
+      const response = await axiosInstance.post('/api/auth/checkOtp', { otp: enteredOtp });
       console.log(response);
      
       if (response.data && response.data.status) {

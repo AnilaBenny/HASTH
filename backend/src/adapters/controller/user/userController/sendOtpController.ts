@@ -5,10 +5,9 @@ export default(dependencies:any)=>{
     const searchController = async (req: Request, res: Response) => {
         try {
                 const response = await sendOtp(req.body.email);
-
             
             if (response ) {
-                
+                req.session.otp=response.otp;
                 res.json({ status: true });
             } else {
                 res.status(400).json( "otp send failed" );
