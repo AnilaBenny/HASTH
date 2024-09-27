@@ -7,6 +7,8 @@ export default(dependencies:any)=>{
                 const response = await sendOtp(req.body.email);
             
             if (response ) {
+                console.log(response,'rs...');
+                
                 req.session.otp=response.otp;
                 res.json({ status: true });
             } else {
