@@ -12,10 +12,10 @@ export default (dependencies: any) => {
       
         
         
-        console.log('Entered OTP:', otp,req.cookies.otp);
+        console.log('Entered OTP:', otp,req.cookies('otp'));
         
         
-        if (req.cookies.otp === otp) {
+        if (req.cookies('otp') === otp) {
           
             
                     res.json({ status: true, message:'Otp verified' });
