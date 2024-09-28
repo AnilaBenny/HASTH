@@ -64,7 +64,6 @@ export default () => {
     const margin = { top: 20, right: 30, bottom: 60, left: 40 };
     const width = 400 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
-  
     d3.select(barChartRef.current).selectAll("*").remove();
     const svg = d3.select(barChartRef.current)
       .append("svg")
@@ -72,64 +71,52 @@ export default () => {
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
-  
-    let processedData: any;
+    let processedData:any;
     let xAxisFormat: (d: string) => string;
-  
     if (timeFrame === 'daily') {
-      processedData = Object.entries(data)
-        .slice(0, 7)
-        .map(([key, value]) => [new Date(key).toLocaleDateString(), value]);
+      const today = new Date();
+      processedData = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        return [date.toISOString().split('T')[0], data[date.toISOString().split('T')[0]] || 0];
+      }).reverse();
       xAxisFormat = d => new Date(d).toLocaleDateString();
     } else if (timeFrame === 'weekly') {
-      processedData = Object.entries(data)
-        .slice(0, 10)
-        .map(([key, value]) => [`Week ${key}`, value]);
+      processedData = Array.from({ length: 7 }, (_, i) => [`Week ${i + 1}`, data[`Week ${i + 1}`] || 0]);
       xAxisFormat = d => d;
     } else if (timeFrame === 'monthly') {
-      processedData = Object.entries(data)
-        .slice(0, 7)
-        .map(([key, value]) => [new Date(key + '-01').toLocaleString('default', { month: 'short' }), value]);
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      processedData = months.slice(0, 7).map(month => [month, data[month] || 0]);
       xAxisFormat = d => d;
     } else {
       processedData = Object.entries(data);
       xAxisFormat = d => d;
     }
-  
     const x = d3.scaleBand()
       .range([0, width])
       .padding(0.1);
-  
     const y = d3.scaleLinear()
       .range([height, 0]);
-  //@ts-ignore
-    x.domain(processedData.map(d => d[0]));
-      //@ts-ignore
+    x.domain(processedData.map((d:any) => d[0]));
+    //@ts-ignore
     y.domain([0, d3.max(processedData, d => d[1]) || 0]);
-  
     svg.selectAll(".bar")
       .data(processedData)
       .enter().append("rect")
       .attr("class", "bar")
-        //@ts-ignore
-      .attr("x", d => x(d[0]) || 0)
+      .attr("x", (d:any) => x(d[0]) || 0)
       .attr("width", x.bandwidth())
-        //@ts-ignore
-      .attr("y", d => y(d[1]))
-        //@ts-ignore
-      .attr("height", d => height - y(d[1]))
+      .attr("y", (d:any) => y(d[1]))
+      .attr("height", (d:any) => height - y(d[1]))
       .attr("fill", "#4CAF50");
-  
     svg.append("g")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x).tickFormat(xAxisFormat))
       .selectAll("text")
       .attr("transform", "rotate(-45)")
       .style("text-anchor", "end");
-  
     svg.append("g")
       .call(d3.axisLeft(y));
-  
     svg.append("text")
       .attr("x", width / 2)
       .attr("y", 0 - (margin.top / 2))
