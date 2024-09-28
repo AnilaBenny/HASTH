@@ -24,9 +24,7 @@ exports.default = (dependencies) => {
             if (response.status) {
                 res.cookie('otp', response.data, {
                     maxAge: 60000,
-                    httpOnly: true,
                     secure: true,
-                    sameSite: 'strict',
                 });
                 console.log(response);
                 res.json({ status: true, data: response.data });
