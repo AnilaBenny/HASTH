@@ -45,6 +45,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   logger.info(`${req.method} ${req.url}`, {
     ip: req.ip,
     headers: req.headers,
+    session: req.session
   });
   next();
 });

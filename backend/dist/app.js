@@ -73,6 +73,7 @@ app.use((req, res, next) => {
     logger_1.default.info(`${req.method} ${req.url}`, {
         ip: req.ip,
         headers: req.headers,
+        session: req.session
     });
     next();
 });
