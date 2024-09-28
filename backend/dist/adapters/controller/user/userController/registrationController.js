@@ -36,10 +36,10 @@ exports.default = (dependencies) => {
                 role,
             };
             req.session.userData = data;
-            console.log(req.session.userData);
+            console.log(req.session.userData, 'session');
             const executionFunction = yield userRegistration(dependencies);
             const response = yield executionFunction.executionFunction(data);
-            // console.log(response);
+            console.log(response, 'resp in registr');
             if (response.status) {
                 req.session.otp = response.data;
                 logger_1.default.info(response);

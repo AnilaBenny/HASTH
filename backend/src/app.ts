@@ -27,12 +27,18 @@ expressConfig(app);
 
 
 const store = new MemoryStore();
+
 app.use(session({
   store: store,
   secret: process.env.COOKIEPARSERSECRET || 'default_secret',
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    secure: true, 
+    maxAge: 24 * 60 * 60 * 1000,
+  },
 }));
+
 
 
 app.use((req: Request, res: Response, next: NextFunction) => {

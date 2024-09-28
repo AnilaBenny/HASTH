@@ -64,6 +64,10 @@ app.use((0, express_session_1.default)({
     secret: process.env.COOKIEPARSERSECRET || 'default_secret',
     resave: false,
     saveUninitialized: false,
+    cookie: {
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+    },
 }));
 app.use((req, res, next) => {
     logger_1.default.info(`${req.method} ${req.url}`, {
