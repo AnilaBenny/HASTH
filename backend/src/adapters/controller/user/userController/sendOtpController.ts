@@ -9,7 +9,13 @@ export default(dependencies:any)=>{
             if (response ) {
                 console.log(response,'rs...');
                 
-                res.cookie('otp',response.otp);
+                res.cookie('otp', response.otp, {
+                    httpOnly: true,  
+                    secure: true,  
+                    maxAge: 60000,  
+                    sameSite: 'strict', 
+                  });
+          
                 res.json({ status: true });
             } else {
                 res.status(400).json( "otp send failed" );

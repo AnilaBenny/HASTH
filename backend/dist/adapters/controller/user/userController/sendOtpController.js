@@ -16,7 +16,12 @@ exports.default = (dependencies) => {
             const response = yield (0, utils_1.sendOtp)(req.body.email);
             if (response) {
                 console.log(response, 'rs...');
-                res.cookie('otp', response.otp);
+                res.cookie('otp', response.otp, {
+                    httpOnly: true,
+                    secure: true,
+                    maxAge: 60000,
+                    sameSite: 'strict',
+                });
                 res.json({ status: true });
             }
             else {
