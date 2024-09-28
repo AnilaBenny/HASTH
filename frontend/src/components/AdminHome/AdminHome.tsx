@@ -61,55 +61,75 @@ export default () => {
   }, [data]);
 
   const drawBarChart = () => {
-    const margin = { top: 20, right: 30, bottom: 40, left: 40 };
+    const margin = { top: 20, right: 30, bottom: 60, left: 40 };
     const width = 400 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
-
+  
     d3.select(barChartRef.current).selectAll("*").remove();
-
     const svg = d3.select(barChartRef.current)
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
-
+  
+    let processedData: any;
+    let xAxisFormat: (d: string) => string;
+  
+    if (timeFrame === 'daily') {
+      processedData = Object.entries(data)
+        .slice(0, 7)
+        .map(([key, value]) => [new Date(key).toLocaleDateString(), value]);
+      xAxisFormat = d => new Date(d).toLocaleDateString();
+    } else if (timeFrame === 'weekly') {
+      processedData = Object.entries(data)
+        .slice(0, 10)
+        .map(([key, value]) => [`Week ${key}`, value]);
+      xAxisFormat = d => d;
+    } else if (timeFrame === 'monthly') {
+      processedData = Object.entries(data)
+        .slice(0, 7)
+        .map(([key, value]) => [new Date(key + '-01').toLocaleString('default', { month: 'short' }), value]);
+      xAxisFormat = d => d;
+    } else {
+      processedData = Object.entries(data);
+      xAxisFormat = d => d;
+    }
+  
     const x = d3.scaleBand()
       .range([0, width])
       .padding(0.1);
-
+  
     const y = d3.scaleLinear()
       .range([height, 0]);
-
-    const keys = Object.keys(data);
-    x.domain(keys);
-    //@ts-ignore
-    y.domain([0, d3.max(Object.values(data)) || 0]);
-
-
+  //@ts-ignore
+    x.domain(processedData.map(d => d[0]));
+      //@ts-ignore
+    y.domain([0, d3.max(processedData, d => d[1]) || 0]);
+  
     svg.selectAll(".bar")
-      .data(keys)
+      .data(processedData)
       .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", d => {
-        const xValue = x(d);
-        return xValue !== undefined ? xValue : 0; 
-      })
+        //@ts-ignore
+      .attr("x", d => x(d[0]) || 0)
       .attr("width", x.bandwidth())
-      .attr("y", d => {
-        const value= data[d];
-        return y(value);
-      })      
-      .attr("height", d => height - y(data[d]))
+        //@ts-ignore
+      .attr("y", d => y(d[1]))
+        //@ts-ignore
+      .attr("height", d => height - y(d[1]))
       .attr("fill", "#4CAF50");
-
+  
     svg.append("g")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(x));
-
+      .call(d3.axisBottom(x).tickFormat(xAxisFormat))
+      .selectAll("text")
+      .attr("transform", "rotate(-45)")
+      .style("text-anchor", "end");
+  
     svg.append("g")
       .call(d3.axisLeft(y));
-
+  
     svg.append("text")
       .attr("x", width / 2)
       .attr("y", 0 - (margin.top / 2))
