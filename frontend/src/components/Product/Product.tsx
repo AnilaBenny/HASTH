@@ -175,7 +175,10 @@ const Product: React.FC = () => {
             });
             
             if (response.data.status) {
-                setProducts(prev => [...prev, response.data.data]);
+                const filteredData = response.data.data.filter(
+                    (product:any) => user._id !== product?.userId._id && user._id !== product?.collab._id
+                );
+                setProducts(filteredData);
                 resetForm();
                 setImagePreviews([]);
                 setIsModalOpen(false);
