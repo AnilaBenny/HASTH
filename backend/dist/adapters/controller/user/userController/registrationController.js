@@ -34,13 +34,21 @@ exports.default = (dependencies) => {
                 zipCode,
                 role,
             };
-            res.cookie('userData', data);
+            res.cookie('userData', data, {
+                maxAge: 900000,
+                secure: true,
+                sameSite: 'none'
+            });
             console.log(req.cookies.userData, 'cookie');
             const executionFunction = yield userRegistration(dependencies);
             const response = yield executionFunction.executionFunction(data);
             console.log(response, 'resp in registr');
             if (response.status) {
-                res.cookie('otp', response.data);
+                res.cookie('otp', response.data, {
+                    maxAge: 60000,
+                    secure: true,
+                    sameSite: 'none'
+                });
                 logger_1.default.info(response);
                 res.json({ status: true, data: response.data });
             }

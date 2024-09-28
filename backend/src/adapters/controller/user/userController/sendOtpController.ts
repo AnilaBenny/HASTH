@@ -9,11 +9,10 @@ export default(dependencies:any)=>{
             if (response ) {
                 console.log(response,'rs...');
                 
-                res.cookie('otp', response.otp, {
-                    httpOnly: true,  
-                    secure: true,  
-                    maxAge: 60000,  
-                    sameSite: 'strict', 
+                res.cookie('otp',response.otp , {
+                    maxAge: 60000, 
+                    secure: true,
+                    sameSite:'none'
                   });
           
                 res.json({ status: true });

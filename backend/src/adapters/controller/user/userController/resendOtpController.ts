@@ -12,7 +12,11 @@ export default (dependencies: any) => {
       const executionFunction = await resendOtpUseCase(dependencies);
       const response = await executionFunction.executionFunction(email);
       if (response.status) {
-        res.cookie('otp',response.data);
+        res.cookie('otp',response.data , {
+          maxAge: 60000, 
+          secure: true,
+          sameSite:'none'
+        });
         console.log(response);
         
         res.json({ status: true , data: response.data });
