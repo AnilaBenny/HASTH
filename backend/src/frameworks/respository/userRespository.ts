@@ -426,10 +426,22 @@ export default  {
         userId,collab,name, description, images,countInStock,price
       });
   
-      const response = await product.save();
-  
-      if (response) {
-        return { status: true, data: response };
+      await product.save();
+ let products = await databaseSchema.Product.find()
+      .populate('userId')
+      .populate('collab') 
+      .sort({ createdAt: -1 });
+      products = await Promise.all(products.map(async (product) => {
+        if (product?.review && product?.review.length > 0) {
+          await product.populate({
+            path: 'review.user', 
+            select: 'name'    
+          });
+        }
+        return product;
+      })); 
+      if (products) {
+        return { status: true, data: products };
       } else {
         return { status: false, message: "Post creation failed" };
       }

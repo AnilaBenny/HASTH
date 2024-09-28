@@ -334,9 +334,22 @@ exports.default = {
             const product = new database_1.databaseSchema.Product({
                 userId, collab, name, description, images, countInStock, price
             });
-            const response = yield product.save();
-            if (response) {
-                return { status: true, data: response };
+            yield product.save();
+            let products = yield database_1.databaseSchema.Product.find()
+                .populate('userId')
+                .populate('collab')
+                .sort({ createdAt: -1 });
+            products = yield Promise.all(products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
+                if ((product === null || product === void 0 ? void 0 : product.review) && (product === null || product === void 0 ? void 0 : product.review.length) > 0) {
+                    yield product.populate({
+                        path: 'review.user',
+                        select: 'name'
+                    });
+                }
+                return product;
+            })));
+            if (products) {
+                return { status: true, data: products };
             }
             else {
                 return { status: false, message: "Post creation failed" };
