@@ -8,7 +8,7 @@ export default (dependencies: any) => {
        try{
         
         const { otp } = req.body;
-        const userData = req.session.userData;
+
       
         
         

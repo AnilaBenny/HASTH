@@ -53,13 +53,13 @@ export default (dependencies: any) => {
 
    
       req.session.userData = data;
-      console.log(req.session.userData);
+      console.log(req.session.userData,'session');
       
 
       const executionFunction = await userRegistration(dependencies);
       const response = await executionFunction.executionFunction(data);
 
-      // console.log(response);
+      console.log(response,'resp in registr');
       if (response.status) {
         req.session.otp = response.data;
         logger.info(response);
