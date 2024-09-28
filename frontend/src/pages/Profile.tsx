@@ -288,7 +288,7 @@ const Profile: React.FC = () => {
             </Form>
           )}
         </Formik>
-        {isModalOpen && <OtpModal closeModal={() => setModalOpen(false)} />}
+        {isModalOpen && <OtpModal closeModal={() => setModalOpen(false)} email={user.email}/>}
       </div>
 
     </div>
