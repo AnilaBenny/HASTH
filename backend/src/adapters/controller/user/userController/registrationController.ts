@@ -1,27 +1,7 @@
 import { Request, Response } from 'express';
 import { hashPassword } from '../../../../utils';
 import logger from '../../../../logger';
-import 'express-session';
 
-declare module 'express-session' {
-  interface SessionData {
-    userData?: {
-      name: string;
-      email: string;
-      password: string;
-      mobile: string;
-      skills: string;
-      education: string;
-      specification: string;
-      street: string;
-      city: string;
-      state: string;
-      zipCode: string;
-      role: string;
-    };
-    otp?: string; 
-  }
-}
 
 export default (dependencies: any) => {
   const { userRegistration } = dependencies.useCase;
@@ -52,8 +32,8 @@ export default (dependencies: any) => {
       };
 
    
-      req.session.userData = data;
-      console.log(req.session.userData,'session');
+      res.cookie('userData', data)
+      console.log(req.cookies.userData,'cookie');
       
 
       const executionFunction = await userRegistration(dependencies);
@@ -61,7 +41,7 @@ export default (dependencies: any) => {
 
       console.log(response,'resp in registr');
       if (response.status) {
-        req.session.otp = response.data;
+        res.cookie('otp',response.data);
         logger.info(response);
         
         res.json({ status: true , data: response.data });

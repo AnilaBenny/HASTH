@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../../../../utils");
 const logger_1 = __importDefault(require("../../../../logger"));
-require("express-session");
 exports.default = (dependencies) => {
     const { userRegistration } = dependencies.useCase;
     const registerController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -35,13 +34,13 @@ exports.default = (dependencies) => {
                 zipCode,
                 role,
             };
-            req.session.userData = data;
-            console.log(req.session.userData, 'session');
+            res.cookie('userData', data);
+            console.log(req.cookies.userData, 'cookie');
             const executionFunction = yield userRegistration(dependencies);
             const response = yield executionFunction.executionFunction(data);
             console.log(response, 'resp in registr');
             if (response.status) {
-                req.session.otp = response.data;
+                res.cookie('otp', response.data);
                 logger_1.default.info(response);
                 res.json({ status: true, data: response.data });
             }

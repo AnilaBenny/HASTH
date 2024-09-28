@@ -12,7 +12,7 @@ export default (dependencies: any) => {
       const executionFunction = await resendOtpUseCase(dependencies);
       const response = await executionFunction.executionFunction(email);
       if (response.status) {
-        req.session.otp = response.data;
+        req.cookies('otp',response.data);
         console.log(response);
         
         res.json({ status: true , data: response.data });

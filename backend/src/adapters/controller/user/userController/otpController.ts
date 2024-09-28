@@ -9,14 +9,14 @@ export default (dependencies: any) => {
        
         
         const { otp } = req.body;
-        const userData = req.session.userData;
+        const userData = req.cookies.userData;
       
         
         
-        logger.info('Entered OTP:', otp,req.session.otp);
+        logger.info('Entered OTP:', otp,req.cookies.otp);
         
         
-        if (req.session.otp === otp) {
+        if (req.cookies.otp === otp) {
             try {
                 const executionFunction = await otpVerification(dependencies);
                 const response=await executionFunction.executionFunction(userData);

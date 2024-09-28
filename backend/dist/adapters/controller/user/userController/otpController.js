@@ -28,9 +28,9 @@ exports.default = (dependencies) => {
     const { otpVerification } = dependencies.useCase;
     const verifyOtp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { otp } = req.body;
-        const userData = req.session.userData;
-        logger_1.default.info('Entered OTP:', otp, req.session.otp);
-        if (req.session.otp === otp) {
+        const userData = req.cookies.userData;
+        logger_1.default.info('Entered OTP:', otp, req.cookies.otp);
+        if (req.cookies.otp === otp) {
             try {
                 const executionFunction = yield otpVerification(dependencies);
                 const response = yield executionFunction.executionFunction(userData);

@@ -17,7 +17,7 @@ exports.default = (dependencies) => {
             const executionFunction = yield resendOtpUseCase(dependencies);
             const response = yield executionFunction.executionFunction(email);
             if (response.status) {
-                req.session.otp = response.data;
+                req.cookies('otp', response.data);
                 console.log(response);
                 res.json({ status: true, data: response.data });
             }

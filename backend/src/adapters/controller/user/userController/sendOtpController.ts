@@ -9,7 +9,7 @@ export default(dependencies:any)=>{
             if (response ) {
                 console.log(response,'rs...');
                 
-                req.session.otp=response.otp;
+                res.cookie('otp',response.otp);
                 res.json({ status: true });
             } else {
                 res.status(400).json( "otp send failed" );

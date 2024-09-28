@@ -22,7 +22,12 @@ exports.default = (dependencies) => {
             const response = yield executionFunction.executionFunction(data);
             console.log(response, '........');
             if (response.status) {
-                req.session.otp = response.data;
+                res.cookie('otp', response.data, {
+                    maxAge: 60000,
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'strict',
+                });
                 console.log(response);
                 res.json({ status: true, data: response.data });
             }
