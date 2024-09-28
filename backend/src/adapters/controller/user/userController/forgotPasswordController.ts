@@ -21,8 +21,9 @@ export default (dependencies: any) => {
         res.cookie('otp',response.data , {
           maxAge: 60000, 
           secure: true,
+          sameSite:'none'
         });
-        console.log(response);
+
         
         res.json({ status: true , data: response.data });
       } else  {
