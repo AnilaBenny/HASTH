@@ -123,8 +123,9 @@ export default () => {
     const height = 300;
     const radius = Math.min(width, height) / 2;
 
+    const filteredData:any= Object.entries(data).filter(([_, value]) => value !== 0);
+  
     d3.select(pieChartRef.current).selectAll("*").remove();
-
     const svg = d3.select(pieChartRef.current)
       .append("svg")
       .attr("width", width)
@@ -132,37 +133,58 @@ export default () => {
       .append("g")
       .attr("transform", `translate(${width / 2},${height / 2})`);
 
+    const tooltip = d3.select(pieChartRef.current)
+      .append("div")
+      .style("opacity", 0)
+      .attr("class", "tooltip")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("padding", "5px")
+      .style("position", "absolute");
+  
     const color = d3.scaleOrdinal()
-      .domain(Object.keys(data))
+      .domain(filteredData.map(([key, _]:any) => key))
       .range(d3.schemeSet2);
-
-    const pie = d3.pie()
-    //@ts-ignore
+  
+    const pie = d3.pie<[string, number]>()
       .value(d => d[1]);
-//@ts-ignore
-    const dataReady = pie(Object.entries(data));
-
-    const arcGenerator = d3.arc()
+  
+    const dataReady = pie(filteredData);
+  
+    const arcGenerator = d3.arc<d3.PieArcDatum<[string, number]>>()
       .innerRadius(0)
       .outerRadius(radius);
-
+  
     svg.selectAll('slices')
       .data(dataReady)
       .enter()
       .append('path')
-      //@ts-ignore
       .attr('d', arcGenerator)
       //@ts-ignore
       .attr('fill', d => color(d.data[0]))
       .attr("stroke", "white")
-      .style("stroke-width", "2px");
-
+      .style("stroke-width", "2px")
+      .on("mouseover", (event, d) => {
+        tooltip.transition()
+          .duration(200)
+          .style("opacity", .9);
+        tooltip.html(`${d.data[0]}: ${d.data[1]}`)
+          .style("left", (event.pageX) + "px")
+          .style("top", (event.pageY - 28) + "px");
+      })
+      .on("mouseout", () => {
+        tooltip.transition()
+          .duration(500)
+          .style("opacity", 0);
+      });
+  
     svg.selectAll('slices')
       .data(dataReady)
       .enter()
       .append('text')
-      .text((d:any) => d.data[0])
-      //@ts-ignore
+      .text(d => d.data[0])
       .attr("transform", d => `translate(${arcGenerator.centroid(d)})`)
       .style("text-anchor", "middle")
       .style("font-size", 10);

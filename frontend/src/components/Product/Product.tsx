@@ -179,6 +179,7 @@ const Product: React.FC = () => {
                     (product:any) => user._id !== product?.userId._id && user._id !== product?.collab._id
                 );
                 setProducts(filteredData);
+                toast.success('product added successfully')
                 resetForm();
                 setImagePreviews([]);
                 setIsModalOpen(false);
