@@ -13,8 +13,8 @@ exports.default = (dependencies) => {
     const verifyOtp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { otp } = req.body;
-            console.log('Entered OTP:', otp, req.cookies.otp);
-            if (req.cookies.otp === otp) {
+            console.log('Entered OTP:', otp, req.cookies('otp'));
+            if (req.cookies('otp') === otp) {
                 res.json({ status: true, message: 'Otp verified' });
             }
             else {
