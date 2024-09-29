@@ -1,28 +1,46 @@
-import  { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { FaUserCircle, FaShoppingCart, FaBox, FaUserEdit, FaNewspaper } from 'react-icons/fa';
 import useApiService from '../../Services/Apicalls';
+import axiosInstance from '../../Axiosconfig/Axiosconfig';
 
-interface User{
-  _id:string
+interface User {
+  _id: string;
+  name: string;
+  role: string;
+  image: string;
 }
-interface Report{
-  _id:string
+
+interface Report {
+  _id: string;
+  reportedUserId: User;
+  reason: string;
+}
+
+interface OrderData {
+  daily: Record<string, number>;
+  weekly: Record<string, number>;
+  monthly: Record<string, number>;
 }
 
 export default () => {
   const [timeFrame, setTimeFrame] = useState('daily');
-  const [data, setData] = useState<any>({
+  const [data, setData] = useState({
     users: 0,
     orders: 0,
     products: 0,
     creatives: 0,
     posts: 0
   });
-  const [newUsers, setNewUsers] = useState<User[]|null>(null);
-  const [reports, setReports] = useState<Report[]|null>(null);
-  const barChartRef = useRef(null);
-  const pieChartRef = useRef(null);
+  const [orderData, setOrderData] = useState<OrderData>({
+    daily: {},
+    weekly: {},
+    monthly: {}
+  });
+  const [newUsers, setNewUsers] = useState<User[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
+  const lineChartRef = useRef<HTMLDivElement>(null);
+  const pieChartRef = useRef<HTMLDivElement>(null);
   const service = useApiService();
 
   useEffect(() => {
@@ -30,107 +48,193 @@ export default () => {
       try {
         const fetchedData = await service.fetchallLists(timeFrame);
         setData(fetchedData);
-        const fetchUsers=await service.fetchUsers();
- 
-        setNewUsers(fetchUsers);
-        const fetchReports=await service.fetchReports();
- 
-        setReports(fetchReports.reports);
-
+        
+        const fetchedUsers = await service.fetchUsers();
+        setNewUsers(fetchedUsers);
+        
+        const fetchedReports = await service.fetchReports();
+        setReports(fetchedReports.reports);
       } catch (error) {
         console.error('Error fetching data:', error);
+      }
+    };
 
-        setData({
-          users: Math.floor(Math.random() * 1000),
-          orders: Math.floor(Math.random() * 500),
-          products: Math.floor(Math.random() * 2000),
-          creatives: Math.floor(Math.random() * 300),
-          posts: Math.floor(Math.random() * 100)
-        });
+    const fetchOrders = async () => {
+      try {
+        const response = await axiosInstance.get('/api/auth/admin/allorders');
+        if (Array.isArray(response.data.data.orders)) {
+          processOrderData(response.data.data.orders);
+        } else {
+          console.error("Invalid order data:", response.data.data.orders);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
       }
     };
 
     fetchData();
+    fetchOrders();
   }, [timeFrame]);
 
   useEffect(() => {
     if (data) {
-      drawBarChart();
+      drawLineChart();
       drawPieChart();
     }
-  }, [data]);
+  }, [data, orderData, timeFrame]);
 
-  const drawBarChart = () => {
-    const margin = { top: 20, right: 30, bottom: 60, left: 40 };
+  const processOrderData = (orders: any[]) => {
+    const daily: Record<string, number> = {};
+    const weekly: Record<string, number> = {};
+    const monthly: Record<string, number> = {};
+
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6); 
+
+
+    const fourWeeksAgo = new Date();
+    fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28); 
+
+    orders.forEach((order) => {
+      const date = new Date(order.createdAt);
+      const amount = order.totalAmount;
+
+      // Daily totals (last 7 days)
+      if (date >= sevenDaysAgo) {
+        const dayKey = date.toISOString().split('T')[0];
+        daily[dayKey] = (daily[dayKey] || 0) + amount;
+      }
+
+      // Weekly totals (last 4 weeks)
+      if (date >= fourWeeksAgo) {
+        const weekNumber = Math.floor((date.getTime() - fourWeeksAgo.getTime()) / (7 * 24 * 60 * 60 * 1000));
+        const weekKey = `Week ${weekNumber + 1}`;
+        weekly[weekKey] = (weekly[weekKey] || 0) + amount;
+      }
+
+      // Monthly totals (keep as is, showing all months)
+      const monthKey = date.toLocaleString('default', { month: 'short' });
+      monthly[monthKey] = (monthly[monthKey] || 0) + amount;
+    });
+
+    // Ensure all 7 days are represented in daily data
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(sevenDaysAgo);
+      date.setDate(date.getDate() + i);
+      const dayKey = date.toISOString().split('T')[0];
+      if (!daily[dayKey]) {
+        daily[dayKey] = 0;
+      }
+    }
+
+    // Ensure all 4 weeks are represented in weekly data
+    for (let i = 1; i <= 4; i++) {
+      const weekKey = `Week ${i}`;
+      if (!weekly[weekKey]) {
+        weekly[weekKey] = 0;
+      }
+    }
+
+    setOrderData({ daily, weekly, monthly });
+  };
+
+  const drawLineChart = () => {
+    if (!lineChartRef.current) return;
+
+    const margin = { top: 20, right: 30, bottom: 60, left: 60 };
     const width = 400 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
-    d3.select(barChartRef.current).selectAll("*").remove();
-    const svg = d3.select(barChartRef.current)
+
+    d3.select(lineChartRef.current).selectAll("*").remove();
+
+    const svg = d3.select(lineChartRef.current)
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
-    let processedData:any;
+    
+    let processedData: [string, number][];
     let xAxisFormat: (d: string) => string;
+  
     if (timeFrame === 'daily') {
-      const today = new Date();
-      processedData = Array.from({ length: 7 }, (_, i) => {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        return [date.toISOString().split('T')[0], data[date.toISOString().split('T')[0]] || 0];
+      const lastSevenDays = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        return date.toISOString().split('T')[0];
       }).reverse();
+      processedData = lastSevenDays.map(day => [day, orderData.daily[day] || 0]);
       xAxisFormat = d => new Date(d).toLocaleDateString();
     } else if (timeFrame === 'weekly') {
-      processedData = Array.from({ length: 7 }, (_, i) => [`Week ${i + 1}`, data[`Week ${i + 1}`] || 0]);
-      xAxisFormat = d => d;
-    } else if (timeFrame === 'monthly') {
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      processedData = months.slice(0, 7).map(month => [month, data[month] || 0]);
+      processedData = Object.entries(orderData.weekly).slice(-4);
       xAxisFormat = d => d;
     } else {
-      processedData = Object.entries(data);
+      processedData = Object.entries(orderData.monthly).slice(-5);
       xAxisFormat = d => d;
     }
-    const x = d3.scaleBand()
+  
+    const x = d3.scalePoint()
       .range([0, width])
-      .padding(0.1);
+      .domain(processedData.map(d => d[0]));
     const y = d3.scaleLinear()
-      .range([height, 0]);
-    x.domain(processedData.map((d:any) => d[0]));
-    //@ts-ignore
-    y.domain([0, d3.max(processedData, d => d[1]) || 0]);
-    svg.selectAll(".bar")
+      .range([height, 0])
+      .domain([0, d3.max(processedData, d => d[1]) || 0]);
+  
+    const line = d3.line<[string, number]>()
+      .x(d => x(d[0]) || 0)
+      .y(d => y(d[1]));
+  
+    svg.append("path")
+      .datum(processedData)
+      .attr("fill", "none")
+      .attr("stroke", "#4CAF50")
+      .attr("stroke-width", 2)
+      .attr("d", line);
+  
+    svg.selectAll(".dot")
       .data(processedData)
-      .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", (d:any) => x(d[0]) || 0)
-      .attr("width", x.bandwidth())
-      .attr("y", (d:any) => y(d[1]))
-      .attr("height", (d:any) => height - y(d[1]))
+      .enter().append("circle")
+      .attr("class", "dot")
+      .attr("cx", d => x(d[0]) || 0)
+      .attr("cy", d => y(d[1]))
+      .attr("r", 4)
       .attr("fill", "#4CAF50");
+  
     svg.append("g")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x).tickFormat(xAxisFormat))
       .selectAll("text")
       .attr("transform", "rotate(-45)")
       .style("text-anchor", "end");
+  
     svg.append("g")
-      .call(d3.axisLeft(y));
+      .call(d3.axisLeft(y).ticks(5).tickFormat(d => `₹${d}`));
+  
     svg.append("text")
       .attr("x", width / 2)
       .attr("y", 0 - (margin.top / 2))
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
-      .text(`${timeFrame.charAt(0).toUpperCase() + timeFrame.slice(1)} Statistics`);
+      .text(`${timeFrame.charAt(0).toUpperCase() + timeFrame.slice(1)} Order Sales`);
+  
+    svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Sales Amount (₹)");
   };
 
   const drawPieChart = () => {
+    if (!pieChartRef.current) return;
+
     const width = 300;
     const height = 300;
     const radius = Math.min(width, height) / 2;
 
-    const filteredData:any= Object.entries(data).filter(([_, value]) => value !== 0);
+    const filteredData = Object.entries(data).filter(([_, value]) => value !== 0);
   
     d3.select(pieChartRef.current).selectAll("*").remove();
     const svg = d3.select(pieChartRef.current)
@@ -151,8 +255,8 @@ export default () => {
       .style("padding", "5px")
       .style("position", "absolute");
   
-    const color = d3.scaleOrdinal()
-      .domain(filteredData.map(([key, _]:any) => key))
+    const color = d3.scaleOrdinal<string>()
+      .domain(filteredData.map(([key, _]) => key))
       .range(d3.schemeSet2);
   
     const pie = d3.pie<[string, number]>()
@@ -169,7 +273,6 @@ export default () => {
       .enter()
       .append('path')
       .attr('d', arcGenerator)
-      //@ts-ignore
       .attr('fill', d => color(d.data[0]))
       .attr("stroke", "white")
       .style("stroke-width", "2px")
@@ -259,11 +362,11 @@ export default () => {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Bar Chart</h2>
-            <div ref={barChartRef} className="bar-chart p-8"></div>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Order Sales</h2>
+            <div ref={lineChartRef} className="line-chart p-8"></div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Pie Chart</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Metrics Distribution</h2>
             {(data.users === 0 &&
                 data.orders === 0 &&
                 data.products === 0 &&
@@ -279,44 +382,41 @@ export default () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold mb-4 text-gray-800">New Users</h2>
             <ul className="space-y-4">
-            {newUsers && newUsers.length > 0 ? (
+              {newUsers && newUsers.length > 0 ? (
                 newUsers.map((user:any, index:any) => (
-                    <li key={index} className="flex items-center">
+                  <li key={index} className="flex items-center">
                     <img src={`https://hasth.mooo.com/src/uploads/${user?.image}` || 'defaultImagePath'} alt="User" className="mr-4 text-gray-400 w-8" />
                     <div>
-                        <p className="font-medium text-gray-800">{user?.name}</p>
-                        <p className="text-sm text-gray-500">{user?.role}</p>
+                      <p className="font-medium text-gray-800">{user?.name}</p>
+                      <p className="text-sm text-gray-500">{user?.role}</p>
                     </div>
-                    </li>
+                  </li>
                 ))
-                ) : (
+              ) : (
                 <p>No users available.</p>
-                )}
-
-
+              )}
             </ul>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold mb-4 text-gray-800">Reported Users</h2>
             <ul className="space-y-4">
-            {reports && reports.length > 0 ? (
+              {reports && reports.length > 0 ? (
                 reports.map((user:any, index:any) => (
-                    <li key={index} className="flex items-center">
-                                        <img src={`https://hasth.mooo.com/src/uploads/${user?.reportedUserId?.image}` || 'defaultImagePath'} alt="User" className="mr-4 text-gray-400 w-8" />
+                  <li key={index} className="flex items-center">
+                    {user?.reportedUserId?.image&&<img src={`https://hasth.mooo.com/src/uploads/${user?.reportedUserId?.image}` || 'defaultImagePath'} alt="User" className="mr-4 text-gray-400 w-8" />}
                     <div>
-                        <p className="font-medium text-gray-800">
+                      <p className="font-medium text-gray-800">
                         {user?.reportedUserId?.name || 'Unknown User'}
-                        </p>
-                        <p className="text-sm text-gray-500">
+                      </p>
+                      <p className="text-sm text-gray-500">
                         {user?.reason || 'No reason provided'}
-                        </p>
+                      </p>
                     </div>
-                    </li>
+                  </li>
                 ))
-                ) : (
+              ) : (
                 <p>No reports available.</p>
-                )}
-
+              )}
             </ul>
           </div>
         </div>
@@ -324,5 +424,3 @@ export default () => {
     </div>
   );
 };
-
- 
