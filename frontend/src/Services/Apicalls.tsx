@@ -9,7 +9,7 @@ const useApiService = () => {
   const navigate=useNavigate();
 
   const handleGoogleSignIn = async () => {
-    window.location.href = 'http://localhost:8080/api/auth/google';
+    window.location.href = 'https://hasth.mooo.com/api/auth/google';
   };
 
   const fetchPosts = async (currentPage: number, postsPerPage: number, setPosts: (posts: any[]) => void) => {
