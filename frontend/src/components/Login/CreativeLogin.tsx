@@ -6,7 +6,7 @@ import { clearUser, setUser, selectIsUserAuthenticated } from '../../store/slice
 import { toast } from 'react-toastify';
 import axiosInstance, { setAuthInfo } from '../../Axiosconfig/Axiosconfig';
 import { AiOutlineMail, AiOutlineLock, AiOutlineEyeInvisible } from 'react-icons/ai';
-import { GoogleLogin } from '@react-oauth/google';
+// import { GoogleLogin } from '@react-oauth/google';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
@@ -66,26 +66,26 @@ const CreativeLogin: React.FC = () => {
     }
   };
 
-  const handleGoogleLoginSuccess = async (credentialResponse: any) => {
-    try {
-      const { credential } = credentialResponse;
-      console.log('credential', credential);
+  // const handleGoogleLoginSuccess = async (credentialResponse: any) => {
+  //   try {
+  //     const { credential } = credentialResponse;
+  //     console.log('credential', credential);
       
-      const response = await axiosInstance.post('/api/auth/google', { idToken: credential });
-      if (response.data && response.data.status) {
-        toast.success('Login successful');
-        dispatch(clearUser());
-        dispatch(setUser(response.data.data));
-        localStorage.setItem('User', JSON.stringify(response.data));
-        navigate('/home');
-      } else {
-        toast.error(response.data.message || 'Login failed');
-      }
-    } catch (error) {
-      console.error('Error during Google login:', error);
-      toast.error('Error during Google login');
-    }
-  };
+  //     const response = await axiosInstance.post('/api/auth/google', { idToken: credential });
+  //     if (response.data && response.data.status) {
+  //       toast.success('Login successful');
+  //       dispatch(clearUser());
+  //       dispatch(setUser(response.data.data));
+  //       localStorage.setItem('User', JSON.stringify(response.data));
+  //       navigate('/home');
+  //     } else {
+  //       toast.error(response.data.message || 'Login failed');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error during Google login:', error);
+  //     toast.error('Error during Google login');
+  //   }
+  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center background-image">
@@ -149,14 +149,14 @@ const CreativeLogin: React.FC = () => {
             <div className="border-t border-gray-300 flex-grow"></div>
           </div>
 
-          <div className="w-full flex justify-center mt-4">
+          {/* <div className="w-full flex justify-center mt-4">
             <GoogleLogin
               onSuccess={handleGoogleLoginSuccess}
               onError={() => toast.error('Google login failed')}
               useOneTap={false}
               promptMomentNotification={() => {}}
             />
-          </div>
+          </div> */}
 
           <div className="text-center mt-4">
             Don't have an account?{' '}

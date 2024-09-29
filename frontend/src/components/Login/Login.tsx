@@ -45,9 +45,9 @@ const Login: React.FC = () => {
     }
   }, [location, navigate, dispatch]);
 
-  const handleGoogleSignIn = async () => {
-    window.location.href = 'https://hasth.mooo.com/api/auth/google';
-  };
+  // const handleGoogleSignIn = async () => {
+  //   window.location.href = 'https://hasth.mooo.com/api/auth/google';
+  // };
 
   const togglePasswordVisibility = () => setIsPasswordVisible(!isPasswordVisible);
 
@@ -163,14 +163,14 @@ const Login: React.FC = () => {
           )}
         </Formik>
         <div className="flex justify-center mb-4">
-          <button
+          {/* <button
             type="button"
             className="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold py-2 rounded mt-4 flex items-center justify-center"
             onClick={handleGoogleSignIn}
           >
             <FcGoogle size={24} className="mr-2" />
             Continue with Google
-          </button>
+          </button> */}
         </div>
         <div className="text-center mt-4">
           Don't have an account?{' '}

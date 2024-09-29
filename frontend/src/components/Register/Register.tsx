@@ -1,6 +1,6 @@
 import  { useState, useEffect } from 'react';
 import { AiOutlineMail, AiOutlineLock, AiOutlineEyeInvisible, AiOutlineUser, AiOutlinePhone } from 'react-icons/ai';
-import { FcGoogle } from 'react-icons/fc';
+// import { FcGoogle } from 'react-icons/fc';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { toast } from 'react-toastify';
 import Loading from '../../Loading/Loading';
@@ -9,14 +9,14 @@ import { initializeUser, setUser } from '../../store/slices/userSlice';
 import { useDispatch } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import useApiService from '../../Services/Apicalls';
+// import useApiService from '../../Services/Apicalls';
 const Register = function () {
   const dispatch = useDispatch();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { handleGoogleSignIn } = useApiService();
+  // const { handleGoogleSignIn } = useApiService();
 
   const initialValues = {
     name: '',
@@ -280,14 +280,14 @@ const Register = function () {
                 </Form>
               )}
             </Formik>
-            <button
+            {/* <button
               type="button"
               className="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold py-2 rounded mt-4 flex items-center justify-center"
               onClick={handleGoogleSignIn}
             >
               <FcGoogle size={24} className="mr-2" />
               Continue with Google
-            </button>
+            </button> */}
             <div className="text-center mt-4">
               Already have an account?{' '}
               <button
