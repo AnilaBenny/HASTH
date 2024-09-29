@@ -20,7 +20,7 @@ const passportConfig = () => {
     passport_1.default.use(new passport_google_oauth20_1.Strategy({
         clientID: '454780597057-m0hi77khg1hntm0l1qj2bm5as7qvbtng.apps.googleusercontent.com',
         clientSecret: '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',
-        callbackURL: "http://localhost:8080/api/auth/google/callback"
+        callbackURL: "https://hasth.mooo.com/api/auth/google/callback"
     }, (accessToken, refreshToken, profile, done) => __awaiter(void 0, void 0, void 0, function* () {
         console.log('Access Token:', accessToken);
         console.log('Refresh Token:', refreshToken);
