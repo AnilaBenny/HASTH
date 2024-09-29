@@ -14,12 +14,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dialogflow_1 = require("@google-cloud/dialogflow");
 const path_1 = __importDefault(require("path"));
+const uuid_1 = require("uuid");
 exports.default = (dependencies) => {
     const dialogflowController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         var _a;
         const keyFilename = path_1.default.resolve(__dirname, '../../../../adapters/controller/user/userController/hasthChatbot.json');
         const client = new dialogflow_1.SessionsClient({ keyFilename: keyFilename });
-        const sessionId = req.body.sessionId || 'default-session-id';
+        let sessionId = req.cookies.dialogflowSessionId;
+        if (!sessionId) {
+            sessionId = (0, uuid_1.v4)();
+            res.cookie('dialogflowSessionId', sessionId, {
+                httpOnly: true,
+                secure: true,
+                maxAge: 24 * 60 * 60 * 1000
+            });
+        }
         const sessionPath = client.projectAgentSessionPath('hasth-xrkj', sessionId);
         const request = {
             session: sessionPath,

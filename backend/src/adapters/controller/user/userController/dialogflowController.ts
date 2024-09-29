@@ -1,12 +1,24 @@
 import { Request, Response } from 'express';
 import { SessionsClient } from '@google-cloud/dialogflow';
 import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+
 export default (dependencies: any) => {
   const dialogflowController = async (req: Request, res: Response) => {
     const keyFilename = path.resolve(__dirname, '../../../../adapters/controller/user/userController/hasthChatbot.json');
-    const client = new SessionsClient({ keyFilename: keyFilename});
+    const client = new SessionsClient({ keyFilename: keyFilename });
 
-    const sessionId = req.body.sessionId || 'default-session-id'; 
+   
+    let sessionId = req.cookies.dialogflowSessionId;
+    if (!sessionId) {
+      sessionId = uuidv4();
+      res.cookie('dialogflowSessionId', sessionId, { 
+        httpOnly: true, 
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000 
+      });
+    }
+
     const sessionPath = client.projectAgentSessionPath('hasth-xrkj', sessionId);
 
     const request = {
@@ -29,5 +41,6 @@ export default (dependencies: any) => {
       res.status(500).send('Error connecting to Dialogflow');
     }
   };
+
   return dialogflowController;
 };
