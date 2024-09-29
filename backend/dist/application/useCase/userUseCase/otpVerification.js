@@ -17,7 +17,8 @@ exports.default = (dependencies) => {
     const { userRespository } = dependencies.respository;
     const executionFunction = (data) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            data.image = yield (0, createImage_1.default)(data.name);
+            data.image = (yield (0, createImage_1.default)(data.name)) || '';
+            console.log(data);
             const response = yield userRespository.createUser(data);
             if (response.status) {
                 return { status: true, data: response.data };

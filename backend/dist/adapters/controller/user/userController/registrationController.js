@@ -49,7 +49,6 @@ exports.default = (dependencies) => {
                     secure: true,
                     sameSite: 'none'
                 });
-                logger_1.default.info(response);
                 res.json({ status: true, data: response.data });
             }
             else {

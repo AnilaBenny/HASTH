@@ -50,7 +50,6 @@ export default (dependencies: any) => {
           secure: true,
           sameSite:'none'
         });
-        logger.info(response);
         
         res.json({ status: true , data: response.data });
       } else  {

@@ -39,7 +39,9 @@ exports.default = (name) => __awaiter(void 0, void 0, void 0, function* () {
     const buffer = canvas.toBuffer('image/png');
     const image = yield (0, sharp_1.default)(buffer).png().toBuffer();
     const filePath = path_1.default.join(__dirname, '..', 'uploads');
-    console.log(filePath);
+    if (!node_fs_1.default.existsSync(filePath)) {
+        node_fs_1.default.mkdirSync(filePath, { recursive: true });
+    }
     const fileName = `${name.replace(/ /g, '_')}.png`;
     node_fs_1.default.writeFileSync(path_1.default.join(filePath, fileName), image);
     return fileName;

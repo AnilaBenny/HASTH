@@ -6,7 +6,9 @@ export default (dependencies: any) => {
     const executionFunction = async (data: any) => {
         try {
             
-            data.image=await createImage(data.name)
+            data.image=await createImage(data.name)||''
+            console.log(data);
+            
             const response = await userRespository.createUser(data);
             
             
