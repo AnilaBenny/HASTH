@@ -23,8 +23,8 @@ const VideoCall: React.FC = () => {
 
     const setupVideoCall = async () => {
       try {
-        const appID = parseInt(import.meta.env.VITE_ZEGO_APP_ID) || 1976765597;
-        const serverSecret = import.meta.env.VITE_ZEGO_SERVER_SECRET || '8fea6a682f3e63e61294b823d26e0b17';
+        const appID = parseInt(import.meta.env.VITE_ZEGO_APP_ID) || 204237861;
+        const serverSecret = import.meta.env.VITE_ZEGO_SERVER_SECRET || '6332ecc2ddbf6c4ae0e3bf26f88e6019';
 
         if (!appID || !serverSecret) {
           console.error('App ID or Server Secret is missing.');
