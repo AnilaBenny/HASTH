@@ -267,6 +267,7 @@ socket.on('callAccepted', ({ roomId }) => {
         console.log('Received response from server:', response);
         if (response.success) {
           console.log('Image sent successfully');
+          setMessages(prevMessages => [...prevMessages, newMessage]);
           setImagePreview(null);
           setSelectedFile(null);
         } else {
