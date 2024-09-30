@@ -163,21 +163,42 @@ io.on("connection", (socket) => {
         }
     }));
     socket.on('sendImage', (_a, callback_1) => __awaiter(void 0, [_a, callback_1], void 0, function* ({ senderId, receiverId, content, conversationId, type, timestamp }, callback) {
-        const { sendImageUseCase } = dependencies_1.default.useCase;
-        const data = {
-            senderId, receiverId, content, conversationId, type, timestamp
-        };
-        const response = yield sendImageUseCase(dependencies_1.default).executeFunction(data);
-        console.log(response, 'sendImage');
-        if (response && response.status && response.data) {
-            const chatId = yield getChatId(response.data.receiverId, response.data.senderId);
-            console.log(chatId, 'chatId in sendImage');
-            if (chatId) {
-                io.to(chatId).emit('getMessage', response.data);
+        try {
+            const { sendImageUseCase } = dependencies_1.default.useCase;
+            const data = {
+                senderId,
+                receiverId,
+                content,
+                conversationId,
+                type,
+                timestamp
+            };
+            const response = yield sendImageUseCase(dependencies_1.default).executeFunction(data);
+            console.log('sendImage response:', response);
+            if (response && response.status && response.data) {
+                const chatId = yield getChatId(response.data.receiverId, response.data.senderId);
+                console.log('chatId in sendImage:', chatId);
+                if (chatId && chatId.length > 0) {
+                    chatId.forEach(chat => {
+                        io.to(chat.chatId).emit('getMessage', response.data);
+                    });
+                }
+                else {
+                    console.warn('No valid chatId found for this conversation');
+                }
+            }
+            else {
+                console.error('Invalid response from sendImageUseCase:', response);
+            }
+            if (callback && typeof callback === 'function') {
+                callback({ success: true, data: response.data });
             }
         }
-        if (callback) {
-            callback({ success: true, data: response.data });
+        catch (error) {
+            console.error('Error in sendImage handler:', error);
+            if (callback && typeof callback === 'function') {
+                callback({ success: false, error: 'Failed to send image' });
+            }
         }
     }));
     socket.on('audioStream', (_a, callback_1) => __awaiter(void 0, [_a, callback_1], void 0, function* ({ senderId, receiverId, content, conversationId, type, timestamp }, callback) {
