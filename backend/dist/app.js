@@ -203,18 +203,12 @@ io.on("connection", (socket) => {
             const sender = yield getUser(userId);
             const recipient = yield getUser(creativeId);
             console.log(sender, recipient, 'videocall');
-            if (recipient && sender) {
-                io.to(recipient.socketId).emit('incomingCall', {
-                    roomId,
-                    caller: userName
-                });
-                if (callback)
-                    callback({ success: true });
-            }
-            else {
-                if (callback)
-                    callback({ success: false, message: 'User or recipient not found' });
-            }
+            io.to(recipient.socketId).emit('incomingCall', {
+                roomId,
+                caller: userName
+            });
+            if (callback)
+                callback({ success: true });
         }
         catch (error) {
             console.error('Error handling video call:', error);

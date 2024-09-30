@@ -219,8 +219,7 @@ io.on("connection",(socket:Socket)=>{
       const sender = await getUser(userId);
       const recipient = await getUser(creativeId);
       console.log(sender,recipient,'videocall');
-      
-      if (recipient && sender) {
+ 
         io.to(recipient.socketId).emit('incomingCall', { 
           roomId, 
           caller: userName 
@@ -228,9 +227,7 @@ io.on("connection",(socket:Socket)=>{
   
   
         if (callback) callback({ success: true });
-      } else {
-        if (callback) callback({ success: false, message: 'User or recipient not found' });
-      }
+ 
     } catch (error) {
       console.error('Error handling video call:', error);
       if (callback) callback({ success: false, message: 'Internal server error' });
