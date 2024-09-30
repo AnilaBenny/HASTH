@@ -168,8 +168,10 @@ io.on("connection", (socket) => {
             senderId, receiverId, content, conversationId, type, timestamp
         };
         const response = yield sendImageUseCase(dependencies_1.default).executeFunction(data);
+        console.log(response, 'sendImage');
         if (response && response.status && response.data) {
-            const chatId = getChatId(response.data.receiverId, response.data.senderId);
+            const chatId = yield getChatId(response.data.receiverId, response.data.senderId);
+            console.log(chatId, 'chatId in sendImage');
             if (chatId) {
                 io.to(chatId).emit('getMessage', response.data);
             }

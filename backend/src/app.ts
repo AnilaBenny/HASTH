@@ -176,8 +176,11 @@ io.on("connection",(socket:Socket)=>{
       senderId,receiverId,content,conversationId,type,timestamp
     };
     const response=await sendImageUseCase(dependencies).executeFunction(data);
+    console.log(response,'sendImage');
+    
     if(response && response.status && response.data){
-      const chatId=getChatId(response.data.receiverId,response.data.senderId)
+      const chatId=await getChatId(response.data.receiverId,response.data.senderId)
+        console.log(chatId,'chatId in sendImage');
         
         if (chatId) {
     
