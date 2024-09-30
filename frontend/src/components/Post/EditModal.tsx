@@ -109,7 +109,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                 formData.append(key, value as string);
             }
         });
-    
+        
         croppedImages.forEach((img, index) => {
             // Check if the image has been cropped or not
             if (img.startsWith('data:image')) {
@@ -167,7 +167,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
             setError('Please upload at least one image or video.');
             return;
         }
-        formData.append('data', data);
+       
     
         try {
             const endpoint = type === 'post' ? '/api/auth/editIdea' : '/api/auth/editProduct';
