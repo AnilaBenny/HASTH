@@ -219,12 +219,10 @@ io.on("connection",(socket:Socket)=>{
       const sender = await getUser(userId);
       const recipient = await getUser(creativeId);
       console.log(sender,recipient,'videocall');
- 
         io.to(recipient.socketId).emit('incomingCall', { 
           roomId, 
           caller: userName 
         });
-  
   
         if (callback) callback({ success: true });
  
