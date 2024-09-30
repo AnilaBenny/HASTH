@@ -215,7 +215,10 @@ io.on("connection",(socket:Socket)=>{
   socket.on('videoCall', async (data, callback) => {
     try {
       const { creativeId, userId, roomId, userName, creativeName } = data;
-        io.to(roomId).emit('incomingCall', { 
+      const receiver = users.find((user: any) => user.receiverId === creativeId);
+      console.log(receiver.socketId,'socket');
+      
+        io.to(receiver.socketId).emit('incomingCall', { 
           roomId, 
           caller: userName 
         });

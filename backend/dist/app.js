@@ -46,7 +46,7 @@ const express_2 = __importDefault(require("./express"));
 const dependencies_1 = __importDefault(require("./frameworks/config/dependencies"));
 const router_1 = require("./adapters/router");
 const passport_1 = __importDefault(require("passport"));
-const passport_2 = __importDefault(require("./config/passport"));
+const passport_2 = __importDefault(require("../src/config/passport"));
 // import { middleware } from './utils/middleware/middleware';
 const logger_1 = __importDefault(require("./logger"));
 // import { createClient } from 'redis';
@@ -200,7 +200,9 @@ io.on("connection", (socket) => {
     socket.on('videoCall', (data, callback) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { creativeId, userId, roomId, userName, creativeName } = data;
-            io.to(roomId).emit('incomingCall', {
+            const receiver = users.find((user) => user.receiverId === creativeId);
+            console.log(receiver.socketId, 'socket');
+            io.to(receiver.socketId).emit('incomingCall', {
                 roomId,
                 caller: userName
             });
