@@ -2,7 +2,7 @@ import  { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import axiosInstance from '../../Axiosconfig/Axiosconfig';
 import { format } from 'date-fns';
-import { PhotoIcon, XMarkIcon,MagnifyingGlassIcon, PaperAirplaneIcon, MicrophoneIcon, TrashIcon, PauseIcon, PlayIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, XMarkIcon,MagnifyingGlassIcon, PaperAirplaneIcon, TrashIcon, PauseIcon, PlayIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import EmojiPicker from 'emoji-picker-react';
 import 'react-h5-audio-player/lib/styles.css';
 import { useSocket } from './socket';
@@ -595,7 +595,7 @@ socket.on('callAccepted', ({ roomId }) => {
                   onClick={startRecording}
                   className="mr-2 p-2 rounded-full bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
                 >
-                  <MicrophoneIcon className="w-5 h-5" />
+                  {/* <MicrophoneIcon className="w-5 h-5" /> */}
                 </button>
               )}
               {isRecording && (
