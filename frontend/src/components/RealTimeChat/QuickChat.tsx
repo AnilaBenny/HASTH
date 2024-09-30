@@ -264,6 +264,7 @@ socket.on('callAccepted', ({ roomId }) => {
   
       console.log('Attempting to send image via socket');
       socket.emit('sendImage', newMessage, (response: any) => {
+        console.log('Received response from server:', response);
         if (response.success) {
           console.log('Image sent successfully');
           setImagePreview(null);
