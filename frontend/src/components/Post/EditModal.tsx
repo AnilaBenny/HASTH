@@ -111,9 +111,9 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
         });
         
         croppedImages.forEach((img, index) => {
-            // Check if the image has been cropped or not
+         
             if (img.startsWith('data:image')) {
-                // Process cropped image (as in the original code)
+               
                 const base64Image = img.split(',')[1];
                 if (base64Image) {
                     try {
@@ -131,7 +131,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                     }
                 }
             } else {
-                // If not cropped, append the original file from newImages array
+              
                 const originalFile = newImages[index];
                 if (originalFile) {
                     formData.append('images', originalFile);
@@ -266,6 +266,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                         type="file"
                         accept="image/*"
                         multiple
+                        hidden
                         onChange={handleImageChange}
                         className="block w-full p-2 border rounded"
                     />
