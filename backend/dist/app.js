@@ -200,19 +200,15 @@ io.on("connection", (socket) => {
     socket.on('videoCall', (data, callback) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { creativeId, userId, roomId, userName, creativeName } = data;
-            console.log(data, 'videocall');
-            const creative = yield getUser(creativeId);
-            console.log(creative, 'receiver in vc');
-            if (creative) {
-                io.to(creative.socketId).emit('incomingCall', {
+            const chatId = getChatId(userId, creativeId);
+            console.log(chatId, 'receiver in vc');
+            if (chatId) {
+                io.to(chatId).emit('incomingCall', {
                     roomId,
                     caller: userName
                 });
                 if (callback)
                     callback({ success: true });
-            }
-            else {
-                console.log('error');
             }
         }
         catch (error) {

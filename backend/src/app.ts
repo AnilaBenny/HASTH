@@ -215,20 +215,17 @@ io.on("connection",(socket:Socket)=>{
   socket.on('videoCall', async (data, callback) => {
     try {
       const { creativeId, userId, roomId, userName, creativeName } = data;
-console.log(data,'videocall');
 
-      const creative= await getUser(creativeId) 
-      console.log(creative,'receiver in vc');
+      const chatId=getChatId(userId,creativeId) 
+      console.log(chatId,'receiver in vc');
       
-      if(creative){
-        io.to(creative.socketId).emit('incomingCall', { 
+      if(chatId){
+        io.to(chatId).emit('incomingCall', { 
           roomId, 
           caller: userName 
         });
   
         if (callback) callback({ success: true });
-      }else{
-        console.log('error')
       }
  
     } catch (error) {
