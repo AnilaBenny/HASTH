@@ -200,10 +200,7 @@ io.on("connection", (socket) => {
     socket.on('videoCall', (data, callback) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { creativeId, userId, roomId, userName, creativeName } = data;
-            const sender = yield getUser(userId);
-            const recipient = yield getUser(creativeId);
-            console.log(sender, recipient, 'videocall');
-            io.to(recipient.socketId).emit('incomingCall', {
+            io.to(roomId).emit('incomingCall', {
                 roomId,
                 caller: userName
             });
