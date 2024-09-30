@@ -592,7 +592,7 @@ socket.on('callAccepted', ({ roomId }) => {
               {!isRecording && !audioURL && (
                 <button 
                   onClick={startRecording}
-                  className="mr-2 p-2 rounded-full bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="mr-2 p-2 rounded-full bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 hidden"
                 >
                   {/* <MicrophoneIcon className="w-5 h-5" /> */}
                 </button>

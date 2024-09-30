@@ -103,15 +103,17 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
     const handleSubmit = async () => {
         setError(null);
         const formData = new FormData();
-
+    
         Object.entries(editedData).forEach(([key, value]) => {
             if (key !== 'images' && key !== 'video') {
                 formData.append(key, value as string);
             }
         });
-
+    
         croppedImages.forEach((img, index) => {
+            // Check if the image has been cropped or not
             if (img.startsWith('data:image')) {
+                // Process cropped image (as in the original code)
                 const base64Image = img.split(',')[1];
                 if (base64Image) {
                     try {
@@ -129,18 +131,22 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                     }
                 }
             } else {
-                formData.append('existingImages', img.split('/').pop() || '');
+                // If not cropped, append the original file from newImages array
+                const originalFile = newImages[index];
+                if (originalFile) {
+                    formData.append('images', originalFile);
+                } else {
+                    formData.append('existingImages', img.split('/').pop() || '');
+                }
             }
         });
-
-        
+    
         if (newVideo) {
             formData.append('video', newVideo);
         } else if (videoPreview && type === 'post') {
-            formData.append('existingVideo', (editedData).video || '');
+            formData.append('existingVideo', editedData.video || '');
         }
-
-        
+    
         if (type === 'post') {
             if (!formData.get('caption')) {
                 setError('Please describe your idea.');
@@ -156,28 +162,26 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                 return;
             }
         }
-
+    
         if (croppedImages.length === 0 && !newVideo && !videoPreview) {
             setError('Please upload at least one image or video.');
             return;
         }
-        formData.append('data',data)
-
+        formData.append('data', data);
+    
         try {
             const endpoint = type === 'post' ? '/api/auth/editIdea' : '/api/auth/editProduct';
-            const response = await axiosInstance.put(endpoint,formData , {
+            const response = await axiosInstance.put(endpoint, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
             console.log(response);
-            
+    
             if (response.data.status) {
-                const updatedItem=response.data.data;
-              
-                onSave(updatedItem,type);
+                const updatedItem = response.data.data;
+                onSave(updatedItem, type);
                 onClose();
-                
             } else {
                 setError('Failed to save. Please try again.');
             }
@@ -186,6 +190,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
             setError('An error occurred while saving the data.');
         }
     };
+    
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -300,7 +305,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                         </div>
                     )}
                 </div>
-                <div className="mb-4">
+                {type === 'post' &&<div className="mb-4">
                     <label htmlFor="video" className="block font-medium">Video:</label>
                     <input
                         id="video"
@@ -314,7 +319,7 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                             <video src={videoPreview} controls className="w-full h-auto"></video>
                         </div>
                     )}
-                </div>
+                </div>}
                 <div className="flex justify-end mt-4">
                     <button onClick={onClose} className="p-2 mr-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
                         Cancel
