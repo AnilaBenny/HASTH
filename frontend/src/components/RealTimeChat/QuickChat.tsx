@@ -239,11 +239,12 @@ socket.on('callAccepted', ({ roomId }) => {
     console.log('Image Preview:', imagePreview);
   }, [selectedFile, imagePreview]);
   const sendImage = () => {
-    try{
-      console.log(selectedFile);
-      
     if (!selectedFile || !socket || !selectedConversation) {
-      console.error('Missing required data for sending image');
+      console.error('Missing required data for sending image:', {
+        selectedFile: !!selectedFile,
+        socket: !!socket,
+        selectedConversation: !!selectedConversation
+      });
       return;
     }
   
@@ -251,6 +252,8 @@ socket.on('callAccepted', ({ roomId }) => {
   
     reader.onload = () => {
       const base64Image = reader.result as string;
+      console.log('Image converted to base64');
+  
       const newMessage: Message = {
         senderId: user.user._id,
         receiverId: selectedConversation.receiver._id,
@@ -260,29 +263,24 @@ socket.on('callAccepted', ({ roomId }) => {
         timestamp: new Date().toISOString(),
       };
   
+      console.log('Attempting to send image via socket');
       socket.emit('sendImage', newMessage, (response: any) => {
         if (response.success) {
+          console.log('Image sent successfully');
           setImagePreview(null);
           setSelectedFile(null);
-          console.log('Image sent successfully',imagePreview,selectedFile);
         } else {
           console.error('Failed to send image:', response.error);
         }
       });
-
-
     };
   
     reader.onerror = (error) => {
       console.error('Error reading file:', error);
     };
   
+    console.log('Starting to read file');
     reader.readAsDataURL(selectedFile);
-  
-}catch(error){
-  console.log(error,'in send Message'); 
-
-}
   };
 
   const toggleEmojiPicker = () => setEmojiPickerOpen(!emojiPickerOpen);
