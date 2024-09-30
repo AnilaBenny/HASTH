@@ -202,6 +202,7 @@ io.on("connection", (socket) => {
             const { creativeId, userId, roomId, userName, creativeName } = data;
             const sender = yield getUser(userId);
             const recipient = yield getUser(creativeId);
+            console.log(sender, recipient, 'videocall');
             if (recipient && sender) {
                 io.to(recipient.socketId).emit('incomingCall', {
                     roomId,

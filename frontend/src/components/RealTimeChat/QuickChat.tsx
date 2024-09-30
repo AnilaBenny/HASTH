@@ -140,8 +140,8 @@ export default  () => {
       socket.on('incomingCall', (data: { roomId: string; caller: string }) => {
         setIncomingCall(data);
       });
-
-      socket.on('callAccepted', ({ roomId }) => {
+      
+socket.on('callAccepted', ({ roomId }) => {
         setIsCallPending(false);
         navigate(`/videoCall/${roomId}`);
       });
