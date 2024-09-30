@@ -17,7 +17,7 @@ mongoose_1.default.set("strictQuery", true);
 const connectDB = (config) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { uri } = config.mongo;
-        yield mongoose_1.default.connect(uri);
+        yield mongoose_1.default.connect('mongodb+srv://anilacbenny810:DaKDKX3EoAGjp1Io@hasth.arate.mongodb.net/HASTH');
         console.log("Connected to the MongoDB database");
     }
     catch (error) {

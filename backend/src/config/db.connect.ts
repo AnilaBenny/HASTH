@@ -12,7 +12,7 @@ const connectDB = async (config: any): Promise<void> => {
   try {
     
     const { uri } = config.mongo;
-    await mongoose.connect(uri);
+    await mongoose.connect('mongodb+srv://anilacbenny810:DaKDKX3EoAGjp1Io@hasth.arate.mongodb.net/HASTH');
     console.log("Connected to the MongoDB database");
   } catch (error) {
     console.error("Error connecting to the MongoDB database:", error);
