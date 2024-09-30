@@ -200,13 +200,20 @@ io.on("connection", (socket) => {
     socket.on('videoCall', (data, callback) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { creativeId, userId, roomId, userName, creativeName } = data;
+            console.log(data, 'videocall');
             const creative = yield getUser(creativeId);
-            io.to(creative.socketId).emit('incomingCall', {
-                roomId,
-                caller: userName
-            });
-            if (callback)
-                callback({ success: true });
+            console.log(creative, 'receiver in vc');
+            if (creative) {
+                io.to(creative.socketId).emit('incomingCall', {
+                    roomId,
+                    caller: userName
+                });
+                if (callback)
+                    callback({ success: true });
+            }
+            else {
+                console.log('error');
+            }
         }
         catch (error) {
             console.error('Error handling video call:', error);

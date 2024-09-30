@@ -421,14 +421,7 @@ socket.on('callAccepted', ({ roomId }) => {
     setIsCallPending(true);
     setIsCallInitiated(true);
   
-    socket.on('incomingCall', (data: { roomId: string; caller: string }) => {
-      setIncomingCall(data);
-    });
-    socket.emit('joinChat', {
-      senderId: user.user._id,
-      receiverId: selectedConversation.receiver._id,
-      chatId: roomId
-    });
+
 
     socket.emit("videoCall", {
       userId: user.user._id,
