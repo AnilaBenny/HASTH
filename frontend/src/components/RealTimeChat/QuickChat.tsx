@@ -222,8 +222,6 @@ socket.on('callAccepted', ({ roomId }) => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('hi');
-    
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       const reader = new FileReader();
@@ -238,6 +236,7 @@ socket.on('callAccepted', ({ roomId }) => {
     console.log('Selected File:', selectedFile);
     console.log('Image Preview:', imagePreview);
   }, [selectedFile, imagePreview]);
+  
   const sendImage = () => {
     if (!selectedFile || !socket || !selectedConversation) {
       console.error('Missing required data for sending image:', {
@@ -267,6 +266,7 @@ socket.on('callAccepted', ({ roomId }) => {
       socket.emit('sendImage', newMessage, (response: any) => {
         if (response.success) {
           console.log('Image sent successfully');
+          setMessages(prevMessages => [...prevMessages, newMessage]);
           setImagePreview(null);
           setSelectedFile(null);
         } else {
