@@ -46,7 +46,7 @@ const express_2 = __importDefault(require("./express"));
 const dependencies_1 = __importDefault(require("./frameworks/config/dependencies"));
 const router_1 = require("./adapters/router");
 const passport_1 = __importDefault(require("passport"));
-const passport_2=require("./config/passport");
+const passport_2 = __importDefault(require("../src/config/passport"));
 // import { middleware } from './utils/middleware/middleware';
 const logger_1 = __importDefault(require("./logger"));
 // import { createClient } from 'redis';
