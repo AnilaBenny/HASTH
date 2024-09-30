@@ -263,10 +263,10 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, data, ty
                     <label htmlFor="images" className="block font-medium">Images:</label>
                     <input
                         id="images"
-                        type="file"
+                        type='hidden'
                         accept="image/*"
                         multiple
-                        hidden
+                        
                         onChange={handleImageChange}
                         className="block w-full p-2 border rounded"
                     />
