@@ -11,10 +11,10 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
   const cart = useSelector((state:any) => state.cart.cart); 
-  const [cartCount,setCartCount]=useState(cart.items.length);
+  const [cartCount,setCartCount]=useState(cart.items.length|0);
   console.log(cartCount,'cartcount');
   useEffect(()=>{
-    setCartCount(cart.items.length)
+    setCartCount(cart.items.length|0)
   },[cart])
 
   const handleToggleNav = () => {
