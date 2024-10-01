@@ -10,7 +10,8 @@ const Navbar = () => {
   const [navOpen, setNavOpen] = useState(false);
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
-
+  const cart = useSelector((state:any) => state.cart); 
+  const cartCount=cart.length;
   const handleToggleNav = () => {
     setNavOpen(prev => !prev);
   };
@@ -102,6 +103,11 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             <Link to="/cart" className="btn2">
               <MdShoppingCart className="text-2xl" title="Cart" />
+              {cartCount > 0 && (
+        <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-black-100">
+          {cartCount}
+        </span>
+      )}
             </Link>
             <Link to="/chat" className="btn2">
             <MdChat className="text-2xl text-black-500 hover:text-blue-700" title="Chat" />
