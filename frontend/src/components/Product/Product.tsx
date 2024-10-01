@@ -60,6 +60,8 @@ const Product: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [productsPerPage] = useState(8); 
     const [totalProducts, setTotalProducts] = useState(0);
+    const dispatch=useDispatch()
+    const cart=useSelector((state:any)=>state.cart.cart)
     const initialValues={
         collab: '',
         name: '',
@@ -196,8 +198,7 @@ const Product: React.FC = () => {
         navigate(`/productDetail`, { state: { product } });
     };
     
-    const dispatch=useDispatch()
-    const cart=useSelector((state:any)=>state.cart.cart)
+
 const handleAddToCart = async (productId: string) => {
     
     try {
