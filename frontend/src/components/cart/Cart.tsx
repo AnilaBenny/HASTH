@@ -51,7 +51,9 @@ export default () => {
       </div>
     );
   }
-
+  const handleProductClick = (product: any) => {
+    navigate(`/productDetail`, { state: { product } });
+};
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-3xl font-bold mb-8 text-gray-800">Your Cart</h1>
@@ -61,12 +63,13 @@ export default () => {
             <div key={item._id} className="flex items-center border-b border-gray-200 py-6 last:border-b-0">
               <img 
                 src={`https://hasth.mooo.com/src/uploads/${item.productId?.images[0]}`} 
-                alt={item.name} 
-                className="w-24 h-24 object-cover rounded-md shadow-sm mr-6" 
+                alt={item.productId.name} 
+                onClick={()=>handleProductClick(item.productId)}
+                className="w-24 h-24 object-cover rounded-md shadow-sm mr-6 cursor-pointer" 
               />
               <div className="flex-grow">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">{item.name}</h2>
-                <p className="text-gray-600 text-lg mb-3">${item.price}</p>
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">{item.productId.name}</h2>
+                <p className="text-gray-600 text-lg mb-3">Rs.{item.productId.price}</p>
                 <div className="flex items-center">
                   <label htmlFor={`quantity-${item._id}`} className="mr-3 text-gray-700">Quantity:</label>
                   <select

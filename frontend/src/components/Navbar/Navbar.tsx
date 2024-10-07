@@ -11,11 +11,18 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
   const cart = useSelector((state:any) => state.cart.cart); 
-  const [cartCount,setCartCount]=useState(cart.items.length|0);
-  console.log(cartCount,'cartcount');
-  useEffect(()=>{
-    setCartCount(cart.items.length|0)
-  },[cart])
+  const [cartCount, setCartCount] = useState(0);
+  
+  useEffect(() => {
+    if (cart && cart.items) {
+    
+      
+      setCartCount(cart.items.length);
+    } else {
+      setCartCount(0); 
+    }
+  }, [cart]);
+
 
   const handleToggleNav = () => {
     setNavOpen(prev => !prev);
@@ -106,13 +113,13 @@ const Navbar = () => {
 
       {isAuthenticated ? (<div className="hidden lg:flex items-center">
           <div className="flex items-center space-x-4">
-            <Link to="/cart" className="btn2">
+          <Link to="/cart" className="relative btn2">
               <MdShoppingCart className="text-2xl" title="Cart" />
-              {cart&&cartCount > 0 && (
-        <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-black-100">
-          {cartCount}
-        </span>
-      )}
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                  {cartCount}
+                </span>
+              )}
             </Link>
             <Link to="/chat" className="btn2">
             <MdChat className="text-2xl text-black-500 hover:text-blue-700" title="Chat" />
