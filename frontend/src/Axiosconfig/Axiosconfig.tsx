@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: "https://hasth.mooo.com",
+  baseURL: "https://hasth.onrender.com",
   timeout: 100000,
   headers: {
     'Content-Type': 'application/json',
